@@ -1,4 +1,4 @@
-# Time Series Derivatives
+# PyDelt
 
 A Python package for calculating derivatives of time series data using various methods:
 
@@ -10,14 +10,14 @@ A Python package for calculating derivatives of time series data using various m
 ## Installation
 
 ```bash
-pip install timeseries_derivatives
+pip install pydelt
 ```
 
 ## Usage
 
 ```python
 import numpy as np
-from timeseries_derivatives import lla, gold, glla, fda
+from pydelt import lla, gold, glla, fda
 
 # Generate sample data
 time = np.linspace(0, 10, 500)

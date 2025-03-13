@@ -3,12 +3,12 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "timeseries_derivatives"
+name = "pydelt"
 version = "0.1.0"
 authors = [
   { name="Your Name", email="your.email@example.com" },
 ]
-description = "Time series smoothing and derivative methods"
+description = "Python package for calculating derivatives of time series data using various methods"
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
@@ -24,5 +24,5 @@ dependencies = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/yourusername/timeseries_derivatives"
-"Bug Tracker" = "https://github.com/yourusername/timeseries_derivatives/issues"
+"Homepage" = "https://github.com/yourusername/pydelt"
+"Bug Tracker" = "https://github.com/yourusername/pydelt/issues"

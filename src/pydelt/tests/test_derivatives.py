@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from timeseries_derivatives.derivatives import lla, gold, glla, fda
+from pydelt.derivatives import lla, gold, glla, fda
 
 def test_lla_sine():
     time = np.linspace(0, 10, 100)
