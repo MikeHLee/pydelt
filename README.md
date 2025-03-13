@@ -1,11 +1,12 @@
 # PyDelt
 
-A Python package for calculating derivatives of time series data using various methods:
+A Python package for calculating derivatives and integrals of time series data using various methods:
 
 - Local Linear Approximation (LLA)
 - Generalized Orthogonal Local Derivative (GOLD)
 - Generalized Local Linear Approximation (GLLA)
 - Functional Data Analysis (FDA)
+- Integration with Error Estimation
 
 ## Installation
 
@@ -17,7 +18,7 @@ pip install pydelt
 
 ```python
 import numpy as np
-from pydelt import lla, gold, glla, fda
+from pydelt import lla, gold, glla, fda, integrate_derivative, integrate_derivative_with_error
 
 # Generate sample data
 time = np.linspace(0, 10, 500)
@@ -28,6 +29,12 @@ derivative, steps = lla(time.tolist(), signal.tolist(), window_size=5)
 result_gold = gold(signal, time, embedding=5, n=2)
 result_glla = glla(signal, time, embedding=5, n=2)
 result_fda = fda(signal, time)
+
+# Reconstruct signal through integration
+reconstructed = integrate_derivative(time, derivative, initial_value=signal[0])
+
+# Get integration with error estimates
+reconstructed_with_error, error = integrate_derivative_with_error(time, derivative, initial_value=signal[0])
 ```
 
 ## Methods
@@ -46,6 +53,15 @@ A robust method for calculating derivatives using orthogonal polynomials. GOLD c
 
 ### FDA (Functional Data Analysis)
 A sophisticated approach that uses spline-based smoothing to represent the time series as a continuous function. FDA automatically determines an optimal smoothing parameter based on the data characteristics, balancing the trade-off between smoothness and fidelity to the original data. This method is particularly well-suited for smooth underlying processes and can provide consistent derivatives up to the order of the chosen spline basis.
+
+### Integration Methods
+The package provides two integration methods:
+
+#### Basic Integration (integrate_derivative)
+Uses the trapezoidal rule to integrate a derivative signal and reconstruct the original time series. You can specify an initial value to match known boundary conditions.
+
+#### Integration with Error Estimation (integrate_derivative_with_error)
+Performs integration using both trapezoidal and rectangular rules to provide an estimate of the integration error. This is particularly useful when working with noisy or uncertain derivative data.
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
