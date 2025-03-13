@@ -1,0 +1,11 @@
+LICENSE
+README.md
+pyproject.toml
+src/timeseries_derivatives/__init__.py
+src/timeseries_derivatives/derivatives.py
+src/timeseries_derivatives.egg-info/PKG-INFO
+src/timeseries_derivatives.egg-info/SOURCES.txt
+src/timeseries_derivatives.egg-info/dependency_links.txt
+src/timeseries_derivatives.egg-info/requires.txt
+src/timeseries_derivatives.egg-info/top_level.txt
+src/timeseries_derivatives/tests/test_derivatives.py
