@@ -37,3 +37,6 @@ ENV/
 dist/
 build/
 *.egg-info/
+
+# Local Files
+#local

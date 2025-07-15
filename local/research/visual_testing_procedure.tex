@@ -1,0 +1,212 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+
+\geometry{a4paper, margin=1in}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\title{Visual Testing Procedure for PyDelt}
+\author{PyDelt Research Team}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This document outlines the visual testing procedure for the PyDelt package, a Python library for calculating derivatives and integrals of time series data. The visual tests are designed to complement the traditional unit tests by providing interactive visualizations that help assess the performance of different algorithms under various conditions, including in the presence of noise.
+\end{abstract}
+
+\section{Introduction}
+
+PyDelt provides several methods for calculating derivatives and integrals of time series data. While traditional unit tests verify that these methods produce results within acceptable error bounds, visual tests provide additional insights into how these methods perform under different conditions, particularly in the presence of noise.
+
+The visual tests generate interactive HTML plots using Plotly, which allow researchers to:
+\begin{itemize}
+    \item Visually compare the performance of different algorithms
+    \item Assess the impact of noise on algorithm performance
+    \item Evaluate the effect of parameter choices (e.g., window size)
+    \item Examine the full pipeline from derivative calculation to signal reconstruction
+\end{itemize}
+
+\section{Testing Framework}
+
+\subsection{Directory Structure}
+
+The visual testing framework is organized as follows:
+\begin{lstlisting}
+pydelt/
+  local/
+    tests/
+      visual_test_derivatives.py
+      visual_test_integrals.py
+      run_visual_tests.py
+    output/
+      [generated HTML files]
+    research/
+      [documentation and research notes]
+\end{lstlisting}
+
+\subsection{Test Types}
+
+The visual tests are divided into two main categories:
+
+\subsubsection{Derivative Tests}
+\begin{itemize}
+    \item Basic tests for each algorithm (LLA, GOLD, GLLA, FDA)
+    \item Algorithm comparison on clean data
+    \item Noise impact analysis across algorithms
+    \item Window size effect analysis for LLA
+\end{itemize}
+
+\subsubsection{Integral Tests}
+\begin{itemize}
+    \item Basic integration tests (constant, sine)
+    \item Initial value handling
+    \item Error estimation
+    \item Input type handling
+    \item Noise impact on integration
+    \item Full pipeline: derivative calculation and signal reconstruction
+\end{itemize}
+
+\section{Noise Testing Methodology}
+
+\subsection{Noise Generation}
+
+Gaussian noise is added to the signals using the following function:
+
+\begin{lstlisting}[language=Python]
+def add_noise(signal, noise_level):
+    """Add Gaussian noise to a signal."""
+    np.random.seed(42)  # For reproducibility
+    noise = np.random.normal(0, noise_level, size=signal.shape)
+    return signal + noise
+\end{lstlisting}
+
+The noise levels used in the tests are: 0.01, 0.05, 0.1, and 0.2, representing increasing levels of signal corruption.
+
+\subsection{Derivative Algorithm Performance Under Noise}
+
+The test \texttt{visual\_test\_noise\_comparison} evaluates how different derivative algorithms (LLA, GOLD, GLLA, FDA) handle varying levels of noise. For each noise level, the test:
+
+\begin{enumerate}
+    \item Generates a noisy sine wave
+    \item Calculates derivatives using each algorithm
+    \item Compares the results to the expected derivative (cosine)
+    \item Displays both the derivative results and the original noisy signal
+\end{enumerate}
+
+\subsection{Window Size Effect on Noise Handling}
+
+The test \texttt{visual\_test\_window\_size\_comparison} examines how the window size parameter in the LLA algorithm affects its ability to handle noise. Larger window sizes generally provide more smoothing but may reduce responsiveness to rapid changes.
+
+\subsection{Integration with Noisy Derivatives}
+
+The test \texttt{visual\_test\_noise\_effect\_on\_integration} evaluates how noise in the derivative affects integration results. This is important because noise in derivatives can accumulate during integration.
+
+\subsection{Signal Reconstruction from Noisy Data}
+
+The test \texttt{visual\_test\_derivative\_reconstruction\_with\_noise} demonstrates the full pipeline:
+\begin{enumerate}
+    \item Start with a noisy signal
+    \item Calculate its derivative
+    \item Reconstruct the original signal by integrating the derivative
+    \item Compare the reconstructed signal to both the noisy original and the clean signal
+\end{enumerate}
+
+\section{Running the Tests}
+
+\subsection{Prerequisites}
+
+\begin{itemize}
+    \item Python 3.8 or higher
+    \item PyDelt package and its dependencies
+    \item Plotly for visualization
+\end{itemize}
+
+\subsection{Execution}
+
+To run the visual tests:
+
+\begin{lstlisting}[language=bash]
+# Activate the virtual environment
+source venv/bin/activate
+
+# Run all visual tests
+python local/tests/run_visual_tests.py
+
+# Run specific test files
+python local/tests/visual_test_derivatives.py
+python local/tests/visual_test_integrals.py
+\end{lstlisting}
+
+\subsection{Output}
+
+The tests generate HTML files in the \texttt{local/output} directory. These files can be opened in any web browser to interactively explore the plots. The interactive features include:
+\begin{itemize}
+    \item Zooming in/out
+    \item Panning
+    \item Hovering for data point values
+    \item Toggling visibility of individual traces
+    \item Downloading as PNG
+\end{itemize}
+
+\section{Interpreting Results}
+
+\subsection{Derivative Algorithm Comparison}
+
+When comparing derivative algorithms, consider:
+\begin{itemize}
+    \item Accuracy: How close is the calculated derivative to the expected value?
+    \item Noise sensitivity: How much does the algorithm's performance degrade with increasing noise?
+    \item Boundary effects: How does the algorithm handle the edges of the data?
+    \item Computational efficiency: How long does the algorithm take to run?
+\end{itemize}
+
+\subsection{Integration Performance}
+
+When evaluating integration performance, consider:
+\begin{itemize}
+    \item Accuracy: How close is the integrated result to the expected function?
+    \item Error accumulation: How does error accumulate over the integration domain?
+    \item Initial value sensitivity: How does the choice of initial value affect the result?
+    \item Noise handling: How well does the integration handle noisy derivatives?
+\end{itemize}
+
+\section{Conclusion}
+
+Visual testing provides valuable insights that complement traditional unit tests. By visualizing the performance of different algorithms under various conditions, researchers can make informed decisions about which methods to use for specific applications.
+
+The PyDelt visual testing framework is designed to be extensible. New tests can be added to evaluate additional aspects of the package's performance or to compare new algorithms with existing ones.
+
+\end{document}

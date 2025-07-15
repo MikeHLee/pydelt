@@ -1,0 +1,265 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+
+\title{Local Regression Methods in PyDelt}
+\author{Michael Lee}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This document provides a detailed explanation of the local regression methods implemented in the PyDelt library, with a focus on their relationship to LOESS (LOcally Estimated Scatterplot Smoothing) and other local regression techniques. We discuss the theoretical foundations, implementation details, and comparative advantages of each method for derivative estimation and raw interpolation.
+\end{abstract}
+
+\section{Introduction}
+
+Local regression methods are non-parametric techniques that fit simple models to localized subsets of data to build a function that describes the deterministic part of the variation in the data. The PyDelt library implements several local regression methods for derivative estimation, including:
+
+\begin{itemize}
+    \item Local Linear Approximation (LLA)
+    \item Generalized Local Linear Approximation (GLLA)
+    \item Generalized Orthogonal Local Derivative (GOLD)
+    \item Functional Data Analysis (FDA) using splines
+\end{itemize}
+
+This document explores how these methods relate to traditional LOESS and other local regression techniques used for raw interpolation.
+
+\section{LOESS and Local Regression}
+
+\subsection{LOESS Overview}
+
+LOESS (LOcally Estimated Scatterplot Smoothing), also known as LOWESS (LOcally WEighted Scatterplot Smoothing), is a popular non-parametric regression method that combines multiple regression models in a k-nearest-neighbor-based meta-model. The key characteristics of LOESS include:
+
+\begin{itemize}
+    \item Fitting simple models (typically low-degree polynomials) to localized subsets of the data
+    \item Using weighted least squares with a weight function that gives more weight to points near the point of estimation and less weight to points further away
+    \item Robust fitting procedures to reduce the influence of outliers
+\end{itemize}
+
+The general form of LOESS involves fitting a polynomial regression of degree $d$ (typically 1 or 2) to a subset of the data using weighted least squares, where the weights decrease with distance from the point of estimation.
+
+\subsection{Mathematical Formulation}
+
+For a dataset $(x_i, y_i)$ for $i = 1, 2, \ldots, n$, LOESS estimates the value at a point $x$ by:
+
+\begin{enumerate}
+    \item Selecting $k$ nearest neighbors to $x$
+    \item Assigning weights $w_i$ to each neighbor based on their distance from $x$, typically using a tri-cubic weight function:
+    \begin{equation}
+        w_i = \left(1 - \left|\frac{x - x_i}{h}\right|^3\right)^3
+    \end{equation}
+    where $h$ is the maximum distance from $x$ to the $k$-th nearest neighbor
+    \item Fitting a weighted polynomial regression of degree $d$ to the $k$ nearest neighbors
+    \item Using the fitted polynomial to estimate the value at $x$
+\end{enumerate}
+
+\section{Local Linear Approximation (LLA)}
+
+\subsection{Method Description}
+
+The Local Linear Approximation (LLA) method in PyDelt estimates derivatives by fitting linear models to localized subsets of the time series data. It uses a sliding window approach and applies optional normalization techniques.
+
+\subsection{Relation to LOESS}
+
+LLA can be viewed as a simplified version of LOESS with the following characteristics:
+
+\begin{itemize}
+    \item Uses a fixed-width window rather than k-nearest neighbors
+    \item Employs a polynomial of degree 1 (linear regression)
+    \item Does not use distance-based weighting within the window (uniform weights)
+    \item Offers options for zero-min and zero-mean normalization within each window
+\end{itemize}
+
+The key difference is that LLA focuses on estimating the slope (first derivative) rather than the function value itself. The slope of the fitted line directly provides the derivative estimate.
+
+\subsection{Mathematical Formulation}
+
+For a time series $(t_i, s_i)$ for $i = 1, 2, \ldots, n$, LLA estimates the derivative at a point $t_j$ by:
+
+\begin{enumerate}
+    \item Selecting a window of size $w$ centered at $t_j$
+    \item Optionally normalizing the data within the window by:
+    \begin{itemize}
+        \item Zero-min: $t'_i = t_i - \min(t_i)$, $s'_i = s_i - \min(s_i)$
+        \item Zero-mean: $t'_i = t_i - \text{mean}(t_i)$, $s'_i = s_i - \text{mean}(s_i)$
+    \end{itemize}
+    \item Fitting a linear regression $s'_i = \beta_0 + \beta_1 t'_i + \epsilon_i$ to the data in the window
+    \item Using the slope coefficient $\beta_1$ as the derivative estimate at $t_j$
+\end{enumerate}
+
+\section{Generalized Local Linear Approximation (GLLA)}
+
+\subsection{Method Description}
+
+The Generalized Local Linear Approximation (GLLA) extends LLA to estimate higher-order derivatives using a Taylor series expansion approach. It fits a polynomial of specified degree to a sliding window of data points.
+
+\subsection{Relation to LOESS}
+
+GLLA relates to LOESS in the following ways:
+
+\begin{itemize}
+    \item Uses a fixed-width window similar to LLA
+    \item Fits higher-degree polynomials (like LOESS with $d > 1$)
+    \item Does not use distance-based weighting
+    \item Focuses on extracting derivative information rather than function values
+\end{itemize}
+
+The key innovation in GLLA is the use of the Taylor series coefficients to directly estimate derivatives of various orders.
+
+\subsection{Mathematical Formulation}
+
+For a time series $(t_i, s_i)$ for $i = 1, 2, \ldots, n$, GLLA estimates derivatives up to order $m$ at a point $t_j$ by:
+
+\begin{enumerate}
+    \item Creating a design matrix $L$ where each column represents a term in the Taylor series:
+    \begin{equation}
+        L_{ij} = \frac{(t_i - \bar{t})^j}{j!}
+    \end{equation}
+    for $j = 0, 1, \ldots, m$
+    
+    \item Computing the weight matrix:
+    \begin{equation}
+        W = L(L^T L)^{-1}
+    \end{equation}
+    
+    \item Applying the weights to the signal values to estimate derivatives:
+    \begin{equation}
+        \hat{s}^{(j)} = X W_j \cdot \Delta t^{-j}
+    \end{equation}
+    where $X$ is the matrix of signal values in the sliding window and $\Delta t$ is the time step
+\end{enumerate}
+
+\section{Generalized Orthogonal Local Derivative (GOLD)}
+
+\subsection{Method Description}
+
+The Generalized Orthogonal Local Derivative (GOLD) method improves upon GLLA by using orthogonalized basis functions. It applies Gram-Schmidt orthogonalization to the polynomial basis functions before estimating derivatives.
+
+\subsection{Relation to LOESS}
+
+GOLD relates to LOESS and local regression in the following ways:
+
+\begin{itemize}
+    \item Uses a fixed-width window like GLLA and LLA
+    \item Employs orthogonalized polynomial basis functions, which improves numerical stability
+    \item Does not use distance-based weighting
+    \item Focuses on derivative estimation rather than function values
+\end{itemize}
+
+The orthogonalization step in GOLD is similar to techniques used in orthogonal polynomial regression, which can be viewed as a specialized form of local regression.
+
+\subsection{Mathematical Formulation}
+
+For a time series $(t_i, s_i)$ for $i = 1, 2, \ldots, n$, GOLD estimates derivatives up to order $m$ at a point $t_j$ by:
+
+\begin{enumerate}
+    \item Creating a basis of polynomial functions:
+    \begin{equation}
+        \phi_k(t) = t^k \quad \text{for } k = 0, 1, \ldots, m
+    \end{equation}
+    
+    \item Orthogonalizing the basis using Gram-Schmidt:
+    \begin{equation}
+        \phi_k'(t) = \phi_k(t) - \sum_{j=0}^{k-1} \frac{\langle \phi_k, \phi_j' \rangle}{\langle \phi_j', \phi_j' \rangle} \phi_j'(t)
+    \end{equation}
+    
+    \item Scaling the orthogonalized basis by factorial terms:
+    \begin{equation}
+        L_k = \frac{1}{k!} \phi_k'
+    \end{equation}
+    
+    \item Computing the weight matrix:
+    \begin{equation}
+        W = L^T (L L^T)^{-1}
+    \end{equation}
+    
+    \item Applying the weights to the signal values to estimate derivatives
+\end{enumerate}
+
+\section{Functional Data Analysis (FDA)}
+
+\subsection{Method Description}
+
+The Functional Data Analysis (FDA) method in PyDelt uses spline smoothing to represent the time series as a continuous function. It then analytically computes derivatives from the spline representation.
+
+\subsection{Relation to LOESS}
+
+FDA differs from LOESS and the other local regression methods in several ways:
+
+\begin{itemize}
+    \item Uses a global spline representation rather than local polynomials
+    \item Employs a smoothing parameter to control the trade-off between fit and smoothness
+    \item Computes derivatives analytically from the spline rather than from local fits
+    \item Provides a continuous representation of the function and its derivatives
+\end{itemize}
+
+While not a local regression method in the strict sense, FDA shares the goal of providing a smooth representation of the data from which derivatives can be estimated.
+
+\subsection{Mathematical Formulation}
+
+For a time series $(t_i, s_i)$ for $i = 1, 2, \ldots, n$, FDA estimates the function and its derivatives by:
+
+\begin{enumerate}
+    \item Fitting a smoothing spline $f(t)$ that minimizes:
+    \begin{equation}
+        \sum_{i=1}^{n} (s_i - f(t_i))^2 + \lambda \int f''(t)^2 dt
+    \end{equation}
+    where $\lambda$ is the smoothing parameter
+    
+    \item Computing derivatives analytically from the spline representation:
+    \begin{equation}
+        f^{(k)}(t) = \frac{d^k}{dt^k} f(t)
+    \end{equation}
+\end{enumerate}
+
+\section{Comparative Analysis}
+
+\subsection{Advantages and Limitations}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Feature} & \textbf{LLA} & \textbf{GLLA} & \textbf{GOLD} & \textbf{FDA} \\
+\midrule
+Computational Complexity & Low & Medium & High & Medium \\
+Higher-order Derivatives & No & Yes & Yes & Yes \\
+Noise Sensitivity & Medium & Medium & Low & Low \\
+Parameter Tuning & Simple & Medium & Medium & Complex \\
+Boundary Handling & Poor & Poor & Poor & Good \\
+\bottomrule
+\end{tabular}
+\caption{Comparison of local regression methods in PyDelt}
+\end{table}
+
+\subsection{Use Cases}
+
+\begin{itemize}
+    \item \textbf{LLA}: Best for simple first-derivative estimation with minimal computational overhead
+    \item \textbf{GLLA}: Suitable for higher-order derivatives in well-behaved data
+    \item \textbf{GOLD}: Preferred for higher-order derivatives in noisy data due to improved numerical stability
+    \item \textbf{FDA}: Ideal for smooth data where a continuous representation is desired
+\end{itemize}
+
+\section{Conclusion}
+
+The local regression methods implemented in PyDelt provide a range of approaches for derivative estimation, each with its own strengths and limitations. While they share conceptual similarities with LOESS and other local regression techniques used for raw interpolation, they are specifically designed for derivative estimation.
+
+The key differences between these methods and traditional LOESS include:
+\begin{itemize}
+    \item Focus on derivative estimation rather than function value prediction
+    \item Different approaches to window selection and weighting
+    \item Specialized techniques for higher-order derivative estimation
+\end{itemize}
+
+Understanding these relationships helps users select the appropriate method for their specific application and interpret the results correctly.
+
+\end{document}

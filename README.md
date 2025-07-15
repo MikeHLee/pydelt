@@ -63,5 +63,30 @@ Uses the trapezoidal rule to integrate a derivative signal and reconstruct the o
 #### Integration with Error Estimation (integrate_derivative_with_error)
 Performs integration using both trapezoidal and rectangular rules to provide an estimate of the integration error. This is particularly useful when working with noisy or uncertain derivative data.
 
+## Testing
+
+PyDelt includes a comprehensive test suite to verify the correctness of its implementations. To run the tests:
+
+```bash
+# Activate your virtual environment (if using one)
+source venv/bin/activate
+
+# Install pytest if not already installed
+pip install pytest
+
+# Run all tests
+python -m pytest src/pydelt/tests/
+
+# Run specific test files
+python -m pytest src/pydelt/tests/test_derivatives.py
+python -m pytest src/pydelt/tests/test_integrals.py
+```
+
+The test suite includes verification of:
+- Derivative calculation accuracy for various methods
+- Integration accuracy and error estimation
+- Input validation and error handling
+- Edge cases and boundary conditions
+
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
