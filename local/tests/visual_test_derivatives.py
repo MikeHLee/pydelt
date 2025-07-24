@@ -10,6 +10,20 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from pydelt.derivatives import lla, gold, glla, fda
 
+# Import neural network and DNDF derivatives if available
+try:
+    from pydelt.autodiff import neural_network_derivative
+    import torch
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
+
+try:
+    import tensorflow as tf
+    TF_AVAILABLE = True
+except ImportError:
+    TF_AVAILABLE = False
+
 # Ensure output directory exists
 OUTPUT_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'output')
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -205,6 +219,25 @@ def visual_test_algorithm_comparison():
         go.Scatter(x=time, y=fda_derivative, mode='lines', name='FDA'),
         row=1, col=1
     )
+    # Add neural network derivatives if available
+    if TORCH_AVAILABLE:
+        nn_deriv_func = neural_network_derivative(
+            time, signal, framework='pytorch', hidden_layers=[64,32,16], dropout=0.025, epochs=300
+        )
+        nn_derivative = nn_deriv_func(time)
+        fig.add_trace(
+            go.Scatter(x=time, y=nn_derivative, mode='lines', name='NN (PyTorch)'),
+            row=1, col=1
+        )
+    if TF_AVAILABLE:
+        nn_deriv_func_tf = neural_network_derivative(
+            time, signal, framework='tensorflow', hidden_layers=[64,32,16], dropout=0.025, epochs=300
+        )
+        nn_derivative_tf = nn_deriv_func_tf(time)
+        fig.add_trace(
+            go.Scatter(x=time, y=nn_derivative_tf, mode='lines', name='NN (TensorFlow)'),
+            row=1, col=1
+        )
     fig.add_trace(
         go.Scatter(x=time, y=expected, mode='lines', name='Expected (cosine)'),
         row=1, col=1
@@ -302,7 +335,36 @@ def visual_test_noise_comparison():
             go.Scatter(x=time, y=fda_derivative, mode='lines', name=f'FDA (noise={noise_level})'),
             row=row, col=1
         )
-        
+        # Neural network derivatives (if available)
+        if TORCH_AVAILABLE:
+            nn_deriv_func = neural_network_derivative(
+                time, noisy_signal, framework='pytorch', hidden_layers=[64,32,16], dropout=0.025, epochs=300
+            )
+            nn_derivative = nn_deriv_func(time)
+            fig.add_trace(
+                go.Scatter(x=time, y=nn_derivative, mode='lines', name=f'NN (PyTorch, noise={noise_level})'),
+                row=row, col=1
+            )
+            try:
+                dndf_deriv_func = deep_neural_decision_forest_derivative(
+                    time, noisy_signal, num_trees=5, depth=3, hidden_layers=[64,32,16], dropout=0.025, epochs=300
+                )
+                dndf_derivative = dndf_deriv_func(time)
+                fig.add_trace(
+                    go.Scatter(x=time, y=dndf_derivative, mode='lines', name=f'DNDF (PyTorch, noise={noise_level})'),
+                    row=row, col=1
+                )
+            except Exception:
+                pass
+        if TF_AVAILABLE:
+            nn_deriv_func_tf = neural_network_derivative(
+                time, noisy_signal, framework='tensorflow', hidden_layers=[64,32,16], dropout=0.025, epochs=300
+            )
+            nn_derivative_tf = nn_deriv_func_tf(time)
+            fig.add_trace(
+                go.Scatter(x=time, y=nn_derivative_tf, mode='lines', name=f'NN (TensorFlow, noise={noise_level})'),
+                row=row, col=1
+            )
         # Add expected derivative
         fig.add_trace(
             go.Scatter(x=time, y=expected, mode='lines', 

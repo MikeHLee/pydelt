@@ -59,6 +59,14 @@ def main():
     integrals_tests.visual_test_integrate_sine()
     integrals_tests.visual_test_integrate_with_initial_value()
     integrals_tests.visual_test_integrate_with_error()
+
+    # Run advanced interpolation visual tests
+    print("\nRunning advanced interpolation visual tests...")
+    advanced_tests = import_module_from_file(
+        "test_visual_advanced_interpolation",
+        tests_dir / "test_visual_advanced_interpolation.py"
+    )
+    advanced_tests.test_derivative_based_interpolation_visual()
     integrals_tests.visual_test_input_types()
     
     # Run noise-related integrals tests

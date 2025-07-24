@@ -7,7 +7,28 @@ import pandas as pd
 from scipy.interpolate import UnivariateSpline, interp1d
 from scipy.stats import linregress
 from statsmodels.nonparametric.smoothers_lowess import lowess
-from typing import List, Tuple, Dict, Union, Optional, Callable
+from typing import List, Tuple, Dict, Union, Optional, Callable, Any
+import warnings
+
+# For neural network methods
+try:
+    import torch
+    import torch.nn as nn
+    import torch.optim as optim
+    from torch.utils.data import DataLoader, TensorDataset
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
+    warnings.warn("PyTorch is not installed. Neural network interpolation methods will not be available.")
+
+try:
+    import tensorflow as tf
+    from tensorflow import keras
+    from tensorflow.keras import layers
+    TF_AVAILABLE = True
+except ImportError:
+    TF_AVAILABLE = False
+    warnings.warn("TensorFlow is not installed. Some neural network interpolation methods will not be available.")
 
 def local_segmented_linear(
     time: Union[List[float], np.ndarray],
@@ -291,7 +312,7 @@ def calculate_fit_quality(
 def get_best_interpolation(
     time: Union[List[float], np.ndarray],
     signal: Union[List[float], np.ndarray],
-    methods: List[str] = ['linear', 'spline', 'lowess', 'loess'],
+    methods: List[str] = ['linear', 'spline', 'lowess', 'loess', 'lla', 'glla', 'gold', 'fda'],
     metric: str = 'r_squared'
 ) -> Tuple[Callable[[Union[float, np.ndarray]], np.ndarray], str, float]:
     """
@@ -318,8 +339,20 @@ def get_best_interpolation(
         'linear': lambda: local_segmented_linear(t, s, window_size=5, force_continuous=True),
         'spline': lambda: spline_interpolation(t, s),
         'lowess': lambda: lowess_interpolation(t, s),
-        'loess': lambda: loess_interpolation(t, s)
+        'loess': lambda: loess_interpolation(t, s),
+        'lla': lambda: derivative_based_interpolation(t, s, method='lla'),
+        'glla': lambda: derivative_based_interpolation(t, s, method='glla'),
+        'gold': lambda: derivative_based_interpolation(t, s, method='gold'),
+        'fda': lambda: derivative_based_interpolation(t, s, method='fda')
     }
+    
+    # Add neural network methods if available
+    if TORCH_AVAILABLE:
+        method_funcs['nn_pytorch'] = lambda: neural_network_interpolation(t, s, framework='pytorch')
+        
+    
+    if TF_AVAILABLE:
+        method_funcs['nn_tensorflow'] = lambda: neural_network_interpolation(t, s, framework='tensorflow')
     
     # Try each method and calculate fit quality
     results = {}
@@ -348,3 +381,310 @@ def get_best_interpolation(
     method_info = best_method[1]
     
     return method_info['function'], method_name, method_info[metric]
+
+
+def derivative_based_interpolation(
+    time: Union[List[float], np.ndarray],
+    signal: Union[List[float], np.ndarray],
+    method: str = 'lla',
+    **kwargs
+) -> Callable[[Union[float, np.ndarray]], np.ndarray]:
+    """
+    Interpolate a time series using derivative estimation and signal reconstruction.
+    
+    Args:
+        time: Time points of the original signal
+        signal: Signal values
+        method: Derivative estimation method ('lla', 'glla', 'gold', 'fda')
+        **kwargs: Additional parameters for the derivative method
+        
+    Returns:
+        Callable function that interpolates the signal at any time point
+    """
+    # Import here to avoid circular imports
+    from pydelt.derivatives import lla, glla, gold, fda
+    from pydelt.integrals import integrate_derivative
+    
+    # Convert inputs to numpy arrays
+    t = np.asarray(time)
+    s = np.asarray(signal)
+    
+    # Ensure data is sorted by time
+    sort_idx = np.argsort(t)
+    t = t[sort_idx]
+    s = s[sort_idx]
+    
+    # Calculate derivatives using the specified method
+    if method.lower() == 'lla':
+        derivative, _ = lla(t.tolist(), s.tolist(), **kwargs)
+    elif method.lower() == 'glla':
+        result = glla(s, t, **kwargs)
+        derivative = result['dsignal'][:, 1]  # First derivative
+    elif method.lower() == 'gold':
+        result = gold(s, t, **kwargs)
+        derivative = result['dsignal'][:, 1]  # First derivative
+    elif method.lower() == 'fda':
+        result = fda(s, t, **kwargs)
+        derivative = result['dsignal'][:, 1]  # First derivative
+    else:
+        raise ValueError(f"Unknown derivative method: {method}")
+    
+    # Ensure derivative array has the same length as time and signal arrays
+    derivative = np.array(derivative)
+    if len(derivative) != len(t):
+        # If derivatives are missing for some points, use linear interpolation to fill them
+        from scipy.interpolate import interp1d
+        x_known = np.arange(len(derivative))
+        x_all = np.arange(len(t))
+        if len(derivative) > 0:
+            deriv_interp = interp1d(x_known, derivative, bounds_error=False, fill_value=(derivative[0], derivative[-1]))
+            derivative = deriv_interp(x_all)
+        else:
+            # If no derivatives were calculated, use zeros
+            derivative = np.zeros_like(t)
+    
+    # Create interpolation function
+    def interpolate(query_time):
+        query_time = np.asarray(query_time)
+        scalar_input = query_time.ndim == 0
+        if scalar_input:
+            query_time = np.array([query_time])
+        
+        result = np.zeros_like(query_time, dtype=float)
+        
+        for i, t_i in enumerate(query_time):
+            # Find the appropriate segment
+            if t_i <= t[0]:
+                # Extrapolate before the first point
+                result[i] = s[0] + derivative[0] * (t_i - t[0])
+            elif t_i >= t[-1]:
+                # Extrapolate after the last point
+                result[i] = s[-1] + derivative[-1] * (t_i - t[-1])
+            else:
+                # Find the nearest time points
+                idx = np.searchsorted(t, t_i)
+                t_prev, t_next = t[idx-1], t[idx]
+                s_prev, s_next = s[idx-1], s[idx]
+                d_prev, d_next = derivative[idx-1], derivative[idx]
+                
+                # Use Hermite interpolation
+                h = t_next - t_prev
+                u = (t_i - t_prev) / h
+                
+                # Hermite basis functions
+                h00 = 2*u**3 - 3*u**2 + 1
+                h10 = u**3 - 2*u**2 + u
+                h01 = -2*u**3 + 3*u**2
+                h11 = u**3 - u**2
+                
+                # Interpolate
+                result[i] = h00*s_prev + h10*h*d_prev + h01*s_next + h11*h*d_next
+        
+        return result[0] if scalar_input else result
+    
+    return interpolate
+
+
+class PyTorchMLP(nn.Module):
+    """
+    PyTorch Multi-Layer Perceptron for time series interpolation.
+    """
+    def __init__(self, hidden_layers=[64, 32, 16], dropout=0.1):
+        super(PyTorchMLP, self).__init__()
+        self.layers = nn.ModuleList()
+        self.dropout = nn.Dropout(dropout)
+        # Input layer
+        self.layers.append(nn.Linear(1, hidden_layers[0]))
+        # Hidden layers
+        for i in range(len(hidden_layers)-1):
+            self.layers.append(nn.Linear(hidden_layers[i], hidden_layers[i+1]))
+        # Output layer
+        self.layers.append(nn.Linear(hidden_layers[-1], 1))
+        self.activation = nn.ReLU()
+    
+    def forward(self, x):
+        for i, layer in enumerate(self.layers[:-1]):
+            x = self.activation(layer(x))
+            x = self.dropout(x)
+        x = self.layers[-1](x)  # No activation on output layer
+        return x
+
+
+class TensorFlowModel:
+    """
+    TensorFlow model wrapper for time series interpolation.
+    """
+    def __init__(self, hidden_layers=[64, 32, 16], dropout=0.1):
+        if not TF_AVAILABLE:
+            raise ImportError("TensorFlow is not installed.")
+        self.model = keras.Sequential()
+        # Input layer using keras.Input
+        self.model.add(keras.Input(shape=(1,)))
+        # First hidden layer
+        self.model.add(layers.Dense(hidden_layers[0], activation='relu'))
+        self.model.add(layers.Dropout(dropout))
+        # Additional hidden layers
+        for units in hidden_layers[1:]:
+            self.model.add(layers.Dense(units, activation='relu'))
+            self.model.add(layers.Dropout(dropout))
+        # Output layer
+        self.model.add(layers.Dense(1))
+        # Compile the model
+        self.model.compile(optimizer='adam', loss='mse')
+    
+    def fit(self, x, y, epochs=100, batch_size=32, verbose=0):
+        return self.model.fit(x, y, epochs=epochs, batch_size=batch_size, verbose=verbose)
+    
+    def predict(self, x):
+        return self.model.predict(x, verbose=0)
+
+
+def neural_network_interpolation(
+    time: Union[list, np.ndarray],
+    signal: Union[list, np.ndarray],
+    framework: str = 'pytorch',
+    hidden_layers: list = [64, 32],
+    epochs: int = 1000,
+    holdout_fraction: float = 0.0,
+    return_model: bool = False,
+    **kwargs
+) -> Union[callable, tuple]:
+    # Convert to numpy arrays
+    time = np.asarray(time)
+    signal = np.asarray(signal)
+    if np.isnan(time).any() or np.isnan(signal).any():
+        raise ValueError('Input time and signal must not contain NaN values. Please impute or remove missing data before fitting.')
+
+    """
+    Interpolate a time series using a neural network.
+    
+    Args:
+        time: Time points of the original signal
+        signal: Signal values
+        framework: Neural network framework ('pytorch' or 'tensorflow')
+        hidden_layers: List of hidden layer sizes
+        epochs: Number of training epochs
+        holdout_fraction: Fraction of data to hold out for evaluation (0.0 to 0.9)
+        return_model: If True, return the trained model along with the interpolation function
+        **kwargs: Additional parameters for the neural network
+        
+    Returns:
+        If return_model is False:
+            Callable function that interpolates the signal at any time point
+        If return_model is True:
+            Tuple containing:
+            - Callable function that interpolates the signal at any time point
+            - Trained neural network model
+    """
+    if framework == 'pytorch' and not TORCH_AVAILABLE:
+        raise ImportError("PyTorch is not installed.")
+    if framework == 'tensorflow' and not TF_AVAILABLE:
+        raise ImportError("TensorFlow is not installed.")
+    
+    # Convert inputs to numpy arrays
+    t = np.asarray(time)
+    s = np.asarray(signal)
+    
+    # Ensure data is sorted by time
+    sort_idx = np.argsort(t)
+    t = t[sort_idx]
+    s = s[sort_idx]
+    
+    # Normalize time to [0, 1] for better training
+    t_min, t_max = t.min(), t.max()
+    t_norm = (t - t_min) / (t_max - t_min) if t_max > t_min else t
+    
+    # Normalize signal to [0, 1] for better training
+    s_min, s_max = s.min(), s.max()
+    s_norm = (s - s_min) / (s_max - s_min) if s_max > s_min else s
+    
+    # Split data into training and holdout sets if requested
+    if 0.0 < holdout_fraction < 0.9:
+        n_holdout = int(len(t) * holdout_fraction)
+        if n_holdout > 0:
+            # Randomly select indices for holdout
+            holdout_indices = np.random.choice(len(t), n_holdout, replace=False)
+            train_indices = np.array([i for i in range(len(t)) if i not in holdout_indices])
+            
+            t_train, s_train = t_norm[train_indices], s_norm[train_indices]
+        else:
+            t_train, s_train = t_norm, s_norm
+    else:
+        t_train, s_train = t_norm, s_norm
+    
+    # Train the neural network
+    if framework == 'pytorch':
+        # Prepare data for PyTorch
+        X = torch.tensor(t_train.reshape(-1, 1), dtype=torch.float32)
+        y = torch.tensor(s_train.reshape(-1, 1), dtype=torch.float32)
+        dataset = TensorDataset(X, y)
+        dataloader = DataLoader(dataset, batch_size=min(32, len(t_train)), shuffle=True)
+        
+        # Create and train the model
+        model = PyTorchMLP(hidden_layers=hidden_layers)
+        optimizer = optim.Adam(model.parameters(), lr=0.01)
+        loss_fn = nn.MSELoss()
+        
+        model.train()
+        for epoch in range(epochs):
+            for batch_X, batch_y in dataloader:
+                optimizer.zero_grad()
+                outputs = model(batch_X)
+                loss = loss_fn(outputs, batch_y)
+                loss.backward()
+                optimizer.step()
+        
+        model.eval()
+        
+        # Create interpolation function
+        def interpolate(query_time):
+            query_time = np.asarray(query_time)
+            scalar_input = query_time.ndim == 0
+            if scalar_input:
+                query_time = np.array([query_time])
+            
+            # Normalize query time
+            query_norm = (query_time - t_min) / (t_max - t_min) if t_max > t_min else query_time
+            
+            # Convert to PyTorch tensor
+            query_tensor = torch.tensor(query_norm.reshape(-1, 1), dtype=torch.float32)
+            
+            # Get predictions
+            with torch.no_grad():
+                pred_norm = model(query_tensor).numpy().flatten()
+            
+            # Denormalize predictions
+            pred = pred_norm * (s_max - s_min) + s_min if s_max > s_min else pred_norm
+            
+            return pred[0] if scalar_input else pred
+    
+    elif framework == 'tensorflow':
+        # Create and train the model
+        model = TensorFlowModel(hidden_layers=hidden_layers)
+        model.fit(t_train.reshape(-1, 1), s_train.reshape(-1, 1), epochs=epochs)
+        
+        # Create interpolation function
+        def interpolate(query_time):
+            query_time = np.asarray(query_time)
+            scalar_input = query_time.ndim == 0
+            if scalar_input:
+                query_time = np.array([query_time])
+            
+            # Normalize query time
+            query_norm = (query_time - t_min) / (t_max - t_min) if t_max > t_min else query_time
+            
+            # Get predictions
+            pred_norm = model.predict(query_norm.reshape(-1, 1)).flatten()
+            
+            # Denormalize predictions
+            pred = pred_norm * (s_max - s_min) + s_min if s_max > s_min else pred_norm
+            
+            return pred[0] if scalar_input else pred
+    
+    else:
+        raise ValueError(f"Unknown framework: {framework}")
+    
+    if return_model:
+        return interpolate, model
+    else:
+        return interpolate
