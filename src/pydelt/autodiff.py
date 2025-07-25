@@ -28,7 +28,7 @@ def neural_network_derivative(
     time: Union[List[float], np.ndarray],
     signal: Union[List[float], np.ndarray],
     framework: str = 'pytorch',
-    hidden_layers: List[int] = [64, 32, 16],
+    hidden_layers: List[int] = [128, 96, 64, 48, 32],
     epochs: int = 1000,
     holdout_fraction: float = 0.0,
     return_model: bool = False,
@@ -77,7 +77,7 @@ def neural_network_derivative(
 def _pytorch_derivative(
     time: Union[List[float], np.ndarray],
     signal: Union[List[float], np.ndarray],
-    hidden_layers: List[int] = [64, 32, 16],
+    hidden_layers: List[int] = [128, 96, 64, 48, 32],
     epochs: int = 1000,
     holdout_fraction: float = 0.0,
     return_model: bool = False,
@@ -202,7 +202,7 @@ def _pytorch_derivative(
 def _tensorflow_derivative(
     time: Union[List[float], np.ndarray],
     signal: Union[List[float], np.ndarray],
-    hidden_layers: List[int] = [64, 32, 16],
+    hidden_layers: List[int] = [128, 96, 64, 48, 32],
     epochs: int = 1000,
     holdout_fraction: float = 0.0,
     return_model: bool = False,

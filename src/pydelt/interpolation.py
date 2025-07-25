@@ -150,7 +150,7 @@ def spline_interpolation(
     time: Union[List[float], np.ndarray],
     signal: Union[List[float], np.ndarray],
     smoothing: Optional[float] = None,
-    k: int = 3
+    k: int = 5
 ) -> Callable[[Union[float, np.ndarray]], np.ndarray]:
     """
     Interpolate a time series using spline interpolation.
@@ -177,7 +177,9 @@ def spline_interpolation(
     if smoothing is None:
         n = len(signal)
         range_y = np.ptp(signal)
-        smoothing = n * (0.01 * range_y) ** 2
+        # More precise smoothing factor calculation
+        noise_estimate = np.std(np.diff(signal)) / np.sqrt(2)
+        smoothing = n * (0.005 * range_y + 0.1 * noise_estimate) ** 2
     
     # Create the spline
     spline = UnivariateSpline(t, s, s=smoothing, k=k)
@@ -486,17 +488,18 @@ def derivative_based_interpolation(
 
 
 class PyTorchMLP(nn.Module):
-    """
-    PyTorch Multi-Layer Perceptron for time series interpolation.
-    """
-    def __init__(self, hidden_layers=[64, 32, 16], dropout=0.1):
+    """PyTorch Multi-Layer Perceptron for time series interpolation."""
+    
+    def __init__(self, hidden_layers=[128, 96, 64, 48, 32], dropout=0.1):
         super(PyTorchMLP, self).__init__()
         self.layers = nn.ModuleList()
-        self.dropout = nn.Dropout(dropout)
+        
         # Input layer
         self.layers.append(nn.Linear(1, hidden_layers[0]))
+        self.dropout = nn.Dropout(dropout)
+        
         # Hidden layers
-        for i in range(len(hidden_layers)-1):
+        for i in range(len(hidden_layers) - 1):
             self.layers.append(nn.Linear(hidden_layers[i], hidden_layers[i+1]))
         # Output layer
         self.layers.append(nn.Linear(hidden_layers[-1], 1))
@@ -511,22 +514,23 @@ class PyTorchMLP(nn.Module):
 
 
 class TensorFlowModel:
-    """
-    TensorFlow model wrapper for time series interpolation.
-    """
-    def __init__(self, hidden_layers=[64, 32, 16], dropout=0.1):
+    """TensorFlow model wrapper for time series interpolation."""
+    
+    def __init__(self, hidden_layers=[128, 96, 64, 48, 32], dropout=0.1):
         if not TF_AVAILABLE:
             raise ImportError("TensorFlow is not installed.")
+            
         self.model = keras.Sequential()
-        # Input layer using keras.Input
-        self.model.add(keras.Input(shape=(1,)))
-        # First hidden layer
-        self.model.add(layers.Dense(hidden_layers[0], activation='relu'))
+        
+        # Input layer
+        self.model.add(layers.Dense(hidden_layers[0], activation='relu', input_shape=(1,)))
         self.model.add(layers.Dropout(dropout))
-        # Additional hidden layers
+        
+        # Hidden layers
         for units in hidden_layers[1:]:
             self.model.add(layers.Dense(units, activation='relu'))
             self.model.add(layers.Dropout(dropout))
+        
         # Output layer
         self.model.add(layers.Dense(1))
         # Compile the model

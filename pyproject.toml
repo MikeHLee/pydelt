@@ -2,23 +2,15 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.setuptools]
-include-package-data = true
-
 [project]
 name = "pydelt"
-version = "0.2.0"
-authors = [
-  { name="Your Name", email="your.email@example.com" },
-]
+version = "0.3.0"
 description = "Python package for calculating derivatives of time series data using various methods"
+authors = [
+  { name="Michael Harrison Lee", email="leemichael289@gmail.com" },
+]
 readme = "README.md"
 requires-python = ">=3.8"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-]
 dependencies = [
     "numpy>=1.20.0",
     "pandas>=1.3.0",
@@ -27,6 +19,11 @@ dependencies = [
     "statsmodels>=0.13.0",
 ]
 
-[project.urls]
-"Homepage" = "https://github.com/yourusername/pydelt"
-"Bug Tracker" = "https://github.com/yourusername/pydelt/issues"
+[tool.hatch.build]
+exclude = [
+    "venv/",
+    "dist/",
+    "build/",
+    "*.egg-info/",
+    "local/",
+]
