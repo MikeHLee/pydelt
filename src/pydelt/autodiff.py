@@ -1,10 +1,20 @@
 """
 Functions for calculating derivatives using automatic differentiation with trained models.
+
+Note: TensorFlow retracing warnings and general UserWarnings are suppressed in this module.
 """
 
 import numpy as np
 from typing import List, Tuple, Dict, Union, Optional, Callable, Any
 import warnings
+
+# Suppress TensorFlow retracing and UserWarnings
+warnings.filterwarnings("ignore", category=UserWarning, module="tensorflow")
+try:
+    import tensorflow as tf
+    tf.get_logger().setLevel('ERROR')
+except ImportError:
+    pass
 
 # For PyTorch methods
 try:
@@ -109,7 +119,7 @@ def _pytorch_derivative(
     s_norm = (s - s_min) / (s_max - s_min) if s_max > s_min else s
     
     # Split data into training and holdout sets if requested
-    if 0.0 < holdout_fraction < 0.9:
+    if 0.00 < holdout_fraction < 0.99:
         n_holdout = int(len(t) * holdout_fraction)
         if n_holdout > 0:
             # Randomly select indices for holdout
@@ -158,26 +168,20 @@ def _pytorch_derivative(
         results = np.zeros_like(query_norm)
         
         for i, t_i in enumerate(query_norm):
-            # Create tensor with requires_grad=True for autodiff
+            # Always use torch.tensor for input when requires_grad is needed
             t_tensor = torch.tensor([[t_i]], dtype=torch.float32, requires_grad=True)
-            
             # Forward pass
             y_pred = model(t_tensor)
-            
             # Initialize gradient calculation
             grad = torch.ones_like(y_pred)
-            
             # Calculate derivative of the specified order
             for _ in range(order):
                 # Backward pass to get gradient
                 y_pred.backward(grad, retain_graph=True)
-                
                 # Get the gradient
                 grad_value = t_tensor.grad.item()
-                
                 # Reset gradients
                 t_tensor.grad.zero_()
-                
                 if _ < order - 1:
                     # For higher-order derivatives, create a new tensor with the gradient
                     y_pred = torch.tensor([[grad_value]], dtype=torch.float32, requires_grad=True)
@@ -191,7 +195,7 @@ def _pytorch_derivative(
         for _ in range(order):
             results *= scale_factor
         
-        return results[0] if scalar_input else results
+        return results.item() if scalar_input and np.ndim(results) == 0 else results
     
     if return_model:
         return derivative_func, model
@@ -308,7 +312,7 @@ def _tensorflow_derivative(
         for _ in range(order):
             derivative *= scale_factor
         
-        return derivative[0] if scalar_input else derivative
+        return derivative.item() if scalar_input and np.ndim(derivative) == 0 else derivative
     
     if return_model:
         return derivative_func, model

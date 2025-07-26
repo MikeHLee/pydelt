@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pydelt"
-version = "0.3.0"
+version = "0.3.1"
 description = "Python package for calculating derivatives of time series data using various methods"
 authors = [
   { name="Michael Harrison Lee", email="leemichael289@gmail.com" },

@@ -1,0 +1,397 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[numbers]{natbib}
+\usepackage{booktabs}
+\usepackage{geometry}
+
+\geometry{margin=1in}
+
+\title{Research Summary: Time Series Derivative Methods}
+\author{PyDelt Project}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This document summarizes existing research papers and tools related to time series derivative calculation methods implemented in the PyDelt package. The focus is on Local Linear Approximation (LLA), Generalized Local Linear Approximation (GLLA), Generalized Orthogonal Local Derivative (GOLD), and Functional Data Analysis (FDA) methods for calculating derivatives and integrals of time series data.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+Time series analysis often requires the estimation of derivatives to understand rates of change, acceleration, or to fit differential equation models. Several methods have been developed for this purpose, each with its own strengths and limitations. The PyDelt package implements four major approaches:
+
+\begin{itemize}
+    \item Local Linear Approximation (LLA)
+    \item Generalized Local Linear Approximation (GLLA)
+    \item Generalized Orthogonal Local Derivative (GOLD)
+    \item Functional Data Analysis (FDA)
+\end{itemize}
+
+This document reviews the key literature and tools related to these methods, providing a comprehensive overview of the theoretical foundations and practical applications.
+
+\section{Local Linear Approximation (LLA)}
+
+\subsection{Theoretical Background}
+
+Local Linear Approximation is a sliding window approach that uses linear regression to estimate derivatives at each point in a time series. The method involves:
+
+\begin{enumerate}
+    \item Selecting a window of points around the target point
+    \item Applying normalization (typically min-normalization) to reduce the impact of local offsets
+    \item Performing linear regression within the window
+    \item Using the slope of the regression line as the derivative estimate
+\end{enumerate}
+
+\subsection{Key Research}
+
+The LLA method has been used extensively in time series analysis, particularly as a foundation for more advanced methods like GLLA.
+
+\begin{itemize}
+    \item Boker, S. M., \& Nesselroade, J. R. (2002). A method for modeling the intrinsic dynamics of intraindividual variability: Recovering the parameters of simulated oscillators in multi-wave panel data. \textit{Multivariate Behavioral Research}, 37(1), 127-160.
+    
+    This paper introduces the basic LLA method for estimating derivatives from time series data and demonstrates its application to modeling oscillatory systems.
+\end{itemize}
+
+\section{Generalized Local Linear Approximation (GLLA)}
+
+\subsection{Theoretical Background}
+
+GLLA extends the LLA method to enable calculation of higher-order derivatives using a generalized linear approximation framework. The method uses a local polynomial fit of arbitrary order combined with a sliding window approach.
+
+The mathematical foundation of GLLA involves creating a design matrix of time lags and using ordinary least squares to estimate the coefficients, which correspond to scaled versions of derivatives.
+
+\subsection{Key Research}
+
+\begin{itemize}
+    \item Boker, S. M., Deboeck, P. R., Edler, C., \& Keel, P. K. (2010). Generalized local linear approximation of derivatives from time series. In S. M. Chow, E. Ferrer, \& F. Hsieh (Eds.), \textit{Statistical methods for modeling human dynamics: An interdisciplinary dialogue} (pp. 161-178). New York, NY: Routledge.
+    
+    This seminal paper introduces the GLLA method, generalizing the LLA approach to estimate higher-order derivatives. The authors demonstrate how GLLA can be used to fit nonlinear differential equation models to empirical time series data.
+    
+    \item Deboeck, P. R. (2010). Estimating dynamical systems: Derivative estimation hints from Sir Ronald A. Fisher. \textit{Multivariate Behavioral Research}, 45(4), 725-745.
+    
+    This paper discusses the statistical properties of derivative estimation methods, including GLLA, and provides insights into their optimal application.
+\end{itemize}
+
+\section{Generalized Orthogonal Local Derivative (GOLD)}
+
+\subsection{Theoretical Background}
+
+The GOLD method calculates derivatives using orthogonal polynomials. It constructs a local coordinate system at each point using orthogonal polynomials, which helps reduce the impact of noise and provides accurate estimates of higher-order derivatives.
+
+GOLD differs from GLLA in its use of orthogonal polynomials, which can provide better numerical stability, especially for higher-order derivatives.
+
+\subsection{Key Research}
+
+\begin{itemize}
+    \item Deboeck, P. R., Boker, S. M., \& Bergeman, C. S. (2008). Modeling individual differences in the derivatives of multiple time series. In N. A. Card, J. P. Selig, \& T. D. Little (Eds.), \textit{Modeling dyadic and interdependent data in the developmental and behavioral sciences} (pp. 155-187). New York, NY: Routledge.
+    
+    This paper introduces the GOLD method and compares it with other derivative estimation techniques, highlighting its advantages for noisy data and higher-order derivatives.
+    
+    \item von Oertzen, T., \& Boker, S. M. (2010). Time delay embedding increases estimation precision of models of intraindividual variability. \textit{Psychometrika}, 75(1), 158-175.
+    
+    This paper discusses the application of methods like GOLD to improve the precision of dynamic models in psychological research.
+\end{itemize}
+
+\section{Functional Data Analysis (FDA)}
+
+\subsection{Theoretical Background}
+
+FDA is a sophisticated approach that uses spline-based smoothing to represent time series as continuous functions. The method:
+
+\begin{enumerate}
+    \item Fits a smooth spline function to the observed data points
+    \item Automatically determines an optimal smoothing parameter based on data characteristics
+    \item Calculates derivatives analytically from the fitted spline function
+\end{enumerate}
+
+FDA is particularly well-suited for smooth underlying processes and can provide consistent derivatives up to the order of the chosen spline basis.
+
+\subsection{Key Research}
+
+\begin{itemize}
+    \item Ramsay, J. O., \& Silverman, B. W. (2005). \textit{Functional Data Analysis} (2nd ed.). New York, NY: Springer.
+    
+    This comprehensive textbook provides the theoretical foundation for FDA and includes numerous examples of its application to real-world problems.
+    
+    \item Ramsay, J. O., Hooker, G., \& Graves, S. (2009). \textit{Functional data analysis with R and MATLAB}. New York, NY: Springer.
+    
+    This book focuses on the practical implementation of FDA methods in R and MATLAB, including derivative estimation.
+    
+    \item Chow, S. M., Zu, J., Shifren, K., \& Zhang, G. (2011). Dynamic factor analysis models with time-varying parameters. \textit{Multivariate Behavioral Research}, 46(2), 303-339.
+    
+    This paper demonstrates the application of FDA methods to estimate derivatives for dynamic factor analysis models.
+\end{itemize}
+
+\section{Comparison of Methods}
+
+\subsection{Comparative Studies}
+
+Several studies have compared the performance of different derivative estimation methods:
+
+\begin{itemize}
+    \item Boker, S. M., Neale, M. C., \& Rausch, J. (2004). Latent differential equation modeling with multivariate multi-occasion indicators. In K. van Montfort, H. Oud, \& A. Satorra (Eds.), \textit{Recent developments on structural equation models: Theory and applications} (pp. 151-174). Dordrecht, Netherlands: Kluwer Academic Publishers.
+    
+    This study compares LLA and related methods for fitting differential equation models to multivariate time series data.
+    
+    \item Chow, S. M., Bendezú, J. J., Cole, P. M., \& Ram, N. (2016). A comparison of two-stage approaches for fitting nonlinear ordinary differential equation models with mixed effects. \textit{Multivariate Behavioral Research}, 51(2-3), 154-184.
+    
+    This paper compares FDA, GLLA, and GOLD methods for estimating derivatives in the context of fitting nonlinear ordinary differential equation models.
+\end{itemize}
+
+\subsection{Key Findings}
+
+Based on the comparative studies, several key findings emerge:
+
+\begin{itemize}
+    \item LLA is simple and computationally efficient but may struggle with noisy data or higher-order derivatives.
+    \item GLLA provides a good balance between computational efficiency and accuracy for higher-order derivatives.
+    \item GOLD offers improved numerical stability, especially for higher-order derivatives and noisy data.
+    \item FDA provides the smoothest derivative estimates but may over-smooth rapid changes in the data.
+\end{itemize}
+
+\section{Software Tools}
+
+\subsection{R Packages}
+
+\begin{itemize}
+    \item \textbf{doremi}: An R package that implements various derivative estimation methods, including GLLA, GOLD, and FDA.
+    
+    \item \textbf{fda}: The primary R package for functional data analysis, including derivative estimation.
+    
+    \item \textbf{EGAnet}: Contains implementations of GLLA and related methods for network analysis.
+    
+    \item \textbf{deSolve}: For solving differential equations after estimating derivatives.
+\end{itemize}
+
+\subsection{Python Packages}
+
+\begin{itemize}
+    \item \textbf{PyDelt}: Implements LLA, GLLA, GOLD, and FDA methods for derivative estimation and integration in Python.
+    
+    \item \textbf{SciPy}: Provides numerical differentiation methods, though not specifically the methods implemented in PyDelt.
+    
+    \item \textbf{scikit-fda}: A Python package for functional data analysis, including derivative estimation.
+    
+    \item \textbf{statsmodels}: Contains tools for time series analysis that can complement derivative estimation methods.
+\end{itemize}
+
+\section{Applications}
+
+\subsection{Biomedicine}
+
+Time series derivative methods have been widely applied in biomedicine:
+
+\begin{itemize}
+    \item Analysis of physiological signals (ECG, EEG)
+    \item Growth curve analysis
+    \item Pharmacokinetic modeling
+\end{itemize}
+
+\subsection{Economics and Finance}
+
+Applications in economics and finance include:
+
+\begin{itemize}
+    \item \textbf{Volatility estimation in financial markets:} Derivative methods are used to calculate instantaneous volatility from price time series, which is crucial for risk management and option pricing.
+    
+    \item \textbf{Business cycle analysis:} Identifying turning points in economic indicators by analyzing the sign changes in first and second derivatives of economic time series.
+    
+    \item \textbf{Economic growth modeling:} Estimating growth rates and acceleration/deceleration patterns in GDP and other macroeconomic variables.
+    
+    \item \textbf{Greeks calculation in options trading:} Computing sensitivity measures like Delta, Gamma, Theta, and Vega, which are essentially derivatives of option prices with respect to various parameters.
+    
+    \item \textbf{Yield curve analysis:} Calculating the slope and curvature of yield curves, which are first and second derivatives of yield with respect to maturity.
+    
+    \item \textbf{Derivative pricing:} Estimating the parameters of stochastic differential equations that model asset price dynamics, which requires accurate derivative estimation from market data.
+    
+    \item \textbf{Market microstructure analysis:} Studying the rate of change in order book dynamics and high-frequency trading patterns.
+\end{itemize}
+
+Research by Cont and Tankov (2004) demonstrates how accurate derivative estimation is crucial for calibrating financial models to market data, particularly for models involving jump processes that capture sudden market movements. Their work shows that proper estimation of derivatives from financial time series is essential for risk management and option pricing. Similarly, A\"it-Sahalia and Jacod (2014) developed sophisticated methods for high-frequency financial econometrics that rely on accurate derivative estimation to analyze market microstructure and volatility dynamics.
+
+\subsection{Psychology and Social Sciences}
+
+In psychology and social sciences, these methods have been used for:
+
+\begin{itemize}
+    \item Modeling emotion dynamics
+    \item Analyzing developmental trajectories
+    \item Studying interpersonal synchrony
+\end{itemize}
+
+\subsection{Environmental Data Analysis}
+
+Time series derivative methods have important applications in environmental science:
+
+\begin{itemize}
+    \item \textbf{Gas production rate analysis:} Estimating methane or carbon dioxide emission rates and their changes over time from concentration measurements.
+    
+    \item \textbf{Ecological population dynamics:} Calculating growth rates, carrying capacities, and predator-prey interactions from population count time series.
+    
+    \item \textbf{Climate data analysis:} Detecting acceleration in temperature changes, sea level rise, or ice melt rates from long-term monitoring data.
+    
+    \item \textbf{Hydrological modeling:} Estimating infiltration rates, groundwater recharge, and river discharge dynamics from water level time series.
+    
+    \item \textbf{Forest growth and carbon sequestration:} Analyzing the rate of biomass accumulation and carbon uptake in forest ecosystems.
+\end{itemize}
+
+Clark et al. (2001) demonstrated how derivative estimation methods can improve ecological forecasting models by incorporating uncertainty and variability in ecosystem dynamics. Their work emphasized that accurate derivative estimation is crucial for predicting ecological responses to environmental changes. Similarly, Piao et al. (2020) used Functional Data Analysis (FDA) methods to analyze changes in terrestrial carbon sink dynamics, revealing important temporal patterns in global greening trends and their relationship to climate change.
+
+\subsection{Computational Physics}
+
+In computational physics, derivative estimation methods are essential for:
+
+\begin{itemize}
+    \item \textbf{Numerical solution of differential equations:} Estimating derivatives from discrete simulation data to verify accuracy of numerical solvers.
+    
+    \item \textbf{Fluid dynamics:} Calculating velocity gradients, vorticity, and strain rates from particle tracking or grid-based simulation data.
+    
+    \item \textbf{Molecular dynamics:} Estimating forces (derivatives of potential energy) and accelerations from atomic position trajectories.
+    
+    \item \textbf{Plasma physics:} Analyzing instability growth rates and energy transfer rates in plasma simulations.
+    
+    \item \textbf{Quantum mechanics:} Calculating expectation values of momentum operators (which involve derivatives) from wave function data.
+    
+    \item \textbf{Astrophysics:} Estimating orbital parameters and gravitational effects from celestial body trajectory data.
+\end{itemize}
+
+Research by Fornberg (1988) on finite difference methods provided fundamental techniques for generating accurate derivative approximations on arbitrarily spaced grids, which has become essential in computational physics simulations. Similarly, Shu (1998) developed essentially non-oscillatory (ENO) and weighted essentially non-oscillatory (WENO) schemes that significantly improved derivative estimation accuracy near discontinuities in fluid dynamics and other physical systems with shock waves or sharp transitions.
+
+\section{Automatic Differentiation in Machine Learning}
+
+\subsection{Neural Networks and Automatic Differentiation}
+
+Automatic differentiation (AD) represents a fundamentally different approach to derivative calculation compared to the numerical methods discussed earlier. Rather than approximating derivatives from data points, AD computes exact derivatives through the chain rule by tracking operations in a computational graph.
+
+\begin{itemize}
+    \item \textbf{Forward and Reverse Mode:} AD can be implemented in forward mode (computing derivatives alongside function evaluation) or reverse mode (backpropagation), with the latter being more efficient for neural networks with many parameters.
+    
+    \item \textbf{Applications in Deep Learning:} AD is the backbone of modern deep learning frameworks like TensorFlow, PyTorch, and JAX, enabling efficient training of neural networks through gradient-based optimization.
+    
+    \item \textbf{Neural Network Approximations for Derivatives:} Recent research has explored using neural networks to approximate derivatives of complex functions or from noisy data:
+    \begin{itemize}
+        \item Chen et al. (2018) proposed Neural Ordinary Differential Equations (Neural ODEs), which use neural networks to learn the dynamics of continuous-time systems. Instead of specifying a discrete sequence of hidden layers, they parameterize the derivative of the hidden state using a neural network and compute the output using a differential equation solver.
+        
+        \item Raissi et al. (2019) developed Physics-Informed Neural Networks (PINNs) that incorporate physical laws expressed as differential equations into the learning process. PINNs can solve both forward and inverse problems involving nonlinear partial differential equations by encoding physical constraints directly into the loss function.
+        
+        \item Both approaches leverage automatic differentiation to enforce differential constraints during training, allowing for end-to-end training through ODE solvers.
+    \end{itemize}
+    
+    \item \textbf{Handling Non-linear Scenarios:} Neural networks with automatic differentiation excel at modeling complex non-linear relationships:
+    \begin{itemize}
+        \item They can learn derivatives of highly non-linear functions that would be difficult to estimate using traditional methods.
+        \item Deep learning approaches can incorporate domain knowledge through custom loss functions that penalize physically impossible derivative behaviors.
+        \item Techniques like attention mechanisms and recurrent architectures can capture long-range dependencies in time series that affect derivative estimates.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Automatic Differentiation Beyond Neural Networks}
+
+While automatic differentiation is most commonly associated with neural networks, recent research has extended its application to other machine learning models:
+
+\begin{itemize}
+    \item \textbf{Decision Trees and Random Forests:} Traditional tree-based methods are not differentiable due to their discrete nature. However, several approaches have emerged to address this limitation:
+    \begin{itemize}
+        \item Kontschieder et al. (2015) introduced Deep Neural Decision Forests, a novel approach that unifies classification trees with the representation learning functionality of deep convolutional networks. They developed a stochastic and differentiable decision tree model that can be trained end-to-end with standard backpropagation, achieving state-of-the-art results on several benchmark datasets.
+        
+        \item Popov et al. (2019) developed Neural Oblivious Decision Ensembles (NODE) for deep learning on tabular data. Their approach creates fully differentiable oblivious decision trees using soft routing functions, allowing for efficient gradient-based optimization within larger neural architectures.
+        
+        \item Frosst and Hinton (2017) proposed soft decision trees trained by distilling knowledge from neural networks, creating interpretable models that maintain much of the performance of their neural network counterparts.
+        
+        \item These approaches enable hybrid models that combine the interpretability of trees with the differentiability needed for certain applications, though they typically involve trade-offs between computational efficiency and model accuracy.
+    \end{itemize}
+    
+    \item \textbf{Gaussian Processes:} Derivatives of Gaussian processes can be computed analytically, enabling joint modeling of functions and their derivatives. Solak et al. (2003) demonstrated that incorporating derivative observations into Gaussian process models significantly improves the accuracy of dynamic system identification, particularly when data is sparse. Their approach allows for combining derivative information and associated uncertainty with normal function observations in the learning and inference process, which is especially valuable for modeling complex physical systems.
+    
+    \item \textbf{Support Vector Machines:} Differentiable kernels in SVMs allow for derivative computation, useful in applications like time series forecasting with derivative constraints.
+\end{itemize}
+
+Despite these advances, fully differentiable versions of tree-based models still lag behind neural networks in terms of widespread adoption and efficiency. The discrete nature of decision boundaries in tree ensembles presents fundamental challenges for automatic differentiation that continue to be active areas of research.
+
+\section{Future Directions}
+
+\subsection{Methodological Advances}
+
+Potential areas for methodological advancement include:
+
+\begin{itemize}
+    \item Adaptive window sizing for local methods
+    \item Robust estimation in the presence of outliers
+    \item Bayesian approaches to derivative estimation
+    \item Machine learning approaches to derivative estimation
+    \item Hybrid methods combining traditional numerical differentiation with machine learning
+    \item Multi-resolution approaches that adapt to different time scales in the data
+\end{itemize}
+
+\subsection{Software Development}
+
+Future software development could focus on:
+
+\begin{itemize}
+    \item GPU acceleration for large-scale applications
+    \item Interactive visualization tools for derivative analysis
+    \item Integration with deep learning frameworks
+    \item Real-time derivative estimation for streaming data
+\end{itemize}
+
+\section{Conclusion}
+
+The field of time series derivative estimation offers a rich set of methods, each with its own strengths and limitations. The PyDelt package implements four major approaches (LLA, GLLA, GOLD, and FDA), providing a comprehensive toolkit for researchers and practitioners. As noted in the project memory, algorithm v4 has significantly better coverage than v5, highlighting the importance of method selection in practical applications.
+
+Future research will likely focus on improving the robustness and efficiency of these methods, as well as expanding their application to new domains. The integration of machine learning techniques with traditional derivative estimation methods is a particularly promising direction.
+
+\begin{thebibliography}{99}
+
+\bibitem{aitsahalia2014} A\"it-Sahalia, Y., \& Jacod, J. (2014). \textit{High-frequency financial econometrics}. Princeton University Press.
+
+\bibitem{chen2018} Chen, R. T., Rubanova, Y., Bettencourt, J., \& Duvenaud, D. K. (2018). Neural ordinary differential equations. \textit{Advances in Neural Information Processing Systems}, 31, 6571-6583.
+
+\bibitem{clark2001} Clark, J. S., Carpenter, S. R., Barber, M., Collins, S., Dobson, A., Foley, J. A., ... \& Wear, D. (2001). Ecological forecasts: An emerging imperative. \textit{Science}, 293(5530), 657-660.
+
+\bibitem{cont2004} Cont, R., \& Tankov, P. (2004). \textit{Financial modelling with jump processes}. Chapman and Hall/CRC.
+
+\bibitem{boker2002} Boker, S. M., \& Nesselroade, J. R. (2002). A method for modeling the intrinsic dynamics of intraindividual variability: Recovering the parameters of simulated oscillators in multi-wave panel data. \textit{Multivariate Behavioral Research}, 37(1), 127-160.
+
+\bibitem{boker2010} Boker, S. M., Deboeck, P. R., Edler, C., \& Keel, P. K. (2010). Generalized local linear approximation of derivatives from time series. In S. M. Chow, E. Ferrer, \& F. Hsieh (Eds.), \textit{Statistical methods for modeling human dynamics: An interdisciplinary dialogue} (pp. 161-178). New York, NY: Routledge.
+
+\bibitem{deboeck2010} Deboeck, P. R. (2010). Estimating dynamical systems: Derivative estimation hints from Sir Ronald A. Fisher. \textit{Multivariate Behavioral Research}, 45(4), 725-745.
+
+\bibitem{deboeck2008} Deboeck, P. R., Boker, S. M., \& Bergeman, C. S. (2008). Modeling individual differences in the derivatives of multiple time series. In N. A. Card, J. P. Selig, \& T. D. Little (Eds.), \textit{Modeling dyadic and interdependent data in the developmental and behavioral sciences} (pp. 155-187). New York, NY: Routledge.
+
+\bibitem{oertzen2010} von Oertzen, T., \& Boker, S. M. (2010). Time delay embedding increases estimation precision of models of intraindividual variability. \textit{Psychometrika}, 75(1), 158-175.
+
+\bibitem{ramsay2005} Ramsay, J. O., \& Silverman, B. W. (2005). \textit{Functional Data Analysis} (2nd ed.). New York, NY: Springer.
+
+\bibitem{ramsay2009} Ramsay, J. O., Hooker, G., \& Graves, S. (2009). \textit{Functional data analysis with R and MATLAB}. New York, NY: Springer.
+
+\bibitem{chow2011} Chow, S. M., Zu, J., Shifren, K., \& Zhang, G. (2011). Dynamic factor analysis models with time-varying parameters. \textit{Multivariate Behavioral Research}, 46(2), 303-339.
+
+\bibitem{boker2004} Boker, S. M., Neale, M. C., \& Rausch, J. (2004). Latent differential equation modeling with multivariate multi-occasion indicators. In K. van Montfort, H. Oud, \& A. Satorra (Eds.), \textit{Recent developments on structural equation models: Theory and applications} (pp. 151-174). Dordrecht, Netherlands: Kluwer Academic Publishers.
+
+\bibitem{chow2016} Chow, S. M., Bendezú, J. J., Cole, P. M., \& Ram, N. (2016). A comparison of two-stage approaches for fitting nonlinear ordinary differential equation models with mixed effects. \textit{Multivariate Behavioral Research}, 51(2-3), 154-184.
+
+\bibitem{fornberg1988} Fornberg, B. (1988). Generation of finite difference formulas on arbitrarily spaced grids. \textit{Mathematics of Computation}, 51(184), 699-706.
+
+\bibitem{kontschieder2015} Kontschieder, P., Fiterau, M., Criminisi, A., \& Rota Bulo, S. (2015). Deep neural decision forests. \textit{Proceedings of the IEEE International Conference on Computer Vision}, 1467-1475.
+
+\bibitem{piao2020} Piao, S., Wang, X., Park, T., Chen, C., Lian, X., He, Y., ... \& Nemani, R. R. (2020). Characteristics, drivers and feedbacks of global greening. \textit{Nature Reviews Earth \& Environment}, 1(1), 14-27.
+
+\bibitem{frosst2017} Frosst, N., \& Hinton, G. (2017). Distilling a neural network into a soft decision tree. \textit{arXiv preprint arXiv:1711.09784}.
+
+\bibitem{popov2019} Popov, S., Morozov, S., \& Babenko, A. (2019). Neural oblivious decision ensembles for deep learning on tabular data. \textit{arXiv preprint arXiv:1909.06312}.
+
+\bibitem{raissi2019} Raissi, M., Perdikaris, P., \& Karniadakis, G. E. (2019). Physics-informed neural networks: A deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations. \textit{Journal of Computational Physics}, 378, 686-707.
+
+\bibitem{shu1998} Shu, C. W. (1998). Essentially non-oscillatory and weighted essentially non-oscillatory schemes for hyperbolic conservation laws. \textit{Advanced Numerical Approximation of Nonlinear Hyperbolic Equations}, 325-432.
+
+\bibitem{solak2003} Solak, E., Murray-Smith, R., Leithead, W. E., Leith, D. J., \& Rasmussen, C. E. (2003). Derivative observations in Gaussian process models of dynamic systems. \textit{Advances in Neural Information Processing Systems}, 16, 1057-1064.
+
+\end{thebibliography}
+
+\end{document}

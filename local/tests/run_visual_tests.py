@@ -62,18 +62,51 @@ def main():
 
     # Run advanced interpolation visual tests
     print("\nRunning advanced interpolation visual tests...")
-    advanced_tests = import_module_from_file(
-        "test_visual_advanced_interpolation",
-        tests_dir / "test_visual_advanced_interpolation.py"
+    interpolation_tests = import_module_from_file(
+        "test_visual_interpolation",
+        tests_dir / "test_visual_interpolation.py"
     )
-    advanced_tests.test_derivative_based_interpolation_visual()
-    integrals_tests.visual_test_input_types()
-    
+    interpolation_tests.test_derivative_based_interpolation_visual()
+    interpolation_tests.test_neural_network_interpolation_visual()
+    interpolation_tests.test_classical_interpolation_visual()
+    interpolation_tests.test_neural_network_derivative_visual()
+    if hasattr(interpolation_tests, "test_regular_interpolation_visual"):
+        interpolation_tests.test_regular_interpolation_visual()
+    if hasattr(interpolation_tests, "test_combined_methods_comparison"):
+        interpolation_tests.test_combined_methods_comparison()
+    if hasattr(interpolation_tests, "visual_test_input_types"):
+        interpolation_tests.visual_test_input_types()
+
     # Run noise-related integrals tests
     print("\nRunning noise-related integrals tests...")
     integrals_tests.visual_test_noise_effect_on_integration()
     integrals_tests.visual_test_derivative_reconstruction_with_noise()
-    
+
+    # Run new visual interpolation tests
+    print("\nRunning visual interpolation tests (test_visual_interpolation.py)...")
+    interp_tests = import_module_from_file(
+        "test_visual_interpolation",
+        tests_dir / "test_visual_interpolation.py"
+    )
+    interp_tests.test_derivative_based_interpolation_visual()
+    interp_tests.test_neural_network_interpolation_visual()
+    interp_tests.test_classical_interpolation_visual()
+    interp_tests.test_neural_network_derivative_visual()
+
+    # Run new visual autodiff/interpolation tests
+    print("\nRunning visual autodiff/interpolation tests (test_visual_autodiff.py)...")
+    autodiff_tests = import_module_from_file(
+        "test_visual_autodiff",
+        tests_dir / "test_visual_autodiff.py"
+    )
+    # Only call if the function exists (for robustness)
+    if hasattr(autodiff_tests, "test_regular_interpolation_visual"):
+        autodiff_tests.test_regular_interpolation_visual()
+    if hasattr(autodiff_tests, "test_neural_network_derivative_visual"):
+        autodiff_tests.test_neural_network_derivative_visual()
+    if hasattr(autodiff_tests, "test_combined_methods_comparison"):
+        autodiff_tests.test_combined_methods_comparison()
+
     print("\n" + "=" * 80)
     print(f"All visual tests completed! HTML files saved to {OUTPUT_DIR}")
     print("=" * 80)

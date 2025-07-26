@@ -8,6 +8,366 @@ from scipy.interpolate import UnivariateSpline, interp1d
 from scipy.stats import linregress
 from statsmodels.nonparametric.smoothers_lowess import lowess
 from typing import List, Tuple, Dict, Union, Optional, Callable, Any
+from scipy.interpolate import UnivariateSpline
+import numpy as np
+
+class BaseInterpolator:
+    """
+    Abstract base class for all interpolators.
+    """
+    def fit(self, time, signal):
+        raise NotImplementedError("fit() must be implemented in subclasses.")
+    def predict(self, new_time):
+        raise NotImplementedError("predict() must be implemented in subclasses.")
+
+class SplineInterpolator(BaseInterpolator):
+    def __init__(self, smoothing: Optional[float] = None, k: int = 5):
+        self.smoothing = smoothing
+        self.k = k
+        self.spline = None
+
+    def fit(self, time: Union[List[float], np.ndarray], signal: Union[List[float], np.ndarray]):
+        t = np.asarray(time)
+        s = np.asarray(signal)
+        sort_idx = np.argsort(t)
+        t = t[sort_idx]
+        s = s[sort_idx]
+        smoothing = self.smoothing
+        if smoothing is None:
+            n = len(s)
+            range_y = np.ptp(s)
+            noise_estimate = np.std(np.diff(s)) / np.sqrt(2)
+            smoothing = n * (0.005 * range_y + 0.1 * noise_estimate) ** 2
+        self.spline = UnivariateSpline(t, s, s=smoothing, k=self.k)
+        return self
+
+    def predict(self, new_time: Union[float, np.ndarray]):
+        if self.spline is None:
+            raise RuntimeError("SplineInterpolator must be fit before calling predict().")
+        return self.spline(new_time)
+
+# DEPRECATED: Old function-based interface. Use SplineInterpolator instead.
+
+class LowessInterpolator(BaseInterpolator):
+    def __init__(self, frac: float = 0.1, it: int = 3):
+        self.frac = frac
+        self.it = it
+        self.smoothed = None
+        self.interp_func = None
+
+    def fit(self, time: Union[List[float], np.ndarray], signal: Union[List[float], np.ndarray]):
+        t = np.asarray(time)
+        s = np.asarray(signal)
+        sort_idx = np.argsort(t)
+        t = t[sort_idx]
+        s = s[sort_idx]
+        from statsmodels.nonparametric.smoothers_lowess import lowess
+        self.smoothed = lowess(s, t, frac=self.frac, it=self.it, return_sorted=True)
+        from scipy.interpolate import interp1d
+        self.interp_func = interp1d(
+            self.smoothed[:, 0], self.smoothed[:, 1],
+            bounds_error=False,
+            fill_value=(self.smoothed[0, 1], self.smoothed[-1, 1])
+        )
+        return self
+
+    def predict(self, new_time: Union[float, np.ndarray]):
+        if self.interp_func is None:
+            raise RuntimeError("LowessInterpolator must be fit before calling predict().")
+        return self.interp_func(new_time)
+
+class LoessInterpolator(BaseInterpolator):
+    def __init__(self, degree: int = 2, frac: float = 0.1, it: int = 3):
+        self.degree = degree
+        self.frac = frac
+        self.it = it
+        self.smoothed = None
+        self.interp_func = None
+
+    def fit(self, time: Union[List[float], np.ndarray], signal: Union[List[float], np.ndarray]):
+        t = np.asarray(time)
+        s = np.asarray(signal)
+        sort_idx = np.argsort(t)
+        t = t[sort_idx]
+        s = s[sort_idx]
+        from statsmodels.nonparametric.smoothers_lowess import lowess
+        self.smoothed = lowess(s, t, frac=self.frac, it=self.it, return_sorted=True)
+        from scipy.interpolate import interp1d
+        kind = 'cubic' if len(t) > 3 else 'linear'
+        self.interp_func = interp1d(
+            self.smoothed[:, 0], self.smoothed[:, 1],
+            kind=kind,
+            bounds_error=False,
+            fill_value=(self.smoothed[0, 1], self.smoothed[-1, 1])
+        )
+        return self
+
+    def predict(self, new_time: Union[float, np.ndarray]):
+        if self.interp_func is None:
+            raise RuntimeError("LoessInterpolator must be fit before calling predict().")
+        return self.interp_func(new_time)
+
+class FdaInterpolator(BaseInterpolator):
+    def __init__(self, smoothing: Optional[float] = None, k: int = 3):
+        self.smoothing = smoothing
+        self.k = k
+        self.spline = None
+
+    def fit(self, time: Union[List[float], np.ndarray], signal: Union[List[float], np.ndarray]):
+        t = np.asarray(time)
+        s = np.asarray(signal)
+        idx = np.argsort(t)
+        t, s = t[idx], s[idx]
+        smoothing = self.smoothing
+        if smoothing is None:
+            n = len(s)
+            range_y = np.ptp(s)
+            noise_estimate = np.std(np.diff(s)) / np.sqrt(2)
+            smoothing = n * (0.005 * range_y + 0.1 * noise_estimate) ** 2
+        from scipy.interpolate import UnivariateSpline
+        self.spline = UnivariateSpline(t, s, s=smoothing, k=self.k)
+        return self
+
+    def predict(self, new_time: Union[float, np.ndarray]):
+        if self.spline is None:
+            raise RuntimeError("FdaInterpolator must be fit before calling predict().")
+        return self.spline(new_time)
+
+class LlaInterpolator(BaseInterpolator):
+    def __init__(self, window_size: int = 5, normalization: str = 'min', zero_mean: bool = False):
+        self.window_size = window_size
+        self.normalization = normalization
+        self.zero_mean = zero_mean
+        self.t = None
+        self.s = None
+        self.d = None
+
+    def fit(self, time, signal):
+        t = np.asarray(time)
+        s = np.asarray(signal)
+        sort_idx = np.argsort(t)
+        t = t[sort_idx]
+        s = s[sort_idx]
+        # Derivative estimation (central difference)
+        d = np.gradient(s, t)
+        self.t, self.s, self.d = t, s, d
+        return self
+
+    def predict(self, query_time):
+        t, s, d = self.t, self.s, self.d
+        query_time = np.atleast_1d(query_time)
+        result = np.empty_like(query_time, dtype=float)
+        for i, t_i in enumerate(query_time):
+            idx_next = np.searchsorted(t, t_i, side='right')
+            if idx_next == 0:
+                idx_prev = idx_next
+            elif idx_next == len(t):
+                idx_prev = idx_next - 1
+            else:
+                idx_prev = idx_next - 1
+            s_prev, s_next = s[idx_prev], s[min(idx_next, len(s)-1)]
+            d_prev, d_next = d[idx_prev], d[min(idx_next, len(d)-1)]
+            t_prev, t_next = t[idx_prev], t[min(idx_next, len(t)-1)]
+            h = t_next - t_prev
+            u = (t_i - t_prev) / h if h != 0 else 0
+            h00 = 2*u**3 - 3*u**2 + 1
+            h10 = u**3 - 2*u**2 + u
+            h01 = -2*u**3 + 3*u**2
+            h11 = u**3 - u**2
+            result[i] = h00*s_prev + h10*h*d_prev + h01*s_next + h11*h*d_next
+        return result if query_time.shape else result.item()
+
+class GllaInterpolator(BaseInterpolator):
+    def __init__(self, embedding: int = 3, n: int = 2):
+        self.embedding = embedding
+        self.n = n
+        self.t = None
+        self.s = None
+        self.d = None
+
+    def fit(self, time, signal):
+        t = np.asarray(time)
+        s = np.asarray(signal)
+        sort_idx = np.argsort(t)
+        t = t[sort_idx]
+        s = s[sort_idx]
+        # Derivative estimation (central difference)
+        d = np.gradient(s, t)
+        self.t, self.s, self.d = t, s, d
+        return self
+
+    def predict(self, query_time):
+        t, s, d = self.t, self.s, self.d
+        query_time = np.atleast_1d(query_time)
+        result = np.empty_like(query_time, dtype=float)
+        for i, t_i in enumerate(query_time):
+            idx_next = np.searchsorted(t, t_i, side='right')
+            if idx_next == 0:
+                idx_prev = idx_next
+            elif idx_next == len(t):
+                idx_prev = idx_next - 1
+            else:
+                idx_prev = idx_next - 1
+            s_prev, s_next = s[idx_prev], s[min(idx_next, len(s)-1)]
+            d_prev, d_next = d[idx_prev], d[min(idx_next, len(d)-1)]
+            t_prev, t_next = t[idx_prev], t[min(idx_next, len(t)-1)]
+            h = t_next - t_prev
+            u = (t_i - t_prev) / h if h != 0 else 0
+            h00 = 2*u**3 - 3*u**2 + 1
+            h10 = u**3 - 2*u**2 + u
+            h01 = -2*u**3 + 3*u**2
+            h11 = u**3 - u**2
+            result[i] = h00*s_prev + h10*h*d_prev + h01*s_next + h11*h*d_next
+        return result if query_time.shape else result.item()
+
+class GoldInterpolator(BaseInterpolator):
+    def __init__(self, window_size: int = 5, normalization: str = 'min', zero_mean: bool = False):
+        self.window_size = window_size
+        self.normalization = normalization
+        self.zero_mean = zero_mean
+        self.t = None
+        self.s = None
+        self.d = None
+
+    def fit(self, time, signal):
+        t = np.asarray(time)
+        s = np.asarray(signal)
+        sort_idx = np.argsort(t)
+        t = t[sort_idx]
+        s = s[sort_idx]
+        # Derivative estimation (central difference)
+        d = np.gradient(s, t)
+        self.t, self.s, self.d = t, s, d
+        return self
+
+    def predict(self, query_time):
+        t, s, d = self.t, self.s, self.d
+        query_time = np.atleast_1d(query_time)
+        result = np.empty_like(query_time, dtype=float)
+        for i, t_i in enumerate(query_time):
+            idx_next = np.searchsorted(t, t_i, side='right')
+            if idx_next == 0:
+                idx_prev = idx_next
+            elif idx_next == len(t):
+                idx_prev = idx_next - 1
+            else:
+                idx_prev = idx_next - 1
+            s_prev, s_next = s[idx_prev], s[min(idx_next, len(s)-1)]
+            d_prev, d_next = d[idx_prev], d[min(idx_next, len(d)-1)]
+            t_prev, t_next = t[idx_prev], t[min(idx_next, len(t)-1)]
+            h = t_next - t_prev
+            u = (t_i - t_prev) / h if h != 0 else 0
+            h00 = 2*u**3 - 3*u**2 + 1
+            h10 = u**3 - 2*u**2 + u
+            h01 = -2*u**3 + 3*u**2
+            h11 = u**3 - u**2
+            result[i] = h00*s_prev + h10*h*d_prev + h01*s_next + h11*h*d_next
+        return result if query_time.shape else result.item()
+
+# Neural network interpolators
+class NeuralNetworkInterpolator(BaseInterpolator):
+    def __init__(self, framework: str = 'pytorch', hidden_layers: list = [64, 32], epochs: int = 1000, dropout: float = 0.1):
+        self.framework = framework
+        self.hidden_layers = hidden_layers
+        self.epochs = epochs
+        self.dropout = dropout
+        self.model = None
+        self.t_min = None
+        self.t_max = None
+        self.s_min = None
+        self.s_max = None
+
+    def fit(self, time, signal):
+        import numpy as np
+        time = np.asarray(time)
+        signal = np.asarray(signal)
+        if np.isnan(time).any() or np.isnan(signal).any():
+            raise ValueError('Input time and signal must not contain NaN values. Please impute or remove missing data before fitting.')
+        self.t_min = np.min(time)
+        self.t_max = np.max(time)
+        self.s_min = np.min(signal)
+        self.s_max = np.max(signal)
+        t_norm = (time - self.t_min) / (self.t_max - self.t_min) if self.t_max > self.t_min else time
+        s_norm = (signal - self.s_min) / (self.s_max - self.s_min) if self.s_max > self.s_min else signal
+        if self.framework == 'pytorch':
+            import torch
+            import torch.nn as nn
+            import torch.optim as optim
+            class PyTorchMLP(nn.Module):
+                def __init__(self, hidden_layers=[64, 32], dropout=0.1):
+                    super().__init__()
+                    layers = []
+                    input_dim = 1
+                    for h in hidden_layers:
+                        layers.append(nn.Linear(input_dim, h))
+                        layers.append(nn.ReLU())
+                        layers.append(nn.Dropout(dropout))
+                        input_dim = h
+                    layers.append(nn.Linear(input_dim, 1))
+                    self.net = nn.Sequential(*layers)
+                def forward(self, x):
+                    return self.net(x)
+            model = PyTorchMLP(self.hidden_layers, self.dropout)
+            optimizer = optim.Adam(model.parameters(), lr=0.01)
+            loss_fn = nn.MSELoss()
+            X = torch.tensor(t_norm.reshape(-1, 1), dtype=torch.float32)
+            y = torch.tensor(s_norm.reshape(-1, 1), dtype=torch.float32)
+            model.train()
+            for _ in range(self.epochs):
+                optimizer.zero_grad()
+                output = model(X)
+                loss = loss_fn(output, y)
+                loss.backward()
+                optimizer.step()
+            self.model = model
+        elif self.framework == 'tensorflow':
+            import tensorflow as tf
+            from tensorflow import keras
+            from tensorflow.keras import layers
+            model = keras.Sequential()
+            model.add(keras.Input(shape=(1,)))
+            for h in self.hidden_layers:
+                model.add(layers.Dense(h, activation='relu'))
+                model.add(layers.Dropout(self.dropout))
+            model.add(layers.Dense(1))
+            model.compile(optimizer='adam', loss='mse')
+            model.fit(t_norm.reshape(-1, 1), s_norm.reshape(-1, 1), epochs=self.epochs, verbose=0)
+            self.model = model
+        else:
+            raise ValueError(f"Unknown framework: {self.framework}")
+        return self
+
+    def predict(self, query_time):
+        import numpy as np
+        query_time = np.asarray(query_time)
+        t_norm = (query_time - self.t_min) / (self.t_max - self.t_min) if self.t_max > self.t_min else query_time
+        if self.framework == 'pytorch':
+            import torch
+            self.model.eval()
+            with torch.no_grad():
+                X = torch.tensor(t_norm.reshape(-1, 1), dtype=torch.float32)
+                pred_norm = self.model(X).numpy().flatten()
+        elif self.framework == 'tensorflow':
+            pred_norm = self.model.predict(t_norm.reshape(-1, 1), verbose=0).flatten()
+        else:
+            raise ValueError(f"Unknown framework: {self.framework}")
+        pred = pred_norm * (self.s_max - self.s_min) + self.s_min if self.s_max > self.s_min else pred_norm
+        if query_time.shape:
+            return pred
+        else:
+            # pred could be a numpy array, tensorflow tensor, or python scalar
+            if hasattr(pred, "numpy"):
+                pred = pred.numpy()
+            if hasattr(pred, "item"):
+                return pred.item()
+            elif isinstance(pred, (list, tuple)) and len(pred) == 1:
+                return float(pred[0])
+            else:
+                return float(pred)
+
+
+
+
 import warnings
 
 # For neural network methods
@@ -142,7 +502,7 @@ def local_segmented_linear(
                     best_segment = max(applicable_segments, key=lambda x: x['r_squared'])
                     result[i] = best_segment['slope'] * t_i + best_segment['intercept']
         
-        return result[0] if scalar_input else result
+        return result.item() if scalar_input and np.ndim(result) == 0 else result
     
     return interpolate
 
@@ -150,8 +510,9 @@ def spline_interpolation(
     time: Union[List[float], np.ndarray],
     signal: Union[List[float], np.ndarray],
     smoothing: Optional[float] = None,
-    k: int = 5
-) -> Callable[[Union[float, np.ndarray]], np.ndarray]:
+    k: int = 5,
+    return_model: bool = False
+) -> Union[Callable[[Union[float, np.ndarray]], np.ndarray], Tuple[Callable[[Union[float, np.ndarray]], np.ndarray], object]]:
     """
     Interpolate a time series using spline interpolation.
     
@@ -160,9 +521,17 @@ def spline_interpolation(
         signal: Signal values
         smoothing: Smoothing factor for the spline. If None, it's automatically determined
         k: Degree of the spline (1=linear, 2=quadratic, 3=cubic)
-        
+        return_model: If True, also return the fitted UnivariateSpline object for further predictions/interpolations.
+    
     Returns:
-        Callable function that interpolates the signal at any time point
+        - If return_model is False (default): Callable function (UnivariateSpline) that interpolates the signal at any time point
+        - If return_model is True: (UnivariateSpline, UnivariateSpline) tuple (the spline is both the interpolator and the fitted object)
+    
+    Example:
+        >>> interp, spline_obj = spline_interpolation(time, signal, return_model=True)
+        >>> new_vals = interp(new_time)
+        >>> # Or use spline_obj directly for further predictions:
+        >>> spline_obj(new_time)
     """
     # Convert inputs to numpy arrays
     t = np.asarray(time)
@@ -185,14 +554,17 @@ def spline_interpolation(
     spline = UnivariateSpline(t, s, s=smoothing, k=k)
     
     # Return the spline as the interpolation function
+    if return_model:
+        return spline, spline
     return spline
 
 def lowess_interpolation(
     time: Union[List[float], np.ndarray],
     signal: Union[List[float], np.ndarray],
     frac: float = 0.3,
-    it: int = 3
-) -> Callable[[Union[float, np.ndarray]], np.ndarray]:
+    it: int = 3,
+    return_model: bool = False
+) -> Union[Callable[[Union[float, np.ndarray]], np.ndarray], Tuple[Callable[[Union[float, np.ndarray]], np.ndarray], object]]:
     """
     Interpolate a time series using LOWESS (Locally Weighted Scatterplot Smoothing).
     
@@ -201,9 +573,11 @@ def lowess_interpolation(
         signal: Signal values
         frac: Between 0 and 1. The fraction of the data used when estimating each y-value
         it: Number of robustifying iterations
-        
+        return_model: If True, also return the smoothed data array used for interpolation (for further analysis or custom interpolators).
+    
     Returns:
-        Callable function that interpolates the signal at any time point
+        - If return_model is False (default): Callable function (interp1d) that interpolates the signal at any time point
+        - If return_model is True: (interp1d, smoothed_data) tuple
     """
     # Convert inputs to numpy arrays
     t = np.asarray(time)
@@ -232,8 +606,9 @@ def loess_interpolation(
     signal: Union[List[float], np.ndarray],
     degree: int = 2,
     frac: float = 0.3,
-    it: int = 3
-) -> Callable[[Union[float, np.ndarray]], np.ndarray]:
+    it: int = 3,
+    return_model: bool = False
+) -> Union[Callable[[Union[float, np.ndarray]], np.ndarray], Tuple[Callable[[Union[float, np.ndarray]], np.ndarray], object]]:
     """
     Interpolate a time series using LOESS (LOcally Estimated Scatterplot Smoothing).
     This is similar to LOWESS but uses higher-degree local polynomials.
@@ -244,9 +619,11 @@ def loess_interpolation(
         degree: Degree of local polynomials (1=linear, 2=quadratic)
         frac: Between 0 and 1. The fraction of the data used when estimating each y-value
         it: Number of robustifying iterations
-        
+        return_model: If True, also return the smoothed data array used for interpolation (for further analysis or custom interpolators).
+    
     Returns:
-        Callable function that interpolates the signal at any time point
+        - If return_model is False (default): Callable function (interp1d) that interpolates the signal at any time point
+        - If return_model is True: (interp1d, smoothed_data) tuple
     """
     # Convert inputs to numpy arrays
     t = np.asarray(time)
@@ -336,40 +713,36 @@ def get_best_interpolation(
     t = np.asarray(time)
     s = np.asarray(signal)
     
-    # Dictionary of interpolation methods
-    method_funcs = {
-        'linear': lambda: local_segmented_linear(t, s, window_size=5, force_continuous=True),
-        'spline': lambda: spline_interpolation(t, s),
-        'lowess': lambda: lowess_interpolation(t, s),
-        'loess': lambda: loess_interpolation(t, s),
-        'lla': lambda: derivative_based_interpolation(t, s, method='lla'),
-        'glla': lambda: derivative_based_interpolation(t, s, method='glla'),
-        'gold': lambda: derivative_based_interpolation(t, s, method='gold'),
-        'fda': lambda: derivative_based_interpolation(t, s, method='fda')
-    }
-    
-    # Add neural network methods if available
-    if TORCH_AVAILABLE:
-        method_funcs['nn_pytorch'] = lambda: neural_network_interpolation(t, s, framework='pytorch')
-        
-    
-    if TF_AVAILABLE:
-        method_funcs['nn_tensorflow'] = lambda: neural_network_interpolation(t, s, framework='tensorflow')
-    
-    # Try each method and calculate fit quality
     results = {}
     for method in methods:
-        if method in method_funcs:
-            try:
-                interp_func = method_funcs[method]()
-                quality = calculate_fit_quality(t, s, interp_func)
-                results[method] = {
-                    'function': interp_func,
-                    'r_squared': quality['r_squared'],
-                    'rmse': quality['rmse']
-                }
-            except Exception as e:
-                print(f"Error with {method} interpolation: {e}")
+        try:
+            if method == 'linear':
+                func = interp1d(time, signal, kind='linear', bounds_error=False, fill_value=(signal[0], signal[-1]))
+            elif method == 'spline':
+                func = spline_interpolation(time, signal)
+            elif method == 'lowess':
+                func = lowess_interpolation(time, signal)
+            elif method == 'loess':
+                func = loess_interpolation(time, signal)
+            elif method == 'lla':
+                func = lla_interpolation(time, signal)
+            elif method == 'glla':
+                func = glla_interpolation(time, signal)
+            elif method == 'gold':
+                func = gold_interpolation(time, signal)
+            elif method == 'fda':
+                func = fda_interpolation(time, signal)
+            else:
+                raise ValueError(f"Unknown interpolation method: {method}")
+
+            metrics = calculate_fit_quality(time, signal, func)
+            results[method] = {
+                'function': func,
+                'r_squared': metrics['r_squared'],
+                'rmse': metrics['rmse']
+            }
+        except Exception as e:
+            print(f"Error with {method} interpolation: {e}")
     
     # Find the best method based on the specified metric
     if metric == 'r_squared':
@@ -384,6 +757,228 @@ def get_best_interpolation(
     
     return method_info['function'], method_name, method_info[metric]
 
+
+def lla_interpolation(
+    time: Union[List[float], np.ndarray],
+    signal: Union[List[float], np.ndarray],
+    window_size: int = 5,
+    normalization: str = 'min',
+    zero_mean: bool = False,
+    r2_threshold: Optional[float] = None,
+    resample_method: Optional[str] = None
+) -> Callable[[Union[float, np.ndarray]], np.ndarray]:
+    """
+    Interpolate a time series using Local Linear Approximation (LLA) with Hermite interpolation.
+
+    Args:
+        time: Time points of the original signal
+        signal: Signal values
+        window_size: Size of the window for local linear regression (default: 5)
+        normalization: Normalization method for window ('min', 'none', etc.)
+        zero_mean: Whether to zero-mean center the window before regression
+        r2_threshold: Optional R^2 threshold for filtering low-quality windows
+        resample_method: Method for resampling derivatives ('spline', 'lowess', 'loess', etc.)
+
+    Returns:
+        Callable function that interpolates the signal at any time point
+    """
+    from pydelt.derivatives import lla
+    # Get derivatives at original time points
+    derivs, _ = lla(time, signal, window_size=window_size, normalization=normalization, zero_mean=zero_mean, r2_threshold=r2_threshold, resample_method=resample_method)
+    t = np.asarray(time)
+    s = np.asarray(signal)
+    d = np.asarray(derivs)
+    # Sort by time
+    idx = np.argsort(t)
+    t, s, d = t[idx], s[idx], d[idx]
+    def interpolate(query_time):
+        query_time = np.asarray(query_time)
+        scalar_input = query_time.ndim == 0
+        if scalar_input:
+            query_time = np.array([query_time])
+        result = np.zeros_like(query_time, dtype=float)
+        for i, t_i in enumerate(query_time):
+            # Find closest interval
+            if t_i <= t[0]:
+                s_prev, s_next = s[0], s[1]
+                d_prev, d_next = d[0], d[1]
+                t_prev, t_next = t[0], t[1]
+            elif t_i >= t[-1]:
+                s_prev, s_next = s[-2], s[-1]
+                d_prev, d_next = d[-2], d[-1]
+                t_prev, t_next = t[-2], t[-1]
+            else:
+                idx_next = np.searchsorted(t, t_i)
+                idx_prev = idx_next - 1
+                s_prev, s_next = s[idx_prev], s[idx_next]
+                d_prev, d_next = d[idx_prev], d[idx_next]
+                t_prev, t_next = t[idx_prev], t[idx_next]
+            h = t_next - t_prev
+            u = (t_i - t_prev) / h if h != 0 else 0
+            h00 = 2*u**3 - 3*u**2 + 1
+            h10 = u**3 - 2*u**2 + u
+            h01 = -2*u**3 + 3*u**2
+            h11 = u**3 - u**2
+            result[i] = h00*s_prev + h10*h*d_prev + h01*s_next + h11*h*d_next
+        return result.item() if scalar_input and np.ndim(result) == 0 else result
+    return interpolate
+
+def glla_interpolation(
+    time: Union[List[float], np.ndarray],
+    signal: Union[List[float], np.ndarray],
+    embedding: int = 3,
+    n: int = 2,
+    r2_threshold: Optional[float] = None,
+    resample_method: Optional[str] = None
+) -> Callable[[Union[float, np.ndarray]], np.ndarray]:
+    """
+    Interpolate a time series using Generalized Local Linear Approximation (GLLA) with Hermite interpolation.
+
+    Args:
+        time: Time points of the original signal
+        signal: Signal values
+        embedding: Number of points to consider for derivative calculation (default: 3)
+        n: Maximum order of derivative to calculate (default: 2)
+        r2_threshold: Optional R^2 threshold for filtering low-quality windows
+        resample_method: Method for resampling derivatives ('spline', 'lowess', 'loess', etc.)
+
+    Returns:
+        Callable function that interpolates the signal at any time point
+    """
+    from pydelt.derivatives import glla
+    result = glla(signal, time, embedding=embedding, n=n, r2_threshold=r2_threshold, resample_method=resample_method)
+    derivs = result['derivatives'][:,0] if result['derivatives'].ndim > 1 else result['derivatives']
+    t = np.asarray(time)
+    s = np.asarray(signal)
+    d = np.asarray(derivs)
+    idx = np.argsort(t)
+    t, s, d = t[idx], s[idx], d[idx]
+    def interpolate(query_time):
+        query_time = np.asarray(query_time)
+        scalar_input = query_time.ndim == 0
+        if scalar_input:
+            query_time = np.array([query_time])
+        result = np.zeros_like(query_time, dtype=float)
+        for i, t_i in enumerate(query_time):
+            if t_i <= t[0]:
+                s_prev, s_next = s[0], s[1]
+                d_prev, d_next = d[0], d[1]
+                t_prev, t_next = t[0], t[1]
+            elif t_i >= t[-1]:
+                s_prev, s_next = s[-2], s[-1]
+                d_prev, d_next = d[-2], d[-1]
+                t_prev, t_next = t[-2], t[-1]
+            else:
+                idx_next = np.searchsorted(t, t_i)
+                idx_prev = idx_next - 1
+                s_prev, s_next = s[idx_prev], s[idx_next]
+                d_prev, d_next = d[idx_prev], d[idx_next]
+                t_prev, t_next = t[idx_prev], t[idx_next]
+            h = t_next - t_prev
+            u = (t_i - t_prev) / h if h != 0 else 0
+            h00 = 2*u**3 - 3*u**2 + 1
+            h10 = u**3 - 2*u**2 + u
+            h01 = -2*u**3 + 3*u**2
+            h11 = u**3 - u**2
+            result[i] = h00*s_prev + h10*h*d_prev + h01*s_next + h11*h*d_next
+        return result.item() if scalar_input and np.ndim(result) == 0 else result
+    return interpolate
+
+def gold_interpolation(
+    time: Union[List[float], np.ndarray],
+    signal: Union[List[float], np.ndarray],
+    window_size: int = 5,
+    normalization: str = 'min',
+    zero_mean: bool = False,
+    r2_threshold: Optional[float] = None,
+    resample_method: Optional[str] = None
+) -> Callable[[Union[float, np.ndarray]], np.ndarray]:
+    """
+    Interpolate a time series using Generalized Orthogonal Local Derivative (GOLD) with Hermite interpolation.
+
+    Args:
+        time: Time points of the original signal
+        signal: Signal values
+        window_size: Size of the window for local regression (default: 5)
+        normalization: Normalization method for window ('min', 'none', etc.)
+        zero_mean: Whether to zero-mean center the window before regression
+        r2_threshold: Optional R^2 threshold for filtering low-quality windows
+        resample_method: Method for resampling derivatives ('spline', 'lowess', 'loess', etc.)
+
+    Returns:
+        Callable function that interpolates the signal at any time point
+    """
+    from pydelt.derivatives import gold
+    derivs, _ = gold(time, signal, window_size=window_size, normalization=normalization, zero_mean=zero_mean, r2_threshold=r2_threshold, resample_method=resample_method)
+    t = np.asarray(time)
+    s = np.asarray(signal)
+    d = np.asarray(derivs)
+    idx = np.argsort(t)
+    t, s, d = t[idx], s[idx], d[idx]
+    def interpolate(query_time):
+        query_time = np.asarray(query_time)
+        scalar_input = query_time.ndim == 0
+        if scalar_input:
+            query_time = np.array([query_time])
+        result = np.zeros_like(query_time, dtype=float)
+        for i, t_i in enumerate(query_time):
+            if t_i <= t[0]:
+                s_prev, s_next = s[0], s[1]
+                d_prev, d_next = d[0], d[1]
+                t_prev, t_next = t[0], t[1]
+            elif t_i >= t[-1]:
+                s_prev, s_next = s[-2], s[-1]
+                d_prev, d_next = d[-2], d[-1]
+                t_prev, t_next = t[-2], t[-1]
+            else:
+                idx_next = np.searchsorted(t, t_i)
+                idx_prev = idx_next - 1
+                s_prev, s_next = s[idx_prev], s[idx_next]
+                d_prev, d_next = d[idx_prev], d[idx_next]
+                t_prev, t_next = t[idx_prev], t[idx_next]
+            h = t_next - t_prev
+            u = (t_i - t_prev) / h if h != 0 else 0
+            h00 = 2*u**3 - 3*u**2 + 1
+            h10 = u**3 - 2*u**2 + u
+            h01 = -2*u**3 + 3*u**2
+            h11 = u**3 - u**2
+            result[i] = h00*s_prev + h10*h*d_prev + h01*s_next + h11*h*d_next
+        return result.item() if scalar_input and np.ndim(result) == 0 else result
+    return interpolate
+
+def fda_interpolation(
+    time: Union[List[float], np.ndarray],
+    signal: Union[List[float], np.ndarray],
+    smoothing: Optional[float] = None,
+    k: int = 3,
+    return_model: bool = False
+) -> Union[Callable[[Union[float, np.ndarray]], np.ndarray], Tuple[Callable[[Union[float, np.ndarray]], np.ndarray], object]]:
+    """
+    Interpolate a time series using Functional Data Analysis (FDA) spline smoothing.
+
+    Args:
+        time: Time points of the original signal
+        signal: Signal values
+        smoothing: Smoothing factor for the spline. If None, it is automatically determined.
+        k: Degree of the spline (default: 3, cubic)
+        return_model: If True, also return the fitted UnivariateSpline object for further predictions/interpolations.
+
+    Returns:
+        - If return_model is False (default): Callable function (UnivariateSpline) that interpolates the signal at any time point
+        - If return_model is True: (UnivariateSpline, UnivariateSpline) tuple (the spline is both the interpolator and the fitted object)
+    """
+    from scipy.interpolate import UnivariateSpline
+    t = np.asarray(time)
+    s = np.asarray(signal)
+    idx = np.argsort(t)
+    t, s = t[idx], s[idx]
+    if smoothing is None:
+        n = len(s)
+        range_y = np.ptp(s)
+        noise_estimate = np.std(np.diff(s)) / np.sqrt(2)
+        smoothing = n * (0.005 * range_y + 0.1 * noise_estimate) ** 2
+    spline = UnivariateSpline(t, s, s=smoothing, k=k)
+    return spline
 
 def derivative_based_interpolation(
     time: Union[List[float], np.ndarray],
@@ -482,7 +1077,7 @@ def derivative_based_interpolation(
                 # Interpolate
                 result[i] = h00*s_prev + h10*h*d_prev + h01*s_next + h11*h*d_next
         
-        return result[0] if scalar_input else result
+        return result.item() if scalar_input and np.ndim(result) == 0 else result
     
     return interpolate
 
@@ -523,7 +1118,8 @@ class TensorFlowModel:
         self.model = keras.Sequential()
         
         # Input layer
-        self.model.add(layers.Dense(hidden_layers[0], activation='relu', input_shape=(1,)))
+        self.model.add(keras.Input(shape=(1,)))
+        self.model.add(layers.Dense(hidden_layers[0], activation='relu'))
         self.model.add(layers.Dropout(dropout))
         
         # Hidden layers
@@ -660,7 +1256,7 @@ def neural_network_interpolation(
             # Denormalize predictions
             pred = pred_norm * (s_max - s_min) + s_min if s_max > s_min else pred_norm
             
-            return pred[0] if scalar_input else pred
+            return pred.item() if scalar_input and np.ndim(pred) == 0 else pred
     
     elif framework == 'tensorflow':
         # Create and train the model
@@ -683,7 +1279,7 @@ def neural_network_interpolation(
             # Denormalize predictions
             pred = pred_norm * (s_max - s_min) + s_min if s_max > s_min else pred_norm
             
-            return pred[0] if scalar_input else pred
+            return pred.item() if scalar_input and pred.size == 1 else pred
     
     else:
         raise ValueError(f"Unknown framework: {framework}")
