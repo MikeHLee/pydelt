@@ -1,0 +1,8 @@
+# Documentation requirements for Read the Docs
+sphinx>=7.0.0
+sphinx-rtd-theme>=1.3.0
+numpy>=1.20.0
+pandas>=1.3.0
+scipy>=1.7.0
+plotly>=5.0.0
+statsmodels>=0.13.0

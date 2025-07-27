@@ -1,0 +1,212 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pydelt: Python Derivatives for Time Series &mdash; pydelt 0.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=6c02275b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pydelt: Python Derivatives for Time Series</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pydelt-python-derivatives-for-time-series">
+<h1>pydelt: Python Derivatives for Time Series<a class="headerlink" href="#pydelt-python-derivatives-for-time-series" title="Link to this heading"></a></h1>
+<p><strong>pydelt</strong> is a comprehensive Python package for calculating derivatives of time series data using various numerical and machine learning methods.</p>
+<section id="key-features">
+<h2>🚀 <strong>Key Features</strong><a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Multiple derivative methods</strong>: Finite differences, local linear approximation, Gaussian processes, and neural networks</p></li>
+<li><p><strong>Advanced interpolation</strong>: Splines, LOWESS, LOESS, and neural network-based interpolation</p></li>
+<li><p><strong>Automatic differentiation</strong>: PyTorch and TensorFlow backends for gradient computation</p></li>
+<li><p><strong>Integration capabilities</strong>: Numerical integration with error estimation</p></li>
+<li><p><strong>Multivariate support</strong>: Handle multi-dimensional time series data</p></li>
+<li><p><strong>Robust error handling</strong>: Comprehensive input validation and error messages</p></li>
+</ul>
+</section>
+<section id="installation">
+<h2>📦 <strong>Installation</strong><a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
+<p>Install pydelt from PyPI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pydelt
+</pre></div>
+</div>
+</section>
+<section id="quick-start">
+<h2>🔧 <strong>Quick Start</strong><a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.derivatives</span><span class="w"> </span><span class="kn">import</span> <span class="n">lla</span>
+
+<span class="c1"># Generate sample data</span>
+<span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+
+<span class="c1"># Calculate derivative using Local Linear Approximation</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">lla</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">signal</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">derivative</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Extract derivatives</span>
+
+<span class="c1"># The derivative of sin(x) should be approximately cos(x)</span>
+<span class="n">expected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max error: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">derivative</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">expected</span><span class="p">))</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="documentation-contents">
+<h2>📚 <strong>Documentation Contents</strong><a class="headerlink" href="#documentation-contents" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#optional-dependencies">Optional Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#install-from-pypi">Install from PyPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#install-with-optional-dependencies">Install with Optional Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#install-from-source">Install from Source</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#verify-installation">Verify Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#basic-derivative-calculation">Basic Derivative Calculation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#advanced-methods">Advanced Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#interpolation">Interpolation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#integration">Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#multivariate-data">Multivariate Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#error-handling">Error Handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#example-1-comparing-derivative-methods">Example 1: Comparing Derivative Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#example-2-neural-network-derivatives">Example 2: Neural Network Derivatives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#example-3-noisy-data-processing">Example 3: Noisy Data Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#example-4-integration-and-roundtrip-accuracy">Example 4: Integration and Roundtrip Accuracy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#example-5-multivariate-time-series">Example 5: Multivariate Time Series</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-pydelt.autodiff">Automatic Differentiation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-pydelt.interpolation">Interpolation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-pydelt.derivatives">Derivatives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-pydelt.integrals">Integrals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-4-0-2025-07-26">Version 0.4.0 (2025-07-26)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-3-1-previous-release">Version 0.3.1 (Previous Release)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="links">
+<h2>🔗 <strong>Links</strong><a class="headerlink" href="#links" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>PyPI</strong>: <a class="reference external" href="https://pypi.org/project/pydelt/">https://pypi.org/project/pydelt/</a></p></li>
+<li><p><strong>Source Code</strong>: <a class="reference external" href="https://github.com/MikeHLee/pydelt">https://github.com/MikeHLee/pydelt</a></p></li>
+<li><p><strong>Issues</strong>: <a class="reference external" href="https://github.com/MikeHLee/pydelt/issues">https://github.com/MikeHLee/pydelt/issues</a></p></li>
+</ul>
+</section>
+<section id="indices-and-tables">
+<h2>📋 <strong>Indices and Tables</strong><a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

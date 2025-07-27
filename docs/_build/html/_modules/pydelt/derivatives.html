@@ -1,0 +1,524 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pydelt.derivatives &mdash; pydelt 0.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=6c02275b"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pydelt.derivatives</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pydelt.derivatives</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">factorial</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnivariateSpline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">linregress</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span>
+
+<span class="c1"># Import interpolation methods</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">local_segmented_linear</span><span class="p">,</span>
+    <span class="n">spline_interpolation</span><span class="p">,</span>
+    <span class="n">lowess_interpolation</span><span class="p">,</span>
+    <span class="n">loess_interpolation</span><span class="p">,</span>
+    <span class="n">get_best_interpolation</span><span class="p">,</span>
+    <span class="n">calculate_fit_quality</span>
+<span class="p">)</span>
+
+<div class="viewcode-block" id="lla">
+<a class="viewcode-back" href="../../api.html#pydelt.derivatives.lla">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">lla</span><span class="p">(</span><span class="n">time_data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">signal_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">window_size</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> 
+         <span class="n">normalization</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;min&#39;</span><span class="p">,</span> <span class="n">zero_mean</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+         <span class="n">r2_threshold</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+         <span class="n">resample_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Local Linear Approximation (LLA) method for estimating the derivative of a time series.</span>
+<span class="sd">    Supports vector-valued signals (multiple columns).</span>
+<span class="sd">    Uses configurable normalization and linear regression within a sliding window.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        time_data: List/array of time values (epoch seconds)</span>
+<span class="sd">        signal_data: List/array of signal values, shape (N,) or (N, n_out)</span>
+<span class="sd">        window_size: Number of points to consider for derivative calculation</span>
+<span class="sd">        normalization: Type of normalization to apply (&#39;min&#39;, &#39;none&#39;)</span>
+<span class="sd">        zero_mean: Whether to center the data by subtracting the mean</span>
+<span class="sd">        r2_threshold: If provided, only keep derivatives where local fit R² exceeds this value</span>
+<span class="sd">        resample_method: If provided with r2_threshold, resample filtered derivatives using this method</span>
+<span class="sd">                        (&#39;linear&#39;, &#39;spline&#39;, &#39;lowess&#39;, &#39;loess&#39;, or &#39;best&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Tuple containing:</span>
+<span class="sd">        - Array of derivative values, shape (N, n_out)</span>
+<span class="sd">        - Array of step sizes used for each calculation</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">time_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">time_data</span><span class="p">)</span>
+    <span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">signal_data</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">signal</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="n">signal</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_data</span><span class="p">)</span> <span class="o">!=</span> <span class="n">signal</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Time and Signal data must have the same length&quot;</span><span class="p">)</span>
+    <span class="n">n_out</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">derivatives</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_out</span><span class="p">):</span>
+        <span class="n">sig_col</span> <span class="o">=</span> <span class="n">signal</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">slope_calc</span><span class="p">(</span><span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+            <span class="n">window_start</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span> <span class="o">-</span> <span class="p">(</span><span class="n">window_size</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="n">shift</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">window_size</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span>
+            <span class="n">window_end</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time_data</span><span class="p">),</span> <span class="n">i</span> <span class="o">+</span> <span class="p">(</span><span class="n">window_size</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">shift</span><span class="p">))</span>
+            <span class="n">time_window</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">time_data</span><span class="p">[</span><span class="n">window_start</span><span class="p">:</span><span class="n">window_end</span><span class="p">])</span>
+            <span class="n">signal_window</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">sig_col</span><span class="p">[</span><span class="n">window_start</span><span class="p">:</span><span class="n">window_end</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">normalization</span> <span class="o">==</span> <span class="s1">&#39;min&#39;</span><span class="p">:</span>
+                <span class="n">min_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">time_window</span><span class="p">)</span>
+                <span class="n">min_signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">signal_window</span><span class="p">)</span>
+                <span class="n">time_window</span> <span class="o">=</span> <span class="n">time_window</span> <span class="o">-</span> <span class="n">min_time</span>
+                <span class="n">signal_window</span> <span class="o">=</span> <span class="n">signal_window</span> <span class="o">-</span> <span class="n">min_signal</span>
+            <span class="k">if</span> <span class="n">zero_mean</span><span class="p">:</span>
+                <span class="n">time_window</span> <span class="o">=</span> <span class="n">time_window</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">time_window</span><span class="p">)</span>
+                <span class="n">signal_window</span> <span class="o">=</span> <span class="n">signal_window</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">signal_window</span><span class="p">)</span>
+            <span class="n">fit</span> <span class="o">=</span> <span class="n">linregress</span><span class="p">(</span><span class="n">time_window</span><span class="p">,</span> <span class="n">signal_window</span><span class="p">)</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="p">(</span><span class="n">window_end</span> <span class="o">-</span> <span class="n">window_start</span><span class="p">)</span><span class="o">/</span><span class="n">window_size</span>
+            <span class="k">return</span> <span class="n">fit</span><span class="o">.</span><span class="n">slope</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">fit</span><span class="o">.</span><span class="n">rvalue</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="p">[</span><span class="n">slope_calc</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time_data</span><span class="p">))]</span>
+        <span class="n">deriv_col</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+        <span class="n">step_col</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+        <span class="n">r_squared</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">r2_threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r_squared</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">r2_threshold</span>
+            <span class="n">valid_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">resample_method</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_indices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_best_interpolation</span><span class="p">,</span> <span class="n">local_segmented_linear</span><span class="p">,</span> <span class="n">spline_interpolation</span><span class="p">,</span> <span class="n">lowess_interpolation</span><span class="p">,</span> <span class="n">loess_interpolation</span>
+                <span class="n">methods</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">&#39;best&#39;</span><span class="p">:</span> <span class="n">get_best_interpolation</span><span class="p">,</span>
+                    <span class="s1">&#39;linear&#39;</span><span class="p">:</span> <span class="n">local_segmented_linear</span><span class="p">,</span>
+                    <span class="s1">&#39;spline&#39;</span><span class="p">:</span> <span class="n">spline_interpolation</span><span class="p">,</span>
+                    <span class="s1">&#39;lowess&#39;</span><span class="p">:</span> <span class="n">lowess_interpolation</span><span class="p">,</span>
+                    <span class="s1">&#39;loess&#39;</span><span class="p">:</span> <span class="n">loess_interpolation</span>
+                <span class="p">}</span>
+                <span class="n">valid_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">time_data</span><span class="p">)[</span><span class="n">valid_indices</span><span class="p">]</span>
+                <span class="n">valid_derivatives</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">deriv_col</span><span class="p">)[</span><span class="n">valid_indices</span><span class="p">]</span>
+                <span class="n">interp_func</span> <span class="o">=</span> <span class="n">methods</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">resample_method</span><span class="p">,</span> <span class="n">spline_interpolation</span><span class="p">)(</span>
+                    <span class="n">valid_times</span><span class="p">,</span> <span class="n">valid_derivatives</span>
+                <span class="p">)</span>
+                <span class="n">deriv_col</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">time_data</span><span class="p">)</span>
+    
+        <span class="n">derivatives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deriv_col</span><span class="p">)</span>
+        <span class="n">steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">step_col</span><span class="p">)</span>
+    
+    <span class="c1"># Convert lists to numpy arrays</span>
+    <span class="n">derivatives</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">derivatives</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># Transpose to get shape (N, n_out)</span>
+    <span class="n">steps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">steps</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>  <span class="c1"># Transpose to get shape (N, n_out)</span>
+    
+    <span class="c1"># If we have only one output dimension, flatten the arrays</span>
+    <span class="k">if</span> <span class="n">n_out</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">derivatives</span> <span class="o">=</span> <span class="n">derivatives</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">steps</span> <span class="o">=</span> <span class="n">steps</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        
+    <span class="k">return</span> <span class="n">derivatives</span><span class="p">,</span> <span class="n">steps</span></div>
+
+
+<div class="viewcode-block" id="gold">
+<a class="viewcode-back" href="../../api.html#pydelt.derivatives.gold">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">gold</span><span class="p">(</span><span class="n">signal</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">embedding</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+         <span class="n">r2_threshold</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+         <span class="n">resample_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate derivatives using the Generalized Orthogonal Local Derivative (GOLD) method.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        signal: Array of signal values</span>
+<span class="sd">        time: Array of time values corresponding to the signal</span>
+<span class="sd">        embedding: Number of points to consider for derivative calculation</span>
+<span class="sd">        n: Maximum order of derivative to estimate</span>
+<span class="sd">        r2_threshold: If provided, only keep derivatives where local fit R² exceeds this value</span>
+<span class="sd">        resample_method: If provided with r2_threshold, resample filtered derivatives using this method</span>
+<span class="sd">                        (&#39;linear&#39;, &#39;spline&#39;, &#39;lowess&#39;, &#39;loess&#39;, or &#39;best&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Dictionary containing:</span>
+<span class="sd">        - dtime: Time values for derivatives</span>
+<span class="sd">        - dsignal: Matrix of derivatives (0th to nth order)</span>
+<span class="sd">        - embedding: Embedding dimension used</span>
+<span class="sd">        - n: Maximum order of derivatives calculated</span>
+<span class="sd">        - r_squared: R² values for each point (if calculated)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Validate input dimensions</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Signal and time vectors should have the same length.&quot;</span><span class="p">)</span>
+    <span class="c1"># Ensure sufficient data points for embedding</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">embedding</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Signal and time vectors should have a length greater than embedding.&quot;</span><span class="p">)</span>
+    <span class="c1"># Ensure embedding dimension is sufficient for derivative order</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="n">embedding</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The embedding dimension should be higher than the maximum order of the derivative, n.&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Create time and signal embedding matrices</span>
+    <span class="c1"># Each column represents a shifted version of the original time/signal</span>
+    <span class="n">tembed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">time</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">)</span><span class="o">-</span><span class="n">embedding</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">embedding</span><span class="p">)])</span>
+    <span class="n">Xembed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">signal</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span><span class="o">-</span><span class="n">embedding</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">embedding</span><span class="p">)])</span>
+    
+    <span class="c1"># Initialize matrix to store derivatives</span>
+    <span class="n">derivatives</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">tembed</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+    
+    <span class="c1"># Initialize array to store R² values</span>
+    <span class="n">r_squared</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">tembed</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    
+    <span class="c1"># Calculate derivatives for each window</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tembed</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="c1"># Center time values around the middle point of the window</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">tembed</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">tembed</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">embedding</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="c1"># Create basis functions (powers of t)</span>
+        <span class="n">Xi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">t</span><span class="o">**</span><span class="n">q</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)])</span>
+        
+        <span class="c1"># Gram-Schmidt orthogonalization of the basis functions</span>
+        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
+                <span class="c1"># Project higher order basis onto lower order and subtract</span>
+                <span class="n">Xi</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Xi</span><span class="p">[</span><span class="n">p</span><span class="p">],</span> <span class="n">t</span><span class="o">**</span><span class="n">q</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Xi</span><span class="p">[</span><span class="n">p</span><span class="p">],</span> <span class="n">t</span><span class="o">**</span><span class="n">p</span><span class="p">)</span> <span class="o">*</span> <span class="n">Xi</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+        
+        <span class="c1"># Scale basis functions by factorial for derivative calculation</span>
+        <span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">factorial</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)))</span>
+        <span class="c1"># Apply scaling to orthogonalized basis</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="n">D</span> <span class="o">@</span> <span class="n">Xi</span>
+        <span class="c1"># Calculate weights for derivative estimation</span>
+        <span class="n">W</span> <span class="o">=</span> <span class="n">L</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">L</span> <span class="o">@</span> <span class="n">L</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="c1"># Compute derivatives by applying weights to signal values</span>
+        <span class="n">derivatives</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">Xembed</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">@</span> <span class="n">W</span>
+        
+        <span class="c1"># Calculate R² for this window&#39;s fit</span>
+        <span class="c1"># Use the 0th derivative (function value) to reconstruct the signal</span>
+        <span class="c1"># W.T is the matrix that transforms derivatives back to signal values</span>
+        <span class="n">predicted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">derivatives</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">embedding</span><span class="p">))</span>  <span class="c1"># 0th derivative is constant</span>
+        <span class="n">ss_total</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">Xembed</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">Xembed</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">ss_residual</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">Xembed</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">predicted</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">r_squared</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">ss_residual</span> <span class="o">/</span> <span class="n">ss_total</span><span class="p">)</span> <span class="k">if</span> <span class="n">ss_total</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+    
+    <span class="c1"># Calculate time points corresponding to derivatives (centered moving average)</span>
+    <span class="n">time_derivative</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">embedding</span><span class="p">)</span><span class="o">/</span><span class="n">embedding</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;valid&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Apply R² threshold filtering if requested</span>
+    <span class="k">if</span> <span class="n">r2_threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Create mask for points that meet the threshold</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">r_squared</span> <span class="o">&gt;=</span> <span class="n">r2_threshold</span>
+        <span class="n">valid_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_indices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Get valid time points and derivatives</span>
+            <span class="n">valid_times</span> <span class="o">=</span> <span class="n">time_derivative</span><span class="p">[</span><span class="n">valid_indices</span><span class="p">]</span>
+            <span class="n">valid_derivatives</span> <span class="o">=</span> <span class="n">derivatives</span><span class="p">[</span><span class="n">valid_indices</span><span class="p">]</span>
+            
+            <span class="c1"># If resampling is requested and we have enough valid points</span>
+            <span class="k">if</span> <span class="n">resample_method</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_indices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Create interpolated derivatives for each order</span>
+                <span class="n">resampled_derivatives</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">derivatives</span><span class="p">)</span>
+                
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="c1"># Create interpolation function for this derivative order</span>
+                    <span class="k">if</span> <span class="n">resample_method</span> <span class="o">==</span> <span class="s1">&#39;best&#39;</span><span class="p">:</span>
+                        <span class="n">interp_func</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_best_interpolation</span><span class="p">(</span><span class="n">valid_times</span><span class="p">,</span> <span class="n">valid_derivatives</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])</span>
+                    <span class="k">elif</span> <span class="n">resample_method</span> <span class="o">==</span> <span class="s1">&#39;linear&#39;</span><span class="p">:</span>
+                        <span class="n">interp_func</span> <span class="o">=</span> <span class="n">local_segmented_linear</span><span class="p">(</span><span class="n">valid_times</span><span class="p">,</span> <span class="n">valid_derivatives</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])</span>
+                    <span class="k">elif</span> <span class="n">resample_method</span> <span class="o">==</span> <span class="s1">&#39;spline&#39;</span><span class="p">:</span>
+                        <span class="n">interp_func</span> <span class="o">=</span> <span class="n">spline_interpolation</span><span class="p">(</span><span class="n">valid_times</span><span class="p">,</span> <span class="n">valid_derivatives</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])</span>
+                    <span class="k">elif</span> <span class="n">resample_method</span> <span class="o">==</span> <span class="s1">&#39;lowess&#39;</span><span class="p">:</span>
+                        <span class="n">interp_func</span> <span class="o">=</span> <span class="n">lowess_interpolation</span><span class="p">(</span><span class="n">valid_times</span><span class="p">,</span> <span class="n">valid_derivatives</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])</span>
+                    <span class="k">elif</span> <span class="n">resample_method</span> <span class="o">==</span> <span class="s1">&#39;loess&#39;</span><span class="p">:</span>
+                        <span class="n">interp_func</span> <span class="o">=</span> <span class="n">loess_interpolation</span><span class="p">(</span><span class="n">valid_times</span><span class="p">,</span> <span class="n">valid_derivatives</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># Default to spline if method not recognized</span>
+                        <span class="n">interp_func</span> <span class="o">=</span> <span class="n">spline_interpolation</span><span class="p">(</span><span class="n">valid_times</span><span class="p">,</span> <span class="n">valid_derivatives</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])</span>
+                    
+                    <span class="c1"># Resample derivatives at all original time points</span>
+                    <span class="n">resampled_derivatives</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">time_derivative</span><span class="p">)</span>
+                
+                <span class="c1"># Replace derivatives with resampled values</span>
+                <span class="n">derivatives</span> <span class="o">=</span> <span class="n">resampled_derivatives</span>
+    
+    <span class="c1"># Return results as dictionary</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;dtime&#39;</span><span class="p">:</span> <span class="n">time_derivative</span><span class="p">,</span> 
+        <span class="s1">&#39;dsignal&#39;</span><span class="p">:</span> <span class="n">derivatives</span><span class="p">,</span> 
+        <span class="s1">&#39;embedding&#39;</span><span class="p">:</span> <span class="n">embedding</span><span class="p">,</span> 
+        <span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span>
+        <span class="s1">&#39;r_squared&#39;</span><span class="p">:</span> <span class="n">r_squared</span>
+    <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="glla">
+<a class="viewcode-back" href="../../api.html#pydelt.derivatives.glla">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">glla</span><span class="p">(</span><span class="n">signal</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">embedding</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+         <span class="n">r2_threshold</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+         <span class="n">resample_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate derivatives using the Generalized Local Linear Approximation (GLLA) method.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        signal: Array of signal values</span>
+<span class="sd">        time: Array of time values corresponding to the signal</span>
+<span class="sd">        embedding: Number of points to consider for derivative calculation</span>
+<span class="sd">        n: Maximum order of derivative to calculate</span>
+<span class="sd">        r2_threshold: If provided, only keep derivatives where local fit R² exceeds this value</span>
+<span class="sd">        resample_method: If provided with r2_threshold, resample filtered derivatives using this method</span>
+<span class="sd">                        (&#39;linear&#39;, &#39;spline&#39;, &#39;lowess&#39;, &#39;loess&#39;, or &#39;best&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Dictionary containing:</span>
+<span class="sd">        - dtime: Time values for derivatives</span>
+<span class="sd">        - dsignal: Matrix of derivatives (0th to nth order)</span>
+<span class="sd">        - embedding: Embedding dimension used</span>
+<span class="sd">        - n: Maximum order of derivatives calculated</span>
+<span class="sd">        - r_squared: R² values for each point (if calculated)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Validate input dimensions</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Signal and time vectors should have the same length.&quot;</span><span class="p">)</span>
+    <span class="c1"># Ensure sufficient data points for embedding</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">embedding</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Signal and time vectors should have a length greater than embedding.&quot;</span><span class="p">)</span>
+    <span class="c1"># Ensure embedding dimension is sufficient for derivative order</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&gt;=</span> <span class="n">embedding</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The embedding dimension should be higher than the maximum order of the derivative, n.&quot;</span><span class="p">)</span>
+    
+    <span class="c1"># Calculate minimum time step for scaling</span>
+    <span class="n">deltat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">time</span><span class="p">))</span>
+    
+    <span class="c1"># Create design matrix with centered time indices raised to powers</span>
+    <span class="c1"># Each column represents a different power (0 to n)</span>
+    <span class="c1"># Each power is divided by factorial for Taylor series representation</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">embedding</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">embedding</span><span class="o">+</span><span class="mi">1</span><span class="p">)))</span><span class="o">**</span><span class="n">i</span> <span class="o">/</span> <span class="n">factorial</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)])</span>
+    
+    <span class="c1"># Calculate weights matrix for derivative estimation</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">L</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">L</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">L</span><span class="p">)</span>
+    
+    <span class="c1"># Create signal embedding matrix (sliding window)</span>
+    <span class="n">Xembed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">signal</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span><span class="o">-</span><span class="n">embedding</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">embedding</span><span class="p">)])</span>
+    
+    <span class="c1"># Calculate derivatives by applying weights to signal values</span>
+    <span class="n">derivatives</span> <span class="o">=</span> <span class="n">Xembed</span> <span class="o">@</span> <span class="n">W</span>
+    
+    <span class="c1"># Scale derivatives by appropriate powers of time step</span>
+    <span class="n">derivatives</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">/=</span> <span class="n">deltat</span><span class="o">**</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+    
+    <span class="c1"># Calculate time points corresponding to derivatives (centered moving average)</span>
+    <span class="n">time_derivative</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">embedding</span><span class="p">)</span><span class="o">/</span><span class="n">embedding</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;valid&#39;</span><span class="p">)</span>
+    
+    <span class="c1"># Calculate R² for each window&#39;s fit</span>
+    <span class="n">r_squared</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time_derivative</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time_derivative</span><span class="p">)):</span>
+        <span class="c1"># Calculate R² for this window&#39;s fit using 0th derivative (function value)</span>
+        <span class="n">predicted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">derivatives</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">embedding</span><span class="p">))</span>  <span class="c1"># 0th derivative is constant</span>
+        <span class="n">ss_total</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">Xembed</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">Xembed</span><span class="p">[</span><span class="n">k</span><span class="p">]))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">ss_residual</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">Xembed</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">predicted</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">r_squared</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">ss_residual</span> <span class="o">/</span> <span class="n">ss_total</span><span class="p">)</span> <span class="k">if</span> <span class="n">ss_total</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+    
+    <span class="c1"># Apply R² threshold filtering if requested</span>
+    <span class="k">if</span> <span class="n">r2_threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Create mask for points that meet the threshold</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">r_squared</span> <span class="o">&gt;=</span> <span class="n">r2_threshold</span>
+        <span class="n">valid_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_indices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Get valid time points and derivatives</span>
+            <span class="n">valid_times</span> <span class="o">=</span> <span class="n">time_derivative</span><span class="p">[</span><span class="n">valid_indices</span><span class="p">]</span>
+            <span class="n">valid_derivatives</span> <span class="o">=</span> <span class="n">derivatives</span><span class="p">[</span><span class="n">valid_indices</span><span class="p">]</span>
+            
+            <span class="c1"># If resampling is requested and we have enough valid points</span>
+            <span class="k">if</span> <span class="n">resample_method</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_indices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># Create interpolated derivatives for each order</span>
+                <span class="n">resampled_derivatives</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">derivatives</span><span class="p">)</span>
+                
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="c1"># Create interpolation function for this derivative order</span>
+                    <span class="k">if</span> <span class="n">resample_method</span> <span class="o">==</span> <span class="s1">&#39;best&#39;</span><span class="p">:</span>
+                        <span class="n">interp_func</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_best_interpolation</span><span class="p">(</span><span class="n">valid_times</span><span class="p">,</span> <span class="n">valid_derivatives</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])</span>
+                    <span class="k">elif</span> <span class="n">resample_method</span> <span class="o">==</span> <span class="s1">&#39;linear&#39;</span><span class="p">:</span>
+                        <span class="n">interp_func</span> <span class="o">=</span> <span class="n">local_segmented_linear</span><span class="p">(</span><span class="n">valid_times</span><span class="p">,</span> <span class="n">valid_derivatives</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])</span>
+                    <span class="k">elif</span> <span class="n">resample_method</span> <span class="o">==</span> <span class="s1">&#39;spline&#39;</span><span class="p">:</span>
+                        <span class="n">interp_func</span> <span class="o">=</span> <span class="n">spline_interpolation</span><span class="p">(</span><span class="n">valid_times</span><span class="p">,</span> <span class="n">valid_derivatives</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])</span>
+                    <span class="k">elif</span> <span class="n">resample_method</span> <span class="o">==</span> <span class="s1">&#39;lowess&#39;</span><span class="p">:</span>
+                        <span class="n">interp_func</span> <span class="o">=</span> <span class="n">lowess_interpolation</span><span class="p">(</span><span class="n">valid_times</span><span class="p">,</span> <span class="n">valid_derivatives</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])</span>
+                    <span class="k">elif</span> <span class="n">resample_method</span> <span class="o">==</span> <span class="s1">&#39;loess&#39;</span><span class="p">:</span>
+                        <span class="n">interp_func</span> <span class="o">=</span> <span class="n">loess_interpolation</span><span class="p">(</span><span class="n">valid_times</span><span class="p">,</span> <span class="n">valid_derivatives</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># Default to spline if method not recognized</span>
+                        <span class="n">interp_func</span> <span class="o">=</span> <span class="n">spline_interpolation</span><span class="p">(</span><span class="n">valid_times</span><span class="p">,</span> <span class="n">valid_derivatives</span><span class="p">[:,</span> <span class="n">j</span><span class="p">])</span>
+                    
+                    <span class="c1"># Resample derivatives at all original time points</span>
+                    <span class="n">resampled_derivatives</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">time_derivative</span><span class="p">)</span>
+                
+                <span class="c1"># Replace derivatives with resampled values</span>
+                <span class="n">derivatives</span> <span class="o">=</span> <span class="n">resampled_derivatives</span>
+    
+    <span class="c1"># Return results as dictionary</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;dtime&#39;</span><span class="p">:</span> <span class="n">time_derivative</span><span class="p">,</span> 
+        <span class="s1">&#39;dsignal&#39;</span><span class="p">:</span> <span class="n">derivatives</span><span class="p">,</span> 
+        <span class="s1">&#39;embedding&#39;</span><span class="p">:</span> <span class="n">embedding</span><span class="p">,</span> 
+        <span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="n">n</span><span class="p">,</span>
+        <span class="s1">&#39;r_squared&#39;</span><span class="p">:</span> <span class="n">r_squared</span>
+    <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="fda">
+<a class="viewcode-back" href="../../api.html#pydelt.derivatives.fda">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fda</span><span class="p">(</span><span class="n">signal</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">spar</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+         <span class="n">r2_threshold</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+         <span class="n">resample_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate derivatives using the Functional Data Analysis (FDA) method.</span>
+<span class="sd">    Supports vector-valued signals (multiple columns).</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        signal: Array of signal values, shape (N,) or (N, n_out)</span>
+<span class="sd">        time: Array of time values corresponding to the signal</span>
+<span class="sd">        spar: Smoothing parameter for the spline. If None, automatically determined</span>
+<span class="sd">        r2_threshold: If provided, only keep derivatives where local fit R² exceeds this value</span>
+<span class="sd">        resample_method: If provided with r2_threshold, resample filtered derivatives using this method</span>
+<span class="sd">                        (&#39;linear&#39;, &#39;spline&#39;, &#39;lowess&#39;, &#39;loess&#39;, or &#39;best&#39;)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Dictionary containing:</span>
+<span class="sd">        - dtime: Time values for derivatives</span>
+<span class="sd">        - dsignal: Matrix of derivatives (0th to 2nd order, shape (N, n_out, 3))</span>
+<span class="sd">        - spar: Smoothing parameter used</span>
+<span class="sd">        - r_squared: R² values for each point (if calculated)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">signal</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="n">signal</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">n_out</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">derivatives</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">r_squared_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_out</span><span class="p">):</span>
+        <span class="n">sig_col</span> <span class="o">=</span> <span class="n">signal</span><span class="p">[:,</span> <span class="n">j</span><span class="p">]</span>
+        <span class="c1"># If spar is None, estimate it based on data characteristics</span>
+        <span class="n">spar_j</span> <span class="o">=</span> <span class="n">spar</span>
+        <span class="k">if</span> <span class="n">spar_j</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sig_col</span><span class="p">)</span>
+            <span class="n">range_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ptp</span><span class="p">(</span><span class="n">sig_col</span><span class="p">)</span>
+            <span class="n">spar_j</span> <span class="o">=</span> <span class="n">n</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.01</span> <span class="o">*</span> <span class="n">range_y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">spline</span> <span class="o">=</span> <span class="n">UnivariateSpline</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">sig_col</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">spar_j</span><span class="p">)</span>
+        <span class="n">d0</span> <span class="o">=</span> <span class="n">spline</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+        <span class="n">d1</span> <span class="o">=</span> <span class="n">spline</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">time</span><span class="p">)</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="n">spline</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">time</span><span class="p">)</span>
+        <span class="n">deriv_mat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">d0</span><span class="p">,</span> <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">])</span>
+        <span class="n">derivatives</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deriv_mat</span><span class="p">)</span>
+        <span class="n">ss_total</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">sig_col</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">sig_col</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">ss_residual</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">sig_col</span> <span class="o">-</span> <span class="n">d0</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">r_squared_global</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">ss_residual</span> <span class="o">/</span> <span class="n">ss_total</span><span class="p">)</span> <span class="k">if</span> <span class="n">ss_total</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">r_squared_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">r_squared_global</span><span class="p">))</span>
+        <span class="c1"># Apply R² threshold filtering if requested</span>
+        <span class="k">if</span> <span class="n">r2_threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">r_squared_global</span> <span class="o">&lt;</span> <span class="n">r2_threshold</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">resample_method</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                    <span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_best_interpolation</span><span class="p">,</span> <span class="n">local_segmented_linear</span><span class="p">,</span> <span class="n">spline_interpolation</span><span class="p">,</span> <span class="n">lowess_interpolation</span><span class="p">,</span> <span class="n">loess_interpolation</span>
+                    <span class="n">methods</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s1">&#39;best&#39;</span><span class="p">:</span> <span class="n">get_best_interpolation</span><span class="p">,</span>
+                        <span class="s1">&#39;linear&#39;</span><span class="p">:</span> <span class="n">local_segmented_linear</span><span class="p">,</span>
+                        <span class="s1">&#39;spline&#39;</span><span class="p">:</span> <span class="n">spline_interpolation</span><span class="p">,</span>
+                        <span class="s1">&#39;lowess&#39;</span><span class="p">:</span> <span class="n">lowess_interpolation</span><span class="p">,</span>
+                        <span class="s1">&#39;loess&#39;</span><span class="p">:</span> <span class="n">loess_interpolation</span>
+                    <span class="p">}</span>
+                    <span class="n">interp_func</span> <span class="o">=</span> <span class="n">methods</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">resample_method</span><span class="p">,</span> <span class="n">spline_interpolation</span><span class="p">)(</span><span class="n">time</span><span class="p">,</span> <span class="n">deriv_mat</span><span class="p">[:,</span> <span class="n">k</span><span class="p">])</span>
+                    <span class="n">deriv_mat</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+        <span class="n">derivatives</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">deriv_mat</span>
+    <span class="n">derivatives</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">derivatives</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># (N, n_out, 3)</span>
+    <span class="n">r_squared</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">r_squared_list</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># (N, n_out)</span>
+    <span class="k">if</span> <span class="n">derivatives</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">derivatives</span> <span class="o">=</span> <span class="n">derivatives</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">r_squared</span> <span class="o">=</span> <span class="n">r_squared</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">&#39;dtime&#39;</span><span class="p">:</span> <span class="n">time</span><span class="p">,</span>
+        <span class="s1">&#39;dsignal&#39;</span><span class="p">:</span> <span class="n">derivatives</span><span class="p">,</span>
+        <span class="s1">&#39;spar&#39;</span><span class="p">:</span> <span class="n">spar</span><span class="p">,</span>
+        <span class="s1">&#39;r_squared&#39;</span><span class="p">:</span> <span class="n">r_squared</span>
+    <span class="p">}</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

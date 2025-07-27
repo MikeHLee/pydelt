@@ -1,0 +1,809 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pydelt.autodiff &mdash; pydelt 0.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=6c02275b"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pydelt.autodiff</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pydelt.autodiff</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions for calculating derivatives using automatic differentiation with trained models.</span>
+
+<span class="sd">Note: TensorFlow retracing warnings and general UserWarnings are suppressed in this module.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+<span class="c1"># Suppress TensorFlow retracing and UserWarnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">UserWarning</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s2">&quot;tensorflow&quot;</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="c1"># For PyTorch methods</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+    <span class="n">TORCH_AVAILABLE</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">TORCH_AVAILABLE</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;PyTorch is not installed. PyTorch-based automatic differentiation will not be available.&quot;</span><span class="p">)</span>
+
+<span class="c1"># For TensorFlow methods</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+    <span class="n">TF_AVAILABLE</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">TF_AVAILABLE</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;TensorFlow is not installed. TensorFlow-based automatic differentiation will not be available.&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="neural_network_derivative">
+<a class="viewcode-back" href="../../api.html#pydelt.autodiff.neural_network_derivative">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">neural_network_derivative</span><span class="p">(</span>
+    <span class="n">time</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+    <span class="n">signal</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+    <span class="n">framework</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;tensorflow&#39;</span><span class="p">,</span>
+    <span class="n">hidden_layers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">128</span><span class="p">,</span> <span class="mi">96</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
+    <span class="n">epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">holdout_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">return_model</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
+    <span class="n">early_stopping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">patience</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate derivatives using automatic differentiation with a neural network.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        time: Input array, shape (N,) for univariate or (N, n_in) for multivariate</span>
+<span class="sd">        signal: Output array, shape (N,) for univariate or (N, n_out) for multivariate</span>
+<span class="sd">        framework: Neural network framework (&#39;pytorch&#39; or &#39;tensorflow&#39;)</span>
+<span class="sd">        hidden_layers: List of hidden layer sizes</span>
+<span class="sd">        epochs: Number of training epochs</span>
+<span class="sd">        holdout_fraction: Fraction of data to use for validation</span>
+<span class="sd">        return_model: Whether to return the model along with the derivative function</span>
+<span class="sd">        order: Order of the derivative to compute</span>
+<span class="sd">        dropout: Dropout rate for regularization</span>
+<span class="sd">        learning_rate: Learning rate for optimizer</span>
+<span class="sd">        batch_size: Batch size for training</span>
+<span class="sd">        early_stopping: Whether to use early stopping</span>
+<span class="sd">        patience: Number of epochs with no improvement after which training will be stopped</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        If return_model is False:</span>
+<span class="sd">            Callable function that calculates the gradient (for scalar output) or Jacobian (for vector output) at any input point</span>
+<span class="sd">        If return_model is True:</span>
+<span class="sd">            Tuple containing:</span>
+<span class="sd">                - Callable function that calculates derivatives</span>
+<span class="sd">                - Trained neural network model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+    <span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">time</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input time and signal must not contain NaN values&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">framework</span> <span class="o">==</span> <span class="s1">&#39;pytorch&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">TORCH_AVAILABLE</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;PyTorch is not installed.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_pytorch_derivative</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">hidden_layers</span><span class="p">,</span> <span class="n">epochs</span><span class="p">,</span> <span class="n">holdout_fraction</span><span class="p">,</span> <span class="n">return_model</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">framework</span> <span class="o">==</span> <span class="s1">&#39;tensorflow&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">TF_AVAILABLE</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;TensorFlow is not installed.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_tensorflow_derivative</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">hidden_layers</span><span class="p">,</span> <span class="n">epochs</span><span class="p">,</span> <span class="n">holdout_fraction</span><span class="p">,</span> <span class="n">return_model</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown framework: </span><span class="si">{</span><span class="n">framework</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">time</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">()</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input time and signal must not contain NaN values&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate derivatives using automatic differentiation with a neural network.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        time: Time points of the original signal</span>
+<span class="sd">        signal: Signal values</span>
+<span class="sd">        framework: Neural network framework (&#39;pytorch&#39; or &#39;tensorflow&#39;)</span>
+<span class="sd">        hidden_layers: List of hidden layer sizes</span>
+<span class="sd">        epochs: Number of training epochs</span>
+<span class="sd">        holdout_fraction: Fraction of data to hold out for evaluation (0.0 to 0.9)</span>
+<span class="sd">        return_model: If True, return the trained model along with the derivative function</span>
+<span class="sd">        order: Order of the derivative to calculate (1 for first derivative, 2 for second, etc.)</span>
+<span class="sd">        dropout: Dropout rate for the neural network</span>
+<span class="sd">        **kwargs: Additional parameters for the neural network</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        If return_model is False:</span>
+<span class="sd">            Callable function that calculates the derivative at any time point</span>
+<span class="sd">        If return_model is True:</span>
+<span class="sd">            Tuple containing:</span>
+<span class="sd">            - Callable function that calculates the derivative at any time point</span>
+<span class="sd">            - Trained neural network model</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">framework</span> <span class="o">==</span> <span class="s1">&#39;pytorch&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">TORCH_AVAILABLE</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;PyTorch is not installed.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_pytorch_derivative</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">hidden_layers</span><span class="p">,</span> <span class="n">epochs</span><span class="p">,</span> <span class="n">holdout_fraction</span><span class="p">,</span> <span class="n">return_model</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> 
+                                  <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> 
+                                  <span class="n">early_stopping</span><span class="o">=</span><span class="n">early_stopping</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="n">patience</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">framework</span> <span class="o">==</span> <span class="s1">&#39;tensorflow&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">TF_AVAILABLE</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;TensorFlow is not installed.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_tensorflow_derivative</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">hidden_layers</span><span class="p">,</span> <span class="n">epochs</span><span class="p">,</span> <span class="n">holdout_fraction</span><span class="p">,</span> <span class="n">return_model</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> 
+                                    <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> 
+                                    <span class="n">early_stopping</span><span class="o">=</span><span class="n">early_stopping</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="n">patience</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown framework: </span><span class="si">{</span><span class="n">framework</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_pytorch_derivative</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+    <span class="n">Y</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+    <span class="n">hidden_layers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">128</span><span class="p">,</span> <span class="mi">96</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
+    <span class="n">epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">holdout_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">return_model</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
+    <span class="n">early_stopping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">patience</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate derivatives using automatic differentiation with PyTorch for vector-valued input/output.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">PyTorchMLP</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torch.optim</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">optim</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">TensorDataset</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">Y</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Ensure data is sorted by first input dimension for consistency</span>
+    <span class="n">sort_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">sort_idx</span><span class="p">]</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span><span class="p">[</span><span class="n">sort_idx</span><span class="p">]</span>
+
+    <span class="c1"># Normalize X and Y for better training</span>
+    <span class="n">X_min</span><span class="p">,</span> <span class="n">X_max</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">X</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">X_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="n">X_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">X_max</span> <span class="o">-</span> <span class="n">X_min</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span>
+    <span class="n">Y_min</span><span class="p">,</span> <span class="n">Y_max</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">Y</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">Y_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y</span> <span class="o">-</span> <span class="n">Y_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">Y_max</span> <span class="o">-</span> <span class="n">Y_min</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span>
+
+    <span class="c1"># Split data into training and holdout sets if requested</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="mf">0.0</span> <span class="o">&lt;</span> <span class="n">holdout_fraction</span> <span class="o">&lt;</span> <span class="mf">0.9</span><span class="p">:</span>
+        <span class="n">n_holdout</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">N</span> <span class="o">*</span> <span class="n">holdout_fraction</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_holdout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">holdout_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">n_holdout</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">train_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">holdout_indices</span><span class="p">])</span>
+            <span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span> <span class="o">=</span> <span class="n">X_norm</span><span class="p">[</span><span class="n">train_indices</span><span class="p">],</span> <span class="n">Y_norm</span><span class="p">[</span><span class="n">train_indices</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span> <span class="o">=</span> <span class="n">X_norm</span><span class="p">,</span> <span class="n">Y_norm</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span> <span class="o">=</span> <span class="n">X_norm</span><span class="p">,</span> <span class="n">Y_norm</span>
+
+    <span class="c1"># Prepare data for PyTorch</span>
+    <span class="n">X_train_torch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">Y_train_torch</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">Y_train</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">TensorDataset</span><span class="p">(</span><span class="n">X_train_torch</span><span class="p">,</span> <span class="n">Y_train_torch</span><span class="p">)</span>
+    <span class="n">dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_train</span><span class="p">)),</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Create and train the model</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">PyTorchMLP</span><span class="p">(</span><span class="n">input_dim</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">output_dim</span><span class="o">=</span><span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">hidden_layers</span><span class="o">=</span><span class="n">hidden_layers</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">)</span>
+    <span class="n">loss_fn</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
+    
+    <span class="c1"># For early stopping</span>
+    <span class="n">best_loss</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
+    <span class="n">patience_counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">best_model_state</span> <span class="o">=</span> <span class="kc">None</span>
+    
+    <span class="c1"># Training loop</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+        <span class="n">epoch_loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">batch_X</span><span class="p">,</span> <span class="n">batch_Y</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+            <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">batch_X</span><span class="p">)</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">batch_Y</span><span class="p">)</span>
+            <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+            <span class="n">epoch_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        
+        <span class="c1"># Early stopping check</span>
+        <span class="k">if</span> <span class="n">early_stopping</span><span class="p">:</span>
+            <span class="n">avg_loss</span> <span class="o">=</span> <span class="n">epoch_loss</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataloader</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">avg_loss</span> <span class="o">&lt;</span> <span class="n">best_loss</span><span class="p">:</span>
+                <span class="n">best_loss</span> <span class="o">=</span> <span class="n">avg_loss</span>
+                <span class="n">patience_counter</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">best_model_state</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">patience_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">patience_counter</span> <span class="o">&gt;=</span> <span class="n">patience</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">best_model_state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">best_model_state</span><span class="p">)</span>
+                    <span class="k">break</span>
+    
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+    <span class="c1"># Create derivative function</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">derivative_func</span><span class="p">(</span><span class="n">query_X</span><span class="p">):</span>
+        <span class="n">query_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">query_X</span><span class="p">)</span>
+        <span class="n">original_shape</span> <span class="o">=</span> <span class="n">query_X</span><span class="o">.</span><span class="n">shape</span>
+        
+        <span class="c1"># Determine input type</span>
+        <span class="n">scalar_input</span> <span class="o">=</span> <span class="n">query_X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="n">vector_input</span> <span class="o">=</span> <span class="n">query_X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span>
+        
+        <span class="c1"># Reshape for processing</span>
+        <span class="k">if</span> <span class="n">scalar_input</span><span class="p">:</span>
+            <span class="c1"># Single scalar value</span>
+            <span class="n">query_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">query_X</span><span class="p">]])</span>
+        <span class="k">elif</span> <span class="n">vector_input</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">query_X</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="c1"># Vector of points for 1D input (e.g., multiple time points)</span>
+            <span class="n">query_X</span> <span class="o">=</span> <span class="n">query_X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">vector_input</span><span class="p">:</span>
+            <span class="c1"># Single vector input for multivariate case</span>
+            <span class="n">query_X</span> <span class="o">=</span> <span class="n">query_X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1"># Normalize query_X</span>
+        <span class="n">query_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">query_X</span> <span class="o">-</span> <span class="n">X_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">X_max</span> <span class="o">-</span> <span class="n">X_min</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span>
+        
+        <span class="c1"># Process each point individually</span>
+        <span class="n">jacobians</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">query_norm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="c1"># Get single sample and ensure correct shape</span>
+            <span class="n">sample</span> <span class="o">=</span> <span class="n">query_norm</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">sample_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            
+            <span class="c1"># Calculate derivatives based on order</span>
+            <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># First-order derivative (Jacobian)</span>
+                <span class="n">jac</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">sample_tensor</span><span class="p">)</span>
+                <span class="n">jac</span> <span class="o">=</span> <span class="n">jac</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+                
+                <span class="c1"># Reshape to ensure consistent dimensions</span>
+                <span class="k">if</span> <span class="n">jac</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">jac</span> <span class="o">=</span> <span class="n">jac</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                
+                <span class="c1"># Scale Jacobian based on normalization</span>
+                <span class="n">scale_y</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y_max</span> <span class="o">-</span> <span class="n">Y_min</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">scale_x</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_max</span> <span class="o">-</span> <span class="n">X_min</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">jac</span> <span class="o">=</span> <span class="n">jac</span> <span class="o">*</span> <span class="p">(</span><span class="n">scale_y</span> <span class="o">/</span> <span class="n">scale_x</span><span class="p">)</span>
+                <span class="n">jacobians</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">jac</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Higher-order derivatives (for scalar output only)</span>
+                <span class="k">if</span> <span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># Create a function that returns scalar output for autograd</span>
+                    <span class="k">def</span><span class="w"> </span><span class="nf">scalar_model</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+                    
+                    <span class="c1"># Use PyTorch&#39;s hessian for 2nd order or manual nesting for higher</span>
+                    <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="n">hess</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">hessian</span><span class="p">(</span><span class="n">scalar_model</span><span class="p">,</span> <span class="n">sample_tensor</span><span class="p">)</span>
+                        <span class="n">hess</span> <span class="o">=</span> <span class="n">hess</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+                        <span class="c1"># Reshape and scale</span>
+                        <span class="n">hess</span> <span class="o">=</span> <span class="n">hess</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="n">scale_factor</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y_max</span> <span class="o">-</span> <span class="n">Y_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">X_max</span> <span class="o">-</span> <span class="n">X_min</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+                        <span class="n">hess</span> <span class="o">=</span> <span class="n">hess</span> <span class="o">*</span> <span class="n">scale_factor</span>
+                        <span class="n">jacobians</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hess</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># For higher orders, approximate with finite differences</span>
+                        <span class="c1"># This is a placeholder - higher orders need custom implementation</span>
+                        <span class="n">zeros</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+                        <span class="n">jacobians</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zeros</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># For vector outputs, higher-order derivatives are tensors</span>
+                    <span class="c1"># Return zeros as placeholder</span>
+                    <span class="n">zeros</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+                    <span class="n">jacobians</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zeros</span><span class="p">)</span>
+        
+        <span class="c1"># Stack results</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">jacobians</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        
+        <span class="c1"># Return appropriate shape based on input</span>
+        <span class="k">if</span> <span class="n">scalar_input</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># Return scalar for scalar I/O</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Return matrix for vector I/O with scalar input</span>
+        <span class="k">elif</span> <span class="n">vector_input</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">original_shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">original_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># Return vector for 1D case</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span>  <span class="c1"># Return batch of matrices</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Return single matrix for vector input</span>
+
+    <span class="k">if</span> <span class="n">return_model</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">derivative_func</span><span class="p">,</span> <span class="n">model</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">derivative_func</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate derivatives using automatic differentiation with PyTorch.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">PyTorchMLP</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">torch.optim</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">optim</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">TensorDataset</span>
+    
+    <span class="c1"># Convert inputs to numpy arrays</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+    
+    <span class="c1"># Ensure data is sorted by time</span>
+    <span class="n">sort_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">sort_idx</span><span class="p">]</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">sort_idx</span><span class="p">]</span>
+    
+    <span class="c1"># Normalize time to [0, 1] for better training</span>
+    <span class="n">t_min</span><span class="p">,</span> <span class="n">t_max</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">t</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">t_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">t_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">t_max</span> <span class="o">-</span> <span class="n">t_min</span><span class="p">)</span> <span class="k">if</span> <span class="n">t_max</span> <span class="o">&gt;</span> <span class="n">t_min</span> <span class="k">else</span> <span class="n">t</span>
+    
+    <span class="c1"># Normalize signal to [0, 1] for better training</span>
+    <span class="n">s_min</span><span class="p">,</span> <span class="n">s_max</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">s</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">s_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">)</span> <span class="k">if</span> <span class="n">s_max</span> <span class="o">&gt;</span> <span class="n">s_min</span> <span class="k">else</span> <span class="n">s</span>
+    
+    <span class="c1"># Split data into training and holdout sets if requested</span>
+    <span class="k">if</span> <span class="mf">0.00</span> <span class="o">&lt;</span> <span class="n">holdout_fraction</span> <span class="o">&lt;</span> <span class="mf">0.99</span><span class="p">:</span>
+        <span class="n">n_holdout</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">holdout_fraction</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_holdout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Randomly select indices for holdout</span>
+            <span class="n">holdout_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">n_holdout</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">train_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">holdout_indices</span><span class="p">])</span>
+            
+            <span class="n">t_train</span><span class="p">,</span> <span class="n">s_train</span> <span class="o">=</span> <span class="n">t_norm</span><span class="p">[</span><span class="n">train_indices</span><span class="p">],</span> <span class="n">s_norm</span><span class="p">[</span><span class="n">train_indices</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t_train</span><span class="p">,</span> <span class="n">s_train</span> <span class="o">=</span> <span class="n">t_norm</span><span class="p">,</span> <span class="n">s_norm</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">t_train</span><span class="p">,</span> <span class="n">s_train</span> <span class="o">=</span> <span class="n">t_norm</span><span class="p">,</span> <span class="n">s_norm</span>
+    
+    <span class="c1"># Prepare data for PyTorch</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">t_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">s_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">TensorDataset</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t_train</span><span class="p">)),</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="c1"># Create and train the model</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">PyTorchMLP</span><span class="p">(</span><span class="n">hidden_layers</span><span class="o">=</span><span class="n">hidden_layers</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+    <span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
+    
+    <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">batch_X</span><span class="p">,</span> <span class="n">batch_y</span> <span class="ow">in</span> <span class="n">dataloader</span><span class="p">:</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+            <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">batch_X</span><span class="p">)</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">batch_y</span><span class="p">)</span>
+            <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+    
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    
+    <span class="c1"># Create derivative function using automatic differentiation</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">derivative_func</span><span class="p">(</span><span class="n">query_time</span><span class="p">):</span>
+        <span class="n">query_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">query_time</span><span class="p">)</span>
+        <span class="n">scalar_input</span> <span class="o">=</span> <span class="n">query_time</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">scalar_input</span><span class="p">:</span>
+            <span class="n">query_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">query_time</span><span class="p">])</span>
+        
+        <span class="c1"># Normalize query time</span>
+        <span class="n">query_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">query_time</span> <span class="o">-</span> <span class="n">t_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">t_max</span> <span class="o">-</span> <span class="n">t_min</span><span class="p">)</span> <span class="k">if</span> <span class="n">t_max</span> <span class="o">&gt;</span> <span class="n">t_min</span> <span class="k">else</span> <span class="n">query_time</span>
+        
+        <span class="c1"># Calculate derivative for each query point</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">query_norm</span><span class="p">)</span>
+        
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t_i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">query_norm</span><span class="p">):</span>
+            <span class="c1"># Always use torch.tensor for input when requires_grad is needed</span>
+            <span class="n">t_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="n">t_i</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># Forward pass</span>
+            <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">t_tensor</span><span class="p">)</span>
+            <span class="c1"># Initialize gradient calculation</span>
+            <span class="n">grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span>
+            <span class="c1"># Calculate derivative of the specified order</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+                <span class="c1"># Backward pass to get gradient</span>
+                <span class="n">y_pred</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span><span class="n">grad</span><span class="p">,</span> <span class="n">retain_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="c1"># Get the gradient</span>
+                <span class="n">grad_value</span> <span class="o">=</span> <span class="n">t_tensor</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+                <span class="c1"># Reset gradients</span>
+                <span class="n">t_tensor</span><span class="o">.</span><span class="n">grad</span><span class="o">.</span><span class="n">zero_</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">_</span> <span class="o">&lt;</span> <span class="n">order</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># For higher-order derivatives, create a new tensor with the gradient</span>
+                    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([[</span><span class="n">grad_value</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># For the final derivative, store the result</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">grad_value</span>
+        
+        <span class="c1"># Scale the derivative based on the normalization</span>
+        <span class="n">scale_factor</span> <span class="o">=</span> <span class="p">(</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">t_max</span> <span class="o">-</span> <span class="n">t_min</span><span class="p">)</span> <span class="k">if</span> <span class="n">t_max</span> <span class="o">&gt;</span> <span class="n">t_min</span> <span class="ow">and</span> <span class="n">s_max</span> <span class="o">&gt;</span> <span class="n">s_min</span> <span class="k">else</span> <span class="mf">1.0</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+            <span class="n">results</span> <span class="o">*=</span> <span class="n">scale_factor</span>
+        
+        <span class="k">return</span> <span class="n">results</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="k">if</span> <span class="n">scalar_input</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">results</span>
+    
+    <span class="k">if</span> <span class="n">return_model</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">derivative_func</span><span class="p">,</span> <span class="n">model</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">derivative_func</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_tensorflow_derivative</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+    <span class="n">Y</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+    <span class="n">hidden_layers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">128</span><span class="p">,</span> <span class="mi">96</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
+    <span class="n">epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="n">holdout_fraction</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">return_model</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">learning_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
+    <span class="n">early_stopping</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">patience</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate derivatives using automatic differentiation with TensorFlow for vector-valued input/output.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorFlowModel</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">Y</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># Ensure data is sorted by first input dimension for consistency</span>
+    <span class="n">sort_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">sort_idx</span><span class="p">]</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span><span class="p">[</span><span class="n">sort_idx</span><span class="p">]</span>
+
+    <span class="c1"># Normalize X and Y for better training</span>
+    <span class="n">X_min</span><span class="p">,</span> <span class="n">X_max</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">X</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">X_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="n">X_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">X_max</span> <span class="o">-</span> <span class="n">X_min</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span>
+    <span class="n">Y_min</span><span class="p">,</span> <span class="n">Y_max</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">Y</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">Y_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y</span> <span class="o">-</span> <span class="n">Y_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">Y_max</span> <span class="o">-</span> <span class="n">Y_min</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span>
+
+    <span class="c1"># Split data into training and holdout sets if requested</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="mf">0.0</span> <span class="o">&lt;</span> <span class="n">holdout_fraction</span> <span class="o">&lt;</span> <span class="mf">0.9</span><span class="p">:</span>
+        <span class="n">n_holdout</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">N</span> <span class="o">*</span> <span class="n">holdout_fraction</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_holdout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">holdout_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">n_holdout</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">train_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">holdout_indices</span><span class="p">])</span>
+            <span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span> <span class="o">=</span> <span class="n">X_norm</span><span class="p">[</span><span class="n">train_indices</span><span class="p">],</span> <span class="n">Y_norm</span><span class="p">[</span><span class="n">train_indices</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span> <span class="o">=</span> <span class="n">X_norm</span><span class="p">,</span> <span class="n">Y_norm</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span> <span class="o">=</span> <span class="n">X_norm</span><span class="p">,</span> <span class="n">Y_norm</span>
+
+    <span class="c1"># Create and train the model</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">TensorFlowModel</span><span class="p">(</span><span class="n">input_dim</span><span class="o">=</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">output_dim</span><span class="o">=</span><span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">hidden_layers</span><span class="o">=</span><span class="n">hidden_layers</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
+    
+    <span class="c1"># Setup callbacks for early stopping if requested</span>
+    <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">early_stopping</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">EarlyStopping</span>
+            <span class="n">es_callback</span> <span class="o">=</span> <span class="n">EarlyStopping</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="s1">&#39;loss&#39;</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="n">patience</span><span class="p">,</span> <span class="n">restore_best_weights</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">es_callback</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="c1"># Fallback for older TensorFlow versions</span>
+            <span class="k">pass</span>
+    
+    <span class="c1"># Train the model with appropriate batch size and learning rate</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.optimizers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Adam</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">),</span> <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mse&#39;</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">Y_train</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Create derivative function</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">derivative_func</span><span class="p">(</span><span class="n">query_X</span><span class="p">):</span>
+        <span class="n">query_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">query_X</span><span class="p">)</span>
+        <span class="n">original_shape</span> <span class="o">=</span> <span class="n">query_X</span><span class="o">.</span><span class="n">shape</span>
+        
+        <span class="c1"># Determine input type</span>
+        <span class="n">scalar_input</span> <span class="o">=</span> <span class="n">query_X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="n">vector_input</span> <span class="o">=</span> <span class="n">query_X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span>
+        
+        <span class="c1"># Reshape for processing</span>
+        <span class="k">if</span> <span class="n">scalar_input</span><span class="p">:</span>
+            <span class="c1"># Single scalar value</span>
+            <span class="n">query_X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">query_X</span><span class="p">]])</span>
+        <span class="k">elif</span> <span class="n">vector_input</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">query_X</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="c1"># Vector of points for 1D input (e.g., multiple time points)</span>
+            <span class="c1"># Each value needs to be treated as a separate sample</span>
+            <span class="n">query_X</span> <span class="o">=</span> <span class="n">query_X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">vector_input</span><span class="p">:</span>
+            <span class="c1"># Single vector input for multivariate case</span>
+            <span class="n">query_X</span> <span class="o">=</span> <span class="n">query_X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        
+        <span class="c1"># Normalize query_X</span>
+        <span class="n">query_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">query_X</span> <span class="o">-</span> <span class="n">X_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">X_max</span> <span class="o">-</span> <span class="n">X_min</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span>
+        
+        <span class="c1"># Process each point individually to avoid shape issues</span>
+        <span class="n">jacobians</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">query_norm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="c1"># Get single sample and ensure correct shape</span>
+            <span class="n">sample</span> <span class="o">=</span> <span class="n">query_norm</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">sample_tensor</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">convert_to_tensor</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+            
+            <span class="c1"># Calculate derivatives</span>
+            <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># First-order derivative (Jacobian)</span>
+                <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">()</span> <span class="k">as</span> <span class="n">tape</span><span class="p">:</span>
+                    <span class="n">tape</span><span class="o">.</span><span class="n">watch</span><span class="p">(</span><span class="n">sample_tensor</span><span class="p">)</span>
+                    <span class="n">y</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">sample_tensor</span><span class="p">)</span>
+                
+                <span class="c1"># Get Jacobian and reshape</span>
+                <span class="n">jac</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">sample_tensor</span><span class="p">)</span>
+                <span class="n">jac</span> <span class="o">=</span> <span class="n">jac</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                
+                <span class="c1"># Scale Jacobian based on normalization</span>
+                <span class="n">scale_y</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y_max</span> <span class="o">-</span> <span class="n">Y_min</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">scale_x</span> <span class="o">=</span> <span class="p">(</span><span class="n">X_max</span> <span class="o">-</span> <span class="n">X_min</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">jac</span> <span class="o">=</span> <span class="n">jac</span> <span class="o">*</span> <span class="p">(</span><span class="n">scale_y</span> <span class="o">/</span> <span class="n">scale_x</span><span class="p">)</span>
+                <span class="n">jacobians</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">jac</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Higher-order derivatives</span>
+                <span class="c1"># For higher orders, we need to use nested GradientTape</span>
+                <span class="k">def</span><span class="w"> </span><span class="nf">get_nth_derivative</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                    
+                    <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">()</span> <span class="k">as</span> <span class="n">g</span><span class="p">:</span>
+                        <span class="n">g</span><span class="o">.</span><span class="n">watch</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                        <span class="n">y</span> <span class="o">=</span> <span class="n">get_nth_derivative</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">g</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+                
+                <span class="c1"># Get the nth derivative</span>
+                <span class="n">deriv</span> <span class="o">=</span> <span class="n">get_nth_derivative</span><span class="p">(</span><span class="n">sample_tensor</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+                
+                <span class="c1"># Scale for normalization</span>
+                <span class="n">scale_factor</span> <span class="o">=</span> <span class="p">(</span><span class="n">Y_max</span> <span class="o">-</span> <span class="n">Y_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">X_max</span> <span class="o">-</span> <span class="n">X_min</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+                    <span class="n">scale_factor</span> <span class="o">=</span> <span class="n">scale_factor</span> <span class="o">/</span> <span class="p">(</span><span class="n">X_max</span> <span class="o">-</span> <span class="n">X_min</span> <span class="o">+</span> <span class="mf">1e-12</span><span class="p">)</span>
+                
+                <span class="k">if</span> <span class="n">deriv</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">deriv</span> <span class="o">=</span> <span class="n">deriv</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="o">*</span> <span class="n">scale_factor</span>
+                    <span class="n">jacobians</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deriv</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># If derivative is None (e.g., for constant functions)</span>
+                    <span class="n">jacobians</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+        
+        <span class="c1"># Stack results</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">jacobians</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        
+        <span class="c1"># Return appropriate shape based on input</span>
+        <span class="k">if</span> <span class="n">scalar_input</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># Return scalar for scalar I/O</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Return matrix for vector I/O with scalar input</span>
+        <span class="k">elif</span> <span class="n">vector_input</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">original_shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">original_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># Return vector for 1D case</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span>  <span class="c1"># Return batch of matrices</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Return single matrix for vector input</span>
+
+    <span class="k">if</span> <span class="n">return_model</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">derivative_func</span><span class="p">,</span> <span class="n">model</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">derivative_func</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate derivatives using automatic differentiation with TensorFlow.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorFlowModel</span>
+    
+    <span class="c1"># Convert inputs to numpy arrays</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+    
+    <span class="c1"># Ensure data is sorted by time</span>
+    <span class="n">sort_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">sort_idx</span><span class="p">]</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">sort_idx</span><span class="p">]</span>
+    
+    <span class="c1"># Normalize time to [0, 1] for better training</span>
+    <span class="n">t_min</span><span class="p">,</span> <span class="n">t_max</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">t</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">t_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">t_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">t_max</span> <span class="o">-</span> <span class="n">t_min</span><span class="p">)</span> <span class="k">if</span> <span class="n">t_max</span> <span class="o">&gt;</span> <span class="n">t_min</span> <span class="k">else</span> <span class="n">t</span>
+    
+    <span class="c1"># Normalize signal to [0, 1] for better training</span>
+    <span class="n">s_min</span><span class="p">,</span> <span class="n">s_max</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">s</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">s_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">)</span> <span class="k">if</span> <span class="n">s_max</span> <span class="o">&gt;</span> <span class="n">s_min</span> <span class="k">else</span> <span class="n">s</span>
+    
+    <span class="c1"># Split data into training and holdout sets if requested</span>
+    <span class="k">if</span> <span class="mf">0.0</span> <span class="o">&lt;</span> <span class="n">holdout_fraction</span> <span class="o">&lt;</span> <span class="mf">0.9</span><span class="p">:</span>
+        <span class="n">n_holdout</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">holdout_fraction</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_holdout</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Randomly select indices for holdout</span>
+            <span class="n">holdout_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">n_holdout</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">train_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">holdout_indices</span><span class="p">])</span>
+            
+            <span class="n">t_train</span><span class="p">,</span> <span class="n">s_train</span> <span class="o">=</span> <span class="n">t_norm</span><span class="p">[</span><span class="n">train_indices</span><span class="p">],</span> <span class="n">s_norm</span><span class="p">[</span><span class="n">train_indices</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">t_train</span><span class="p">,</span> <span class="n">s_train</span> <span class="o">=</span> <span class="n">t_norm</span><span class="p">,</span> <span class="n">s_norm</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">t_train</span><span class="p">,</span> <span class="n">s_train</span> <span class="o">=</span> <span class="n">t_norm</span><span class="p">,</span> <span class="n">s_norm</span>
+    
+    <span class="c1"># Create and train the model</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">TensorFlowModel</span><span class="p">(</span><span class="n">hidden_layers</span><span class="o">=</span><span class="n">hidden_layers</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">s_train</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">)</span>
+    
+    <span class="c1"># Create a TensorFlow function for computing derivatives</span>
+    <span class="nd">@tf</span><span class="o">.</span><span class="n">function</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_derivative</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">convert_to_tensor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">(</span><span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">tape</span><span class="p">:</span>
+            <span class="c1"># Watch the input tensor</span>
+            <span class="n">tape</span><span class="o">.</span><span class="n">watch</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            
+            <span class="c1"># Forward pass</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            
+            <span class="c1"># For higher-order derivatives</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">order</span><span class="p">):</span>
+                <span class="c1"># Get the gradient</span>
+                <span class="n">grad</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+                
+                <span class="c1"># For higher orders, we need to watch the gradient</span>
+                <span class="n">tape</span><span class="o">.</span><span class="n">watch</span><span class="p">(</span><span class="n">grad</span><span class="p">)</span>
+                
+                <span class="c1"># Update y to be the gradient for the next iteration</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">grad</span>
+        
+        <span class="c1"># Get the final derivative</span>
+        <span class="n">derivative</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">derivative</span>
+    
+    <span class="c1"># Create derivative function</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">derivative_func</span><span class="p">(</span><span class="n">query_time</span><span class="p">):</span>
+        <span class="n">query_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">query_time</span><span class="p">)</span>
+        <span class="n">scalar_input</span> <span class="o">=</span> <span class="n">query_time</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">scalar_input</span><span class="p">:</span>
+            <span class="n">query_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">query_time</span><span class="p">])</span>
+        
+        <span class="c1"># Normalize query time</span>
+        <span class="n">query_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">query_time</span> <span class="o">-</span> <span class="n">t_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">t_max</span> <span class="o">-</span> <span class="n">t_min</span><span class="p">)</span> <span class="k">if</span> <span class="n">t_max</span> <span class="o">&gt;</span> <span class="n">t_min</span> <span class="k">else</span> <span class="n">query_time</span>
+        
+        <span class="c1"># Reshape for TensorFlow</span>
+        <span class="n">query_tensor</span> <span class="o">=</span> <span class="n">query_norm</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        
+        <span class="c1"># Calculate derivative</span>
+        <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">(</span><span class="n">persistent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">tape</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">convert_to_tensor</span><span class="p">(</span><span class="n">query_tensor</span><span class="p">)</span>
+            <span class="n">tape</span><span class="o">.</span><span class="n">watch</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            
+            <span class="c1"># For higher-order derivatives</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">order</span><span class="p">):</span>
+                <span class="n">grad</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+                <span class="n">tape</span><span class="o">.</span><span class="n">watch</span><span class="p">(</span><span class="n">grad</span><span class="p">)</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">grad</span>
+        
+        <span class="n">derivative</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        
+        <span class="c1"># Scale the derivative based on the normalization</span>
+        <span class="n">scale_factor</span> <span class="o">=</span> <span class="p">(</span><span class="n">s_max</span> <span class="o">-</span> <span class="n">s_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">t_max</span> <span class="o">-</span> <span class="n">t_min</span><span class="p">)</span> <span class="k">if</span> <span class="n">t_max</span> <span class="o">&gt;</span> <span class="n">t_min</span> <span class="ow">and</span> <span class="n">s_max</span> <span class="o">&gt;</span> <span class="n">s_min</span> <span class="k">else</span> <span class="mf">1.0</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+            <span class="n">derivative</span> <span class="o">*=</span> <span class="n">scale_factor</span>
+        
+        <span class="k">return</span> <span class="n">derivative</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="k">if</span> <span class="n">scalar_input</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">derivative</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">derivative</span>
+    
+    <span class="k">if</span> <span class="n">return_model</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">derivative_func</span><span class="p">,</span> <span class="n">model</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">derivative_func</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
