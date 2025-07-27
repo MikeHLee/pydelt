@@ -37,15 +37,60 @@ except ImportError:
 def neural_network_derivative(
     time: Union[List[float], np.ndarray],
     signal: Union[List[float], np.ndarray],
-    framework: str = 'pytorch',
+    framework: str = 'tensorflow',
     hidden_layers: List[int] = [128, 96, 64, 48, 32],
     epochs: int = 1000,
     holdout_fraction: float = 0.0,
     return_model: bool = False,
     order: int = 1,
     dropout: float = 0.1,
-    **kwargs
+    learning_rate: float = 0.001,
+    batch_size: int = 32,
+    early_stopping: bool = True,
+    patience: int = 50,
 ) -> Union[Callable[[Union[float, np.ndarray]], np.ndarray], Tuple[Callable[[Union[float, np.ndarray]], np.ndarray], Any]]:
+    """
+    Calculate derivatives using automatic differentiation with a neural network.
+    
+    Args:
+        time: Input array, shape (N,) for univariate or (N, n_in) for multivariate
+        signal: Output array, shape (N,) for univariate or (N, n_out) for multivariate
+        framework: Neural network framework ('pytorch' or 'tensorflow')
+        hidden_layers: List of hidden layer sizes
+        epochs: Number of training epochs
+        holdout_fraction: Fraction of data to use for validation
+        return_model: Whether to return the model along with the derivative function
+        order: Order of the derivative to compute
+        dropout: Dropout rate for regularization
+        learning_rate: Learning rate for optimizer
+        batch_size: Batch size for training
+        early_stopping: Whether to use early stopping
+        patience: Number of epochs with no improvement after which training will be stopped
+    
+    Returns:
+        If return_model is False:
+            Callable function that calculates the gradient (for scalar output) or Jacobian (for vector output) at any input point
+        If return_model is True:
+            Tuple containing:
+                - Callable function that calculates derivatives
+                - Trained neural network model
+    """
+    import numpy as np
+    time = np.asarray(time)
+    signal = np.asarray(signal)
+    if np.isnan(time).any() or np.isnan(signal).any():
+        raise ValueError("Input time and signal must not contain NaN values")
+    if framework == 'pytorch':
+        if not TORCH_AVAILABLE:
+            raise ImportError("PyTorch is not installed.")
+        return _pytorch_derivative(time, signal, hidden_layers, epochs, holdout_fraction, return_model, order, dropout=dropout)
+    elif framework == 'tensorflow':
+        if not TF_AVAILABLE:
+            raise ImportError("TensorFlow is not installed.")
+        return _tensorflow_derivative(time, signal, hidden_layers, epochs, holdout_fraction, return_model, order, dropout=dropout)
+    else:
+        raise ValueError(f"Unknown framework: {framework}")
+
     import numpy as np
     if np.isnan(time).any() or np.isnan(signal).any():
         raise ValueError("Input time and signal must not contain NaN values")
@@ -75,25 +120,211 @@ def neural_network_derivative(
     if framework == 'pytorch':
         if not TORCH_AVAILABLE:
             raise ImportError("PyTorch is not installed.")
-        return _pytorch_derivative(time, signal, hidden_layers, epochs, holdout_fraction, return_model, order, dropout=dropout)
+        return _pytorch_derivative(time, signal, hidden_layers, epochs, holdout_fraction, return_model, order, 
+                                  dropout=dropout, learning_rate=learning_rate, batch_size=batch_size, 
+                                  early_stopping=early_stopping, patience=patience)
     elif framework == 'tensorflow':
         if not TF_AVAILABLE:
             raise ImportError("TensorFlow is not installed.")
-        return _tensorflow_derivative(time, signal, hidden_layers, epochs, holdout_fraction, return_model, order, dropout=dropout)
+        return _tensorflow_derivative(time, signal, hidden_layers, epochs, holdout_fraction, return_model, order, 
+                                    dropout=dropout, learning_rate=learning_rate, batch_size=batch_size, 
+                                    early_stopping=early_stopping, patience=patience)
     else:
         raise ValueError(f"Unknown framework: {framework}")
 
 
 def _pytorch_derivative(
-    time: Union[List[float], np.ndarray],
-    signal: Union[List[float], np.ndarray],
+    X: Union[List[float], np.ndarray],
+    Y: Union[List[float], np.ndarray],
     hidden_layers: List[int] = [128, 96, 64, 48, 32],
     epochs: int = 1000,
     holdout_fraction: float = 0.0,
     return_model: bool = False,
     order: int = 1,
     dropout: float = 0.1,
+    learning_rate: float = 0.001,
+    batch_size: int = 32,
+    early_stopping: bool = True,
+    patience: int = 50,
 ) -> Union[Callable[[Union[float, np.ndarray]], np.ndarray], Tuple[Callable[[Union[float, np.ndarray]], np.ndarray], Any]]:
+    """
+    Calculate derivatives using automatic differentiation with PyTorch for vector-valued input/output.
+    """
+    from pydelt.interpolation import PyTorchMLP
+    import torch.optim as optim
+    from torch.utils.data import DataLoader, TensorDataset
+    import torch
+    import numpy as np
+
+    X = np.asarray(X)
+    Y = np.asarray(Y)
+    if X.ndim == 1:
+        X = X.reshape(-1, 1)
+    if Y.ndim == 1:
+        Y = Y.reshape(-1, 1)
+
+    # Ensure data is sorted by first input dimension for consistency
+    sort_idx = np.argsort(X[:, 0])
+    X = X[sort_idx]
+    Y = Y[sort_idx]
+
+    # Normalize X and Y for better training
+    X_min, X_max = X.min(axis=0), X.max(axis=0)
+    X_norm = (X - X_min) / (X_max - X_min + 1e-12)
+    Y_min, Y_max = Y.min(axis=0), Y.max(axis=0)
+    Y_norm = (Y - Y_min) / (Y_max - Y_min + 1e-12)
+
+    # Split data into training and holdout sets if requested
+    N = X.shape[0]
+    if 0.0 < holdout_fraction < 0.9:
+        n_holdout = int(N * holdout_fraction)
+        if n_holdout > 0:
+            holdout_indices = np.random.choice(N, n_holdout, replace=False)
+            train_indices = np.array([i for i in range(N) if i not in holdout_indices])
+            X_train, Y_train = X_norm[train_indices], Y_norm[train_indices]
+        else:
+            X_train, Y_train = X_norm, Y_norm
+    else:
+        X_train, Y_train = X_norm, Y_norm
+
+    # Prepare data for PyTorch
+    X_train_torch = torch.tensor(X_train, dtype=torch.float32)
+    Y_train_torch = torch.tensor(Y_train, dtype=torch.float32)
+    dataset = TensorDataset(X_train_torch, Y_train_torch)
+    dataloader = DataLoader(dataset, batch_size=min(batch_size, len(X_train)), shuffle=True)
+
+    # Create and train the model
+    model = PyTorchMLP(input_dim=X.shape[1], output_dim=Y.shape[1], hidden_layers=hidden_layers, dropout=dropout)
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    loss_fn = torch.nn.MSELoss()
+    
+    # For early stopping
+    best_loss = float('inf')
+    patience_counter = 0
+    best_model_state = None
+    
+    # Training loop
+    model.train()
+    for epoch in range(epochs):
+        epoch_loss = 0.0
+        for batch_X, batch_Y in dataloader:
+            optimizer.zero_grad()
+            outputs = model(batch_X)
+            loss = loss_fn(outputs, batch_Y)
+            loss.backward()
+            optimizer.step()
+            epoch_loss += loss.item()
+        
+        # Early stopping check
+        if early_stopping:
+            avg_loss = epoch_loss / len(dataloader)
+            if avg_loss < best_loss:
+                best_loss = avg_loss
+                patience_counter = 0
+                best_model_state = model.state_dict().copy()
+            else:
+                patience_counter += 1
+                if patience_counter >= patience:
+                    if best_model_state is not None:
+                        model.load_state_dict(best_model_state)
+                    break
+    
+    model.eval()
+
+    # Create derivative function
+    def derivative_func(query_X):
+        query_X = np.asarray(query_X)
+        original_shape = query_X.shape
+        
+        # Determine input type
+        scalar_input = query_X.ndim == 0
+        vector_input = query_X.ndim == 1
+        
+        # Reshape for processing
+        if scalar_input:
+            # Single scalar value
+            query_X = np.array([[query_X]])
+        elif vector_input and len(query_X) > X.shape[1]:
+            # Vector of points for 1D input (e.g., multiple time points)
+            query_X = query_X.reshape(-1, 1)
+        elif vector_input:
+            # Single vector input for multivariate case
+            query_X = query_X.reshape(1, -1)
+        
+        # Normalize query_X
+        query_norm = (query_X - X_min) / (X_max - X_min + 1e-12)
+        
+        # Process each point individually
+        jacobians = []
+        for i in range(query_norm.shape[0]):
+            # Get single sample and ensure correct shape
+            sample = query_norm[i:i+1]
+            sample_tensor = torch.tensor(sample, dtype=torch.float32, requires_grad=True)
+            
+            # Calculate derivatives based on order
+            if order == 1:
+                # First-order derivative (Jacobian)
+                jac = torch.autograd.functional.jacobian(model, sample_tensor)
+                jac = jac.detach().numpy()
+                
+                # Reshape to ensure consistent dimensions
+                if jac.ndim > 2:
+                    jac = jac.reshape(Y.shape[1], X.shape[1])
+                
+                # Scale Jacobian based on normalization
+                scale_y = (Y_max - Y_min + 1e-12).reshape(-1, 1)
+                scale_x = (X_max - X_min + 1e-12).reshape(1, -1)
+                jac = jac * (scale_y / scale_x)
+                jacobians.append(jac)
+            else:
+                # Higher-order derivatives (for scalar output only)
+                if Y.shape[1] == 1:
+                    # Create a function that returns scalar output for autograd
+                    def scalar_model(x):
+                        return model(x).squeeze()
+                    
+                    # Use PyTorch's hessian for 2nd order or manual nesting for higher
+                    if order == 2:
+                        hess = torch.autograd.functional.hessian(scalar_model, sample_tensor)
+                        hess = hess.detach().numpy()
+                        # Reshape and scale
+                        hess = hess.reshape(X.shape[1], X.shape[1])
+                        scale_factor = (Y_max - Y_min) / ((X_max - X_min + 1e-12) ** 2)
+                        hess = hess * scale_factor
+                        jacobians.append(hess)
+                    else:
+                        # For higher orders, approximate with finite differences
+                        # This is a placeholder - higher orders need custom implementation
+                        zeros = np.zeros((Y.shape[1], X.shape[1]))
+                        jacobians.append(zeros)
+                else:
+                    # For vector outputs, higher-order derivatives are tensors
+                    # Return zeros as placeholder
+                    zeros = np.zeros((Y.shape[1], X.shape[1]))
+                    jacobians.append(zeros)
+        
+        # Stack results
+        result = np.stack(jacobians, axis=0)
+        
+        # Return appropriate shape based on input
+        if scalar_input:
+            if Y.shape[1] == 1 and X.shape[1] == 1:
+                return result[0, 0, 0]  # Return scalar for scalar I/O
+            else:
+                return result[0]  # Return matrix for vector I/O with scalar input
+        elif vector_input and len(original_shape) == 1 and original_shape[0] > X.shape[1]:
+            if Y.shape[1] == 1 and X.shape[1] == 1:
+                return result[:, 0, 0]  # Return vector for 1D case
+            else:
+                return result  # Return batch of matrices
+        else:
+            return result[0]  # Return single matrix for vector input
+
+    if return_model:
+        return derivative_func, model
+    else:
+        return derivative_func
+
     """
     Calculate derivatives using automatic differentiation with PyTorch.
     """
@@ -204,15 +435,172 @@ def _pytorch_derivative(
 
 
 def _tensorflow_derivative(
-    time: Union[List[float], np.ndarray],
-    signal: Union[List[float], np.ndarray],
+    X: Union[List[float], np.ndarray],
+    Y: Union[List[float], np.ndarray],
     hidden_layers: List[int] = [128, 96, 64, 48, 32],
     epochs: int = 1000,
     holdout_fraction: float = 0.0,
     return_model: bool = False,
     order: int = 1,
     dropout: float = 0.1,
+    learning_rate: float = 0.001,
+    batch_size: int = 32,
+    early_stopping: bool = True,
+    patience: int = 50,
 ) -> Union[Callable[[Union[float, np.ndarray]], np.ndarray], Tuple[Callable[[Union[float, np.ndarray]], np.ndarray], Any]]:
+    """
+    Calculate derivatives using automatic differentiation with TensorFlow for vector-valued input/output.
+    """
+    from pydelt.interpolation import TensorFlowModel
+    import tensorflow as tf
+    import numpy as np
+
+    X = np.asarray(X)
+    Y = np.asarray(Y)
+    if X.ndim == 1:
+        X = X.reshape(-1, 1)
+    if Y.ndim == 1:
+        Y = Y.reshape(-1, 1)
+
+    # Ensure data is sorted by first input dimension for consistency
+    sort_idx = np.argsort(X[:, 0])
+    X = X[sort_idx]
+    Y = Y[sort_idx]
+
+    # Normalize X and Y for better training
+    X_min, X_max = X.min(axis=0), X.max(axis=0)
+    X_norm = (X - X_min) / (X_max - X_min + 1e-12)
+    Y_min, Y_max = Y.min(axis=0), Y.max(axis=0)
+    Y_norm = (Y - Y_min) / (Y_max - Y_min + 1e-12)
+
+    # Split data into training and holdout sets if requested
+    N = X.shape[0]
+    if 0.0 < holdout_fraction < 0.9:
+        n_holdout = int(N * holdout_fraction)
+        if n_holdout > 0:
+            holdout_indices = np.random.choice(N, n_holdout, replace=False)
+            train_indices = np.array([i for i in range(N) if i not in holdout_indices])
+            X_train, Y_train = X_norm[train_indices], Y_norm[train_indices]
+        else:
+            X_train, Y_train = X_norm, Y_norm
+    else:
+        X_train, Y_train = X_norm, Y_norm
+
+    # Create and train the model
+    model = TensorFlowModel(input_dim=X.shape[1], output_dim=Y.shape[1], hidden_layers=hidden_layers, dropout=dropout)
+    
+    # Setup callbacks for early stopping if requested
+    callbacks = []
+    if early_stopping:
+        try:
+            from tensorflow.keras.callbacks import EarlyStopping
+            es_callback = EarlyStopping(monitor='loss', patience=patience, restore_best_weights=True)
+            callbacks.append(es_callback)
+        except ImportError:
+            # Fallback for older TensorFlow versions
+            pass
+    
+    # Train the model with appropriate batch size and learning rate
+    from tensorflow.keras.optimizers import Adam
+    model.model.compile(optimizer=Adam(learning_rate=learning_rate), loss='mse')
+    model.fit(X_train, Y_train, epochs=epochs, batch_size=batch_size, verbose=0)
+
+    # Create derivative function
+    def derivative_func(query_X):
+        query_X = np.asarray(query_X)
+        original_shape = query_X.shape
+        
+        # Determine input type
+        scalar_input = query_X.ndim == 0
+        vector_input = query_X.ndim == 1
+        
+        # Reshape for processing
+        if scalar_input:
+            # Single scalar value
+            query_X = np.array([[query_X]])
+        elif vector_input and len(query_X) > X.shape[1]:
+            # Vector of points for 1D input (e.g., multiple time points)
+            # Each value needs to be treated as a separate sample
+            query_X = query_X.reshape(-1, 1)
+        elif vector_input:
+            # Single vector input for multivariate case
+            query_X = query_X.reshape(1, -1)
+        
+        # Normalize query_X
+        query_norm = (query_X - X_min) / (X_max - X_min + 1e-12)
+        
+        # Process each point individually to avoid shape issues
+        jacobians = []
+        for i in range(query_norm.shape[0]):
+            # Get single sample and ensure correct shape
+            sample = query_norm[i:i+1]
+            sample_tensor = tf.convert_to_tensor(sample, dtype=tf.float32)
+            
+            # Calculate derivatives
+            if order == 1:
+                # First-order derivative (Jacobian)
+                with tf.GradientTape() as tape:
+                    tape.watch(sample_tensor)
+                    y = model.model(sample_tensor)
+                
+                # Get Jacobian and reshape
+                jac = tape.jacobian(y, sample_tensor)
+                jac = jac.numpy().reshape(Y.shape[1], X.shape[1])
+                
+                # Scale Jacobian based on normalization
+                scale_y = (Y_max - Y_min + 1e-12).reshape(-1, 1)
+                scale_x = (X_max - X_min + 1e-12).reshape(1, -1)
+                jac = jac * (scale_y / scale_x)
+                jacobians.append(jac)
+            else:
+                # Higher-order derivatives
+                # For higher orders, we need to use nested GradientTape
+                def get_nth_derivative(x, n):
+                    if n == 0:
+                        return model.model(x)
+                    
+                    with tf.GradientTape() as g:
+                        g.watch(x)
+                        y = get_nth_derivative(x, n-1)
+                    return g.gradient(y, x)
+                
+                # Get the nth derivative
+                deriv = get_nth_derivative(sample_tensor, order)
+                
+                # Scale for normalization
+                scale_factor = (Y_max - Y_min) / (X_max - X_min + 1e-12)
+                for _ in range(order):
+                    scale_factor = scale_factor / (X_max - X_min + 1e-12)
+                
+                if deriv is not None:
+                    deriv = deriv.numpy() * scale_factor
+                    jacobians.append(deriv.reshape(Y.shape[1], X.shape[1]))
+                else:
+                    # If derivative is None (e.g., for constant functions)
+                    jacobians.append(np.zeros((Y.shape[1], X.shape[1])))
+        
+        # Stack results
+        result = np.stack(jacobians, axis=0)
+        
+        # Return appropriate shape based on input
+        if scalar_input:
+            if Y.shape[1] == 1 and X.shape[1] == 1:
+                return result[0, 0, 0]  # Return scalar for scalar I/O
+            else:
+                return result[0]  # Return matrix for vector I/O with scalar input
+        elif vector_input and len(original_shape) == 1 and original_shape[0] > X.shape[1]:
+            if Y.shape[1] == 1 and X.shape[1] == 1:
+                return result[:, 0, 0]  # Return vector for 1D case
+            else:
+                return result  # Return batch of matrices
+        else:
+            return result[0]  # Return single matrix for vector input
+
+    if return_model:
+        return derivative_func, model
+    else:
+        return derivative_func
+
     """
     Calculate derivatives using automatic differentiation with TensorFlow.
     """

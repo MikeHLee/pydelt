@@ -15,17 +15,18 @@ from pydelt.interpolation import (
     calculate_fit_quality
 )
 
-def lla(time_data: List[int], signal_data: List[float], window_size: Optional[int] = 5, 
+def lla(time_data: List[int], signal_data: Union[List[float], np.ndarray], window_size: Optional[int] = 5, 
          normalization: str = 'min', zero_mean: bool = False,
          r2_threshold: Optional[float] = None,
-         resample_method: Optional[str] = None) -> Tuple[List[float], List[float]]:
+         resample_method: Optional[str] = None) -> Tuple[np.ndarray, np.ndarray]:
     '''
     Local Linear Approximation (LLA) method for estimating the derivative of a time series.
+    Supports vector-valued signals (multiple columns).
     Uses configurable normalization and linear regression within a sliding window.
     
     Args:
-        time_data: List of time values (epoch seconds)
-        signal_data: List of signal values
+        time_data: List/array of time values (epoch seconds)
+        signal_data: List/array of signal values, shape (N,) or (N, n_out)
         window_size: Number of points to consider for derivative calculation
         normalization: Type of normalization to apply ('min', 'none')
         zero_mean: Whether to center the data by subtracting the mean
@@ -35,92 +36,73 @@ def lla(time_data: List[int], signal_data: List[float], window_size: Optional[in
     
     Returns:
         Tuple containing:
-        - List of derivative values
-        - List of step sizes used for each calculation
+        - Array of derivative values, shape (N, n_out)
+        - Array of step sizes used for each calculation
     '''
-    # Validate input data has matching lengths
-    if len(time_data) != len(signal_data):
+    time_data = np.asarray(time_data)
+    signal = np.asarray(signal_data)
+    if signal.ndim == 1:
+        signal = signal[:, None]
+    if len(time_data) != signal.shape[0]:
         raise ValueError("Time and Signal data must have the same length")
+    n_out = signal.shape[1]
+    derivatives = []
+    steps = []
+    for j in range(n_out):
+        sig_col = signal[:, j]
+        def slope_calc(i: int) -> Tuple[float, float, float]:
+            window_start = int(max(0, i - (window_size - 0.5) // 2))
+            shift = 0 if window_size % 2 == 0 else 1
+            window_end = int(min(len(time_data), i + (window_size - 0.5) // 2 + shift))
+            time_window = np.array(time_data[window_start:window_end])
+            signal_window = np.array(sig_col[window_start:window_end])
+            if normalization == 'min':
+                min_time = np.min(time_window)
+                min_signal = np.min(signal_window)
+                time_window = time_window - min_time
+                signal_window = signal_window - min_signal
+            if zero_mean:
+                time_window = time_window - np.mean(time_window)
+                signal_window = signal_window - np.mean(signal_window)
+            fit = linregress(time_window, signal_window)
+            step = (window_end - window_start)/window_size
+            return fit.slope, step, fit.rvalue**2
+        results = [slope_calc(i) for i in range(len(time_data))]
+        deriv_col = [r[0] for r in results]
+        step_col = [r[1] for r in results]
+        r_squared = [r[2] for r in results] if len(results[0]) > 2 else [1.0] * len(results)
+        if r2_threshold is not None:
+            mask = np.array(r_squared) >= r2_threshold
+            valid_indices = np.where(mask)[0]
+            if resample_method and len(valid_indices) > 0:
+                from pydelt.interpolation import get_best_interpolation, local_segmented_linear, spline_interpolation, lowess_interpolation, loess_interpolation
+                methods = {
+                    'best': get_best_interpolation,
+                    'linear': local_segmented_linear,
+                    'spline': spline_interpolation,
+                    'lowess': lowess_interpolation,
+                    'loess': loess_interpolation
+                }
+                valid_times = np.array(time_data)[valid_indices]
+                valid_derivatives = np.array(deriv_col)[valid_indices]
+                interp_func = methods.get(resample_method, spline_interpolation)(
+                    valid_times, valid_derivatives
+                )
+                deriv_col = interp_func(time_data)
     
-    # Validate normalization parameter
-    if normalization not in ['min', 'none']:
-        raise ValueError("Normalization must be 'min' or 'none'")
+        derivatives.append(deriv_col)
+        steps.append(step_col)
     
-    def slope_calc(i: int) -> Tuple[float, float, float]:
-        # Calculate window boundaries centered around index i
-        window_start = int(max(0, i - (window_size - 0.5) // 2))
-        # Adjust for even/odd window sizes
-        shift = 0 if window_size % 2 == 0 else 1
-        # Ensure window end doesn't exceed data length
-        window_end = int(min(len(time_data), i + (window_size - 0.5) // 2 + shift))
-        
-        # Extract window data
-        time_window = np.array(time_data[window_start:window_end])
-        signal_window = np.array(signal_data[window_start:window_end])
-        
-        # Apply normalization if requested
-        if normalization == 'min':
-            # Min normalization - shift data to start at zero
-            min_time = np.min(time_window)
-            min_signal = np.min(signal_window)
-            time_window = time_window - min_time
-            signal_window = signal_window - min_signal
-        
-        # Apply zero-mean centering if requested
-        if zero_mean:
-            # Center data by subtracting mean
-            time_window = time_window - np.mean(time_window)
-            signal_window = signal_window - np.mean(signal_window)
-        
-        # Perform linear regression on the window
-        fit = linregress(time_window, signal_window)
-        # Calculate effective step size
-        step = (window_end - window_start)/window_size
-        # Return slope, step size, and R² value
-        return fit.slope, step, fit.rvalue**2
+    # Convert lists to numpy arrays
+    derivatives = np.array(derivatives).T  # Transpose to get shape (N, n_out)
+    steps = np.array(steps).T  # Transpose to get shape (N, n_out)
     
-    # Calculate slopes for each point in the time series
-    results = [slope_calc(i) for i in range(len(time_data))]
-    # Extract derivative values and R² values
-    derivative = [r[0] for r in results]
-    steps = [r[1] for r in results]
-    r_squared = [r[2] for r in results] if len(results[0]) > 2 else [1.0] * len(results)
-    
-    # Apply R² threshold filtering if requested
-    if r2_threshold is not None:
-        # Create mask for points that meet the threshold
-        mask = np.array(r_squared) >= r2_threshold
-        valid_indices = np.where(mask)[0]
+    # If we have only one output dimension, flatten the arrays
+    if n_out == 1:
+        derivatives = derivatives.flatten()
+        steps = steps.flatten()
         
-        if len(valid_indices) == 0:
-            # If no points meet threshold, return original results
-            return derivative, steps
-        
-        # Get valid time points, derivatives, and steps
-        valid_times = np.array(time_data)[valid_indices]
-        valid_derivatives = np.array(derivative)[valid_indices]
-        
-        # If resampling is requested
-        if resample_method and len(valid_indices) > 1:
-            # Create interpolation function for derivatives
-            if resample_method == 'best':
-                interp_func, _, _ = get_best_interpolation(valid_times, valid_derivatives)
-            elif resample_method == 'linear':
-                interp_func = local_segmented_linear(valid_times, valid_derivatives)
-            elif resample_method == 'spline':
-                interp_func = spline_interpolation(valid_times, valid_derivatives)
-            elif resample_method == 'lowess':
-                interp_func = lowess_interpolation(valid_times, valid_derivatives)
-            elif resample_method == 'loess':
-                interp_func = loess_interpolation(valid_times, valid_derivatives)
-            else:
-                # Default to spline if method not recognized
-                interp_func = spline_interpolation(valid_times, valid_derivatives)
-            
-            # Resample derivatives at all original time points
-            derivative = interp_func(time_data).tolist()
-    
-    return derivative, steps
+    return derivatives, steps
 
 def gold(signal: np.ndarray, time: np.ndarray, embedding: int = 3, n: int = 2,
          r2_threshold: Optional[float] = None,
@@ -363,9 +345,10 @@ def fda(signal: np.ndarray, time: np.ndarray, spar: Optional[float] = None,
          resample_method: Optional[str] = None) -> Dict[str, Union[np.ndarray, float, None]]:
     """
     Calculate derivatives using the Functional Data Analysis (FDA) method.
+    Supports vector-valued signals (multiple columns).
     
     Args:
-        signal: Array of signal values
+        signal: Array of signal values, shape (N,) or (N, n_out)
         time: Array of time values corresponding to the signal
         spar: Smoothing parameter for the spline. If None, automatically determined
         r2_threshold: If provided, only keep derivatives where local fit R² exceeds this value
@@ -375,66 +358,57 @@ def fda(signal: np.ndarray, time: np.ndarray, spar: Optional[float] = None,
     Returns:
         Dictionary containing:
         - dtime: Time values for derivatives
-        - dsignal: Matrix of derivatives (0th to 2nd order)
+        - dsignal: Matrix of derivatives (0th to 2nd order, shape (N, n_out, 3))
         - spar: Smoothing parameter used
         - r_squared: R² values for each point (if calculated)
     """
-    # If spar is None, estimate it based on data characteristics
-    if spar is None:
-        # Use a heuristic based on data length and range
-        n = len(signal)
-        # Calculate peak-to-peak range of signal
-        range_y = np.ptp(signal)
-        # Set smoothing parameter proportional to data length and squared range
-        spar = n * (0.01 * range_y) ** 2
-
-    # Create univariate spline with specified smoothing parameter
-    spline = UnivariateSpline(time, signal, s=spar)
-    
-    # Evaluate the spline (0th derivative) at original time points
-    d0 = spline(time)
-    # Evaluate first derivative at original time points
-    d1 = spline.derivative(n=1)(time)
-    # Evaluate second derivative at original time points
-    d2 = spline.derivative(n=2)(time)
-    
-    # Combine all derivatives into a single matrix
-    derivatives = np.column_stack([d0, d1, d2])
-    
-    # Calculate R² for the spline fit
-    ss_total = np.sum((signal - np.mean(signal))**2)
-    ss_residual = np.sum((signal - d0)**2)
-    r_squared_global = 1 - (ss_residual / ss_total) if ss_total > 0 else 0
-    
-    # Create array of R² values (same for all points since it's a global fit)
-    r_squared = np.full(len(time), r_squared_global)
-    
-    # Apply R² threshold filtering if requested
-    if r2_threshold is not None and r_squared_global < r2_threshold:
-        # If global R² is below threshold and resampling is requested
-        if resample_method:
-            # Try a different interpolation method for each derivative order
-            for j in range(3):  # 0th, 1st, and 2nd derivatives
-                if resample_method == 'best':
-                    interp_func, _, _ = get_best_interpolation(time, derivatives[:, j])
-                elif resample_method == 'linear':
-                    interp_func = local_segmented_linear(time, derivatives[:, j])
-                elif resample_method == 'lowess':
-                    interp_func = lowess_interpolation(time, derivatives[:, j])
-                elif resample_method == 'loess':
-                    interp_func = loess_interpolation(time, derivatives[:, j])
-                else:
-                    # Default to spline with different smoothing
-                    alt_spar = spar * 0.5 if spar is not None else None
-                    interp_func = spline_interpolation(time, derivatives[:, j], smoothing=alt_spar)
-                
-                # Replace derivatives with resampled values
-                derivatives[:, j] = interp_func(time)
-    
-    # Return results as dictionary
+    signal = np.asarray(signal)
+    if signal.ndim == 1:
+        signal = signal[:, None]
+    n_out = signal.shape[1]
+    derivatives = []
+    r_squared_list = []
+    for j in range(n_out):
+        sig_col = signal[:, j]
+        # If spar is None, estimate it based on data characteristics
+        spar_j = spar
+        if spar_j is None:
+            n = len(sig_col)
+            range_y = np.ptp(sig_col)
+            spar_j = n * (0.01 * range_y) ** 2
+        spline = UnivariateSpline(time, sig_col, s=spar_j)
+        d0 = spline(time)
+        d1 = spline.derivative(n=1)(time)
+        d2 = spline.derivative(n=2)(time)
+        deriv_mat = np.column_stack([d0, d1, d2])
+        derivatives.append(deriv_mat)
+        ss_total = np.sum((sig_col - np.mean(sig_col))**2)
+        ss_residual = np.sum((sig_col - d0)**2)
+        r_squared_global = 1 - (ss_residual / ss_total) if ss_total > 0 else 0
+        r_squared_list.append(np.full(len(time), r_squared_global))
+        # Apply R² threshold filtering if requested
+        if r2_threshold is not None and r_squared_global < r2_threshold:
+            if resample_method:
+                for k in range(3):
+                    from pydelt.interpolation import get_best_interpolation, local_segmented_linear, spline_interpolation, lowess_interpolation, loess_interpolation
+                    methods = {
+                        'best': get_best_interpolation,
+                        'linear': local_segmented_linear,
+                        'spline': spline_interpolation,
+                        'lowess': lowess_interpolation,
+                        'loess': loess_interpolation
+                    }
+                    interp_func = methods.get(resample_method, spline_interpolation)(time, deriv_mat[:, k])
+                    deriv_mat[:, k] = interp_func(time)
+        derivatives[-1] = deriv_mat
+    derivatives = np.stack(derivatives, axis=1)  # (N, n_out, 3)
+    r_squared = np.stack(r_squared_list, axis=1)  # (N, n_out)
+    if derivatives.shape[1] == 1:
+        derivatives = derivatives[:, 0, :]
+        r_squared = r_squared[:, 0]
     return {
-        'dtime': time, 
-        'dsignal': derivatives, 
+        'dtime': time,
+        'dsignal': derivatives,
         'spar': spar,
         'r_squared': r_squared
     }

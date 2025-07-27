@@ -24,7 +24,7 @@ class SplineInterpolator(BaseInterpolator):
     def __init__(self, smoothing: Optional[float] = None, k: int = 5):
         self.smoothing = smoothing
         self.k = k
-        self.spline = None
+        self.splines = None  # List of splines if vector output
 
     def fit(self, time: Union[List[float], np.ndarray], signal: Union[List[float], np.ndarray]):
         t = np.asarray(time)
@@ -32,19 +32,38 @@ class SplineInterpolator(BaseInterpolator):
         sort_idx = np.argsort(t)
         t = t[sort_idx]
         s = s[sort_idx]
-        smoothing = self.smoothing
-        if smoothing is None:
-            n = len(s)
-            range_y = np.ptp(s)
-            noise_estimate = np.std(np.diff(s)) / np.sqrt(2)
-            smoothing = n * (0.005 * range_y + 0.1 * noise_estimate) ** 2
-        self.spline = UnivariateSpline(t, s, s=smoothing, k=self.k)
+        if s.ndim == 1:
+            s = s[:, None]
+        self.splines = []
+        for j in range(s.shape[1]):
+            s_col = s[:, j]
+            smoothing = self.smoothing
+            if smoothing is None:
+                n = len(s_col)
+                range_y = np.ptp(s_col)
+                noise_estimate = np.std(np.diff(s_col)) / np.sqrt(2)
+                smoothing = n * (0.005 * range_y + 0.1 * noise_estimate) ** 2
+            spline = UnivariateSpline(t, s_col, s=smoothing, k=self.k)
+            self.splines.append(spline)
         return self
 
     def predict(self, new_time: Union[float, np.ndarray]):
-        if self.spline is None:
+        if self.splines is None:
             raise RuntimeError("SplineInterpolator must be fit before calling predict().")
-        return self.spline(new_time)
+        new_time = np.asarray(new_time)
+        scalar_input = new_time.ndim == 0
+        if scalar_input:
+            new_time = np.array([new_time])
+            
+        preds = [spline(new_time) for spline in self.splines]
+        result = np.stack(preds, axis=-1)
+        
+        # Handle different result dimensions
+        if len(self.splines) == 1:
+            result = result.flatten()
+            return result[0] if scalar_input else result
+        else:
+            return result[0] if scalar_input else result
 
 # DEPRECATED: Old function-based interface. Use SplineInterpolator instead.
 
@@ -53,7 +72,7 @@ class LowessInterpolator(BaseInterpolator):
         self.frac = frac
         self.it = it
         self.smoothed = None
-        self.interp_func = None
+        self.interp_funcs = None  # List of interp1d for each output dim
 
     def fit(self, time: Union[List[float], np.ndarray], signal: Union[List[float], np.ndarray]):
         t = np.asarray(time)
@@ -61,20 +80,38 @@ class LowessInterpolator(BaseInterpolator):
         sort_idx = np.argsort(t)
         t = t[sort_idx]
         s = s[sort_idx]
+        if s.ndim == 1:
+            s = s[:, None]
+        self.interp_funcs = []
         from statsmodels.nonparametric.smoothers_lowess import lowess
-        self.smoothed = lowess(s, t, frac=self.frac, it=self.it, return_sorted=True)
         from scipy.interpolate import interp1d
-        self.interp_func = interp1d(
-            self.smoothed[:, 0], self.smoothed[:, 1],
-            bounds_error=False,
-            fill_value=(self.smoothed[0, 1], self.smoothed[-1, 1])
-        )
+        for j in range(s.shape[1]):
+            smoothed = lowess(s[:, j], t, frac=self.frac, it=self.it, return_sorted=True)
+            interp_func = interp1d(
+                smoothed[:, 0], smoothed[:, 1],
+                bounds_error=False,
+                fill_value=(smoothed[0, 1], smoothed[-1, 1])
+            )
+            self.interp_funcs.append(interp_func)
         return self
 
     def predict(self, new_time: Union[float, np.ndarray]):
-        if self.interp_func is None:
+        if self.interp_funcs is None:
             raise RuntimeError("LowessInterpolator must be fit before calling predict().")
-        return self.interp_func(new_time)
+        new_time = np.asarray(new_time)
+        scalar_input = new_time.ndim == 0
+        if scalar_input:
+            new_time = np.array([new_time])
+            
+        preds = [interp_func(new_time) for interp_func in self.interp_funcs]
+        result = np.stack(preds, axis=-1)
+        
+        # Handle different result dimensions
+        if len(self.interp_funcs) == 1:
+            result = result.flatten()
+            return result[0] if scalar_input else result
+        else:
+            return result[0] if scalar_input else result
 
 class LoessInterpolator(BaseInterpolator):
     def __init__(self, degree: int = 2, frac: float = 0.1, it: int = 3):
@@ -82,7 +119,7 @@ class LoessInterpolator(BaseInterpolator):
         self.frac = frac
         self.it = it
         self.smoothed = None
-        self.interp_func = None
+        self.interp_funcs = None
 
     def fit(self, time: Union[List[float], np.ndarray], signal: Union[List[float], np.ndarray]):
         t = np.asarray(time)
@@ -90,22 +127,40 @@ class LoessInterpolator(BaseInterpolator):
         sort_idx = np.argsort(t)
         t = t[sort_idx]
         s = s[sort_idx]
+        if s.ndim == 1:
+            s = s[:, None]
+        self.interp_funcs = []
         from statsmodels.nonparametric.smoothers_lowess import lowess
-        self.smoothed = lowess(s, t, frac=self.frac, it=self.it, return_sorted=True)
         from scipy.interpolate import interp1d
         kind = 'cubic' if len(t) > 3 else 'linear'
-        self.interp_func = interp1d(
-            self.smoothed[:, 0], self.smoothed[:, 1],
-            kind=kind,
-            bounds_error=False,
-            fill_value=(self.smoothed[0, 1], self.smoothed[-1, 1])
-        )
+        for j in range(s.shape[1]):
+            smoothed = lowess(s[:, j], t, frac=self.frac, it=self.it, return_sorted=True)
+            interp_func = interp1d(
+                smoothed[:, 0], smoothed[:, 1],
+                kind=kind,
+                bounds_error=False,
+                fill_value=(smoothed[0, 1], smoothed[-1, 1])
+            )
+            self.interp_funcs.append(interp_func)
         return self
 
     def predict(self, new_time: Union[float, np.ndarray]):
-        if self.interp_func is None:
+        if self.interp_funcs is None:
             raise RuntimeError("LoessInterpolator must be fit before calling predict().")
-        return self.interp_func(new_time)
+        new_time = np.asarray(new_time)
+        scalar_input = new_time.ndim == 0
+        if scalar_input:
+            new_time = np.array([new_time])
+            
+        preds = [interp_func(new_time) for interp_func in self.interp_funcs]
+        result = np.stack(preds, axis=-1)
+        
+        # Handle different result dimensions
+        if len(self.interp_funcs) == 1:
+            result = result.flatten()
+            return result[0] if scalar_input else result
+        else:
+            return result[0] if scalar_input else result
 
 class FdaInterpolator(BaseInterpolator):
     def __init__(self, smoothing: Optional[float] = None, k: int = 3):
@@ -1083,42 +1138,42 @@ def derivative_based_interpolation(
 
 
 class PyTorchMLP(nn.Module):
-    """PyTorch Multi-Layer Perceptron for time series interpolation."""
-    
-    def __init__(self, hidden_layers=[128, 96, 64, 48, 32], dropout=0.1):
+    """
+    PyTorch Multi-Layer Perceptron for time series interpolation and autodiff.
+    Supports arbitrary input and output dimensions for vector-valued signals.
+    Args:
+        input_dim (int): Number of input features
+        output_dim (int): Number of output features
+        hidden_layers (list of int): Hidden layer sizes
+        dropout (float): Dropout rate
+    """
+    def __init__(self, input_dim=1, output_dim=1, hidden_layers=[128, 96, 64, 48, 32], dropout=0.1):
         super(PyTorchMLP, self).__init__()
-        self.layers = nn.ModuleList()
-        
-        # Input layer
-        self.layers.append(nn.Linear(1, hidden_layers[0]))
-        self.dropout = nn.Dropout(dropout)
-        
-        # Hidden layers
-        for i in range(len(hidden_layers) - 1):
-            self.layers.append(nn.Linear(hidden_layers[i], hidden_layers[i+1]))
-        # Output layer
-        self.layers.append(nn.Linear(hidden_layers[-1], 1))
-        self.activation = nn.ReLU()
-    
+        layers = []
+        in_dim = input_dim
+        for h in hidden_layers:
+            layers.append(nn.Linear(in_dim, h))
+            layers.append(nn.ReLU())
+            layers.append(nn.Dropout(dropout))
+            in_dim = h
+        layers.append(nn.Linear(in_dim, output_dim))
+        self.net = nn.Sequential(*layers)
     def forward(self, x):
-        for i, layer in enumerate(self.layers[:-1]):
-            x = self.activation(layer(x))
-            x = self.dropout(x)
-        x = self.layers[-1](x)  # No activation on output layer
-        return x
+        return self.net(x)
+
 
 
 class TensorFlowModel:
     """TensorFlow model wrapper for time series interpolation."""
     
-    def __init__(self, hidden_layers=[128, 96, 64, 48, 32], dropout=0.1):
+    def __init__(self, hidden_layers=[128, 96, 64, 48, 32], dropout=0.1, input_dim=1, output_dim=1):
         if not TF_AVAILABLE:
             raise ImportError("TensorFlow is not installed.")
             
         self.model = keras.Sequential()
         
         # Input layer
-        self.model.add(keras.Input(shape=(1,)))
+        self.model.add(keras.Input(shape=(input_dim,)))
         self.model.add(layers.Dense(hidden_layers[0], activation='relu'))
         self.model.add(layers.Dropout(dropout))
         
@@ -1128,7 +1183,7 @@ class TensorFlowModel:
             self.model.add(layers.Dropout(dropout))
         
         # Output layer
-        self.model.add(layers.Dense(1))
+        self.model.add(layers.Dense(output_dim))
         # Compile the model
         self.model.compile(optimizer='adam', loss='mse')
     

@@ -8,105 +8,90 @@ from typing import List, Tuple, Union, Optional
 def integrate_derivative(
     time: Union[List[float], np.ndarray],
     derivative: Union[List[float], np.ndarray],
-    initial_value: Optional[float] = 0.0
+    initial_value: Optional[Union[float, np.ndarray, List[float]]] = 0.0
 ) -> np.ndarray:
     """
     Integrate a time series derivative to reconstruct the original signal.
+    Supports vector-valued derivatives and initial values.
     
     Args:
         time: Time points corresponding to the derivative values.
-        derivative: Derivative values at each time point.
-        initial_value: Initial value of the integral at time[0]. Defaults to 0.0.
-        
+        derivative: Derivative values at each time point, shape (N,) or (N, n_out)
+        initial_value: Initial value(s) of the integral at time[0]. Scalar or shape (n_out,). Defaults to 0.0.
     Returns:
-        np.ndarray: Reconstructed signal through integration.
-        
+        np.ndarray: Reconstructed signal through integration, shape (N, n_out) or (N,)
     Example:
         >>> time = np.linspace(0, 10, 500)
-        >>> signal = np.sin(time)
-        >>> derivative, _ = lla(time.tolist(), signal.tolist(), window_size=5)
+        >>> signal = np.stack([np.sin(time), np.cos(time)], axis=-1)
+        >>> derivative, _ = lla(time, signal, window_size=5)
         >>> reconstructed = integrate_derivative(time, derivative, initial_value=signal[0])
         >>> # reconstructed should be close to original signal
     """
-    # Convert inputs to numpy arrays for efficient computation
     t = np.asarray(time)
     deriv = np.asarray(derivative)
-    
-    # Calculate time differences between consecutive points
-    # This gives us the width of each integration interval
+    if deriv.ndim == 1:
+        deriv = deriv[:, None]
+    n_out = deriv.shape[1]
+    if np.isscalar(initial_value):
+        init = np.full(n_out, initial_value)
+    else:
+        init = np.asarray(initial_value)
+        if init.shape == ():
+            init = np.full(n_out, float(init))
+        elif init.shape[0] != n_out:
+            raise ValueError("initial_value must be scalar or shape (n_out,)")
     dt = np.diff(t)
-    
-    # Initialize array to store integrated values with same shape as time
-    integral = np.zeros_like(t)
-    
-    # Set the first value to the specified initial value
-    # This represents the integration constant C in ∫f'(x)dx = f(x) + C
-    integral[0] = initial_value
-    
-    # Perform cumulative integration using the trapezoidal rule
-    # The trapezoidal rule approximates the area under the curve as a series of trapezoids
-    # For each interval [t_i-1, t_i], the area is approximately (f(t_i-1) + f(t_i))/2 * (t_i - t_i-1)
+    integral = np.zeros((len(t), n_out), dtype=deriv.dtype)
+    integral[0, :] = init
     for i in range(1, len(t)):
-        # Add the area of the current trapezoid to the previous cumulative sum
-        # 0.5 * (deriv[i] + deriv[i-1]) is the average height of the trapezoid
-        # dt[i-1] is the width of the trapezoid
-        integral[i] = integral[i-1] + 0.5 * (deriv[i] + deriv[i-1]) * dt[i-1]
-    
+        integral[i, :] = integral[i-1, :] + 0.5 * (deriv[i, :] + deriv[i-1, :]) * dt[i-1]
+    if integral.shape[1] == 1:
+        return integral[:, 0]
     return integral
 
 def integrate_derivative_with_error(
     time: Union[List[float], np.ndarray],
     derivative: Union[List[float], np.ndarray],
-    initial_value: Optional[float] = 0.0
+    initial_value: Optional[Union[float, np.ndarray, List[float]]] = 0.0
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Integrate a time series derivative and estimate integration error.
+    Supports vector-valued derivatives and initial values.
     
     Args:
         time: Time points corresponding to the derivative values.
-        derivative: Derivative values at each time point.
-        initial_value: Initial value of the integral at time[0]. Defaults to 0.0.
-        
+        derivative: Derivative values at each time point, shape (N,) or (N, n_out)
+        initial_value: Initial value(s) of the integral at time[0]. Scalar or shape (n_out,). Defaults to 0.0.
     Returns:
-        Tuple[np.ndarray, np.ndarray]: (reconstructed signal, estimated error)
-        
+        Tuple[np.ndarray, np.ndarray]: (reconstructed signal, estimated error), each shape (N, n_out) or (N,)
     Example:
         >>> time = np.linspace(0, 10, 500)
-        >>> signal = np.sin(time)
-        >>> derivative, _ = lla(time.tolist(), signal.tolist(), window_size=5)
+        >>> signal = np.stack([np.sin(time), np.cos(time)], axis=-1)
+        >>> derivative, _ = lla(time, signal, window_size=5)
         >>> reconstructed, error = integrate_derivative_with_error(time, derivative, initial_value=signal[0])
     """
-    # Convert inputs to numpy arrays for efficient computation
     t = np.asarray(time)
     deriv = np.asarray(derivative)
-    
-    # Calculate time differences between consecutive points
-    # This gives us the width of each integration interval
+    if deriv.ndim == 1:
+        deriv = deriv[:, None]
+    n_out = deriv.shape[1]
+    if np.isscalar(initial_value):
+        init = np.full(n_out, initial_value)
+    else:
+        init = np.asarray(initial_value)
+        if init.shape == ():
+            init = np.full(n_out, float(init))
+        elif init.shape[0] != n_out:
+            raise ValueError("initial_value must be scalar or shape (n_out,)")
     dt = np.diff(t)
-    
-    # Initialize arrays to store integrated values using two different methods
-    # We'll use both trapezoidal and rectangular rules to estimate error
-    integral_trap = np.zeros_like(t)  # For trapezoidal rule integration
-    integral_rect = np.zeros_like(t)  # For rectangular rule integration
-    
-    # Set the first value of both methods to the specified initial value
-    integral_trap[0] = initial_value
-    integral_rect[0] = initial_value
-    
-    # Perform cumulative integration using both methods
+    integral_trap = np.zeros((len(t), n_out), dtype=deriv.dtype)
+    integral_rect = np.zeros((len(t), n_out), dtype=deriv.dtype)
+    integral_trap[0, :] = init
+    integral_rect[0, :] = init
     for i in range(1, len(t)):
-        # Trapezoidal rule: approximates area as trapezoid
-        # Average of function values at endpoints multiplied by interval width
-        integral_trap[i] = integral_trap[i-1] + 0.5 * (deriv[i] + deriv[i-1]) * dt[i-1]
-        
-        # Rectangular rule: approximates area as rectangle
-        # Uses only the left endpoint function value multiplied by interval width
-        integral_rect[i] = integral_rect[i-1] + deriv[i-1] * dt[i-1]
-    
-    # Estimate error as the absolute difference between the two methods
-    # This provides a rough approximation of the numerical integration error
-    # The difference between methods is proportional to the true error
+        integral_trap[i, :] = integral_trap[i-1, :] + 0.5 * (deriv[i, :] + deriv[i-1, :]) * dt[i-1]
+        integral_rect[i, :] = integral_rect[i-1, :] + deriv[i-1, :] * dt[i-1]
     error = np.abs(integral_trap - integral_rect)
-    
-    # Return the trapezoidal rule result (more accurate) and the error estimate
+    if integral_trap.shape[1] == 1:
+        return integral_trap[:, 0], error[:, 0]
     return integral_trap, error
