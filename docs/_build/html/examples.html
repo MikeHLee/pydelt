@@ -52,9 +52,11 @@
 <li class="toctree-l2"><a class="reference internal" href="#example-3-noisy-data-processing">Example 3: Noisy Data Processing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#example-4-integration-and-roundtrip-accuracy">Example 4: Integration and Roundtrip Accuracy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#example-5-multivariate-time-series">Example 5: Multivariate Time Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-6-understanding-numerical-limitations">Example 6: Understanding Numerical Limitations</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 </ul>
 
@@ -423,6 +425,49 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+</section>
+<section id="example-6-understanding-numerical-limitations">
+<h2>Example 6: Understanding Numerical Limitations<a class="headerlink" href="#example-6-understanding-numerical-limitations" title="Link to this heading"></a></h2>
+<p>Demonstrating critical point smoothing in multivariate derivatives:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.multivariate</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultivariateDerivatives</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+
+<span class="c1"># Function with known critical points: f(x,y) = (x-y)²</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="n">Y</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>  <span class="c1"># Zero gradient along x=y line</span>
+
+<span class="c1"># Fit multivariate derivatives</span>
+<span class="n">input_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span>
+<span class="n">output_data</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+<span class="n">mv</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span><span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">mv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">output_data</span><span class="p">)</span>
+
+<span class="c1"># Test at critical points where gradient should be zero</span>
+<span class="n">critical_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>  <span class="c1"># Should have zero gradient</span>
+
+<span class="n">gradient_func</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">gradient</span><span class="p">()</span>
+<span class="n">grad_critical</span> <span class="o">=</span> <span class="n">gradient_func</span><span class="p">(</span><span class="n">critical_points</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Critical Points (should be ~[0, 0]):&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">critical_points</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Point </span><span class="si">{</span><span class="n">point</span><span class="si">}</span><span class="s2">: Numerical gradient </span><span class="si">{</span><span class="n">grad_critical</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Key Insight:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Numerical methods smooth out zero gradients at critical points.&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  This is a fundamental limitation of interpolation-based derivatives.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Key Takeaways:</strong></p>
+<ul class="simple">
+<li><p>Numerical methods cannot perfectly capture sharp mathematical features</p></li>
+<li><p>Critical points often show non-zero numerical gradients due to smoothing</p></li>
+<li><p>Always validate numerical results against analytical solutions when possible</p></li>
+<li><p>Consider neural network methods for exact derivatives at critical points</p></li>
+</ul>
 </section>
 </section>
 

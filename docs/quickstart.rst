@@ -127,6 +127,43 @@ Handle multi-dimensional time series:
    error = np.mean(np.abs(derivatives_2d - expected))
    print(f"Multivariate derivative error: {error:.4f}")
 
+Important Limitations
+--------------------
+
+When working with multivariate derivatives, be aware of these numerical limitations:
+
+**Critical Point Smoothing**
+
+Numerical interpolation methods smooth out sharp mathematical features:
+
+.. code-block:: python
+
+   # Example: f(x,y) = (x-y)² has zero gradient along x=y line
+   # But numerical methods will give non-zero gradients everywhere
+   
+   from pydelt.multivariate import MultivariateDerivatives
+   from pydelt.interpolation import SplineInterpolator
+   
+   # At point (-3,-3), gradient should be [0, 0] mathematically
+   # But numerical result will be non-zero due to smoothing
+   
+   # Always validate against analytical solutions when possible
+   analytical_gradient = [2*x - 2*y, 2*y - 2*x]  # For f(x,y) = x² + y² - 2xy
+
+**When to Be Cautious:**
+
+* Functions with sharp valleys or ridges
+* Optimization problems where exact critical points matter
+* Near boundaries of the interpolation domain
+* Functions with discontinuities or sharp transitions
+
+**Mitigation Strategies:**
+
+* Use higher resolution sampling near critical points
+* Reduce smoothing parameters (but beware of overfitting)
+* Compare numerical results with analytical solutions
+* Consider neural network methods for exact derivatives
+
 Error Handling
 -------------
 

@@ -39,8 +39,16 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"></div>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -90,10 +98,28 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">signal</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;fit() must be implemented in subclasses.&quot;</span><span class="p">)</span></div>
 
+    
 <div class="viewcode-block" id="BaseInterpolator.predict">
 <a class="viewcode-back" href="../../api.html#pydelt.interpolation.BaseInterpolator.predict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_time</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;predict() must be implemented in subclasses.&quot;</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="BaseInterpolator.differentiate">
+<a class="viewcode-back" href="../../api.html#pydelt.interpolation.BaseInterpolator.differentiate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">differentiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a callable function that computes derivatives of the interpolated function.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            order: Order of derivative (1 for first derivative, 2 for second, etc.)</span>
+<span class="sd">            mask: Optional mask for partial derivatives (boolean array or indices)</span>
+<span class="sd">                 If provided, only compute derivatives for selected points</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Callable function that takes input points and returns derivative values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;differentiate() must be implemented in subclasses.&quot;</span><span class="p">)</span></div>
 </div>
 
 
@@ -148,6 +174,61 @@
             <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">scalar_input</span> <span class="k">else</span> <span class="n">result</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">scalar_input</span> <span class="k">else</span> <span class="n">result</span></div>
+
+    
+<div class="viewcode-block" id="SplineInterpolator.differentiate">
+<a class="viewcode-back" href="../../api.html#pydelt.interpolation.SplineInterpolator.differentiate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">differentiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a callable function that computes derivatives of the spline interpolation.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            order: Order of derivative (1 for first derivative, 2 for second, etc.)</span>
+<span class="sd">            mask: Optional mask for partial derivatives (boolean array or indices)</span>
+<span class="sd">                 If provided, only compute derivatives for selected points</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Callable function that takes input points and returns derivative values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">splines</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;SplineInterpolator must be fit before calling differentiate().&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">order</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Derivative order must be &gt;= 1&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">order</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Derivative order </span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2"> exceeds spline degree </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">derivative_func</span><span class="p">(</span><span class="n">eval_points</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+            <span class="n">eval_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+            <span class="n">scalar_input</span> <span class="o">=</span> <span class="n">eval_points</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">scalar_input</span><span class="p">:</span>
+                <span class="n">eval_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">eval_points</span><span class="p">])</span>
+            
+            <span class="c1"># Apply mask if provided</span>
+            <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mask_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">mask_array</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+                    <span class="c1"># Boolean mask</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask_array</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">eval_points</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Boolean mask length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">mask_array</span><span class="p">)</span><span class="si">}</span><span class="s2"> doesn&#39;t match eval_points length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">eval_points</span> <span class="o">=</span> <span class="n">eval_points</span><span class="p">[</span><span class="n">mask_array</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Index mask</span>
+                    <span class="n">eval_points</span> <span class="o">=</span> <span class="n">eval_points</span><span class="p">[</span><span class="n">mask_array</span><span class="p">]</span>
+            
+            <span class="c1"># Compute derivatives for each spline</span>
+            <span class="n">derivs</span> <span class="o">=</span> <span class="p">[</span><span class="n">spline</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">order</span><span class="p">)(</span><span class="n">eval_points</span><span class="p">)</span> <span class="k">for</span> <span class="n">spline</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">splines</span><span class="p">]</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">derivs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+            
+            <span class="c1"># Handle different result dimensions</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">splines</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">scalar_input</span> <span class="k">else</span> <span class="n">result</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">scalar_input</span> <span class="k">else</span> <span class="n">result</span>
+        
+        <span class="k">return</span> <span class="n">derivative_func</span></div>
 </div>
 
 
@@ -205,6 +286,88 @@
             <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">scalar_input</span> <span class="k">else</span> <span class="n">result</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">scalar_input</span> <span class="k">else</span> <span class="n">result</span></div>
+
+    
+<div class="viewcode-block" id="LowessInterpolator.differentiate">
+<a class="viewcode-back" href="../../api.html#pydelt.interpolation.LowessInterpolator.differentiate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">differentiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a callable function that computes derivatives of the LOWESS interpolation using numerical differentiation.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            order: Order of derivative (1 for first derivative, 2 for second, etc.)</span>
+<span class="sd">            mask: Optional mask for partial derivatives (boolean array or indices)</span>
+<span class="sd">                 If provided, only compute derivatives for selected points</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Callable function that takes input points and returns derivative values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp_funcs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;LowessInterpolator must be fit before calling differentiate().&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">order</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Derivative order must be &gt;= 1&quot;</span><span class="p">)</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">derivative_func</span><span class="p">(</span><span class="n">eval_points</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+            <span class="n">eval_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+            <span class="n">scalar_input</span> <span class="o">=</span> <span class="n">eval_points</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">scalar_input</span><span class="p">:</span>
+                <span class="n">eval_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">eval_points</span><span class="p">])</span>
+            
+            <span class="c1"># Apply mask if provided</span>
+            <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mask_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">mask_array</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+                    <span class="c1"># Boolean mask</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask_array</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">eval_points</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Boolean mask length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">mask_array</span><span class="p">)</span><span class="si">}</span><span class="s2"> doesn&#39;t match eval_points length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">eval_points</span> <span class="o">=</span> <span class="n">eval_points</span><span class="p">[</span><span class="n">mask_array</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Index mask</span>
+                    <span class="n">eval_points</span> <span class="o">=</span> <span class="n">eval_points</span><span class="p">[</span><span class="n">mask_array</span><span class="p">]</span>
+            
+            <span class="c1"># Use numerical differentiation with small step size</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="mf">1e-6</span>  <span class="c1"># Small step for numerical differentiation</span>
+            
+            <span class="c1"># Compute derivatives for each interpolation function</span>
+            <span class="n">derivs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">interp_func</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp_funcs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># First derivative: f&#39;(x) ≈ (f(x+h) - f(x-h)) / (2h)</span>
+                    <span class="n">f_plus</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">eval_points</span> <span class="o">+</span> <span class="n">h</span><span class="p">)</span>
+                    <span class="n">f_minus</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">eval_points</span> <span class="o">-</span> <span class="n">h</span><span class="p">)</span>
+                    <span class="n">deriv</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_plus</span> <span class="o">-</span> <span class="n">f_minus</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="c1"># Second derivative: f&#39;&#39;(x) ≈ (f(x+h) - 2f(x) + f(x-h)) / h²</span>
+                    <span class="n">f_plus</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">eval_points</span> <span class="o">+</span> <span class="n">h</span><span class="p">)</span>
+                    <span class="n">f_center</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+                    <span class="n">f_minus</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">eval_points</span> <span class="o">-</span> <span class="n">h</span><span class="p">)</span>
+                    <span class="n">deriv</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_plus</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">f_center</span> <span class="o">+</span> <span class="n">f_minus</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Higher order derivatives using recursive approach</span>
+                    <span class="c1"># Start with function values</span>
+                    <span class="n">current_values</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+                    
+                    <span class="c1"># Apply finite differences iteratively</span>
+                    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+                        <span class="n">f_plus</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">eval_points</span> <span class="o">+</span> <span class="n">h</span><span class="p">)</span>
+                        <span class="n">f_minus</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">eval_points</span> <span class="o">-</span> <span class="n">h</span><span class="p">)</span>
+                        <span class="n">current_values</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_plus</span> <span class="o">-</span> <span class="n">f_minus</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+                    
+                    <span class="n">deriv</span> <span class="o">=</span> <span class="n">current_values</span>
+                
+                <span class="n">derivs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deriv</span><span class="p">)</span>
+            
+            <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">derivs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+            
+            <span class="c1"># Handle different result dimensions</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interp_funcs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">scalar_input</span> <span class="k">else</span> <span class="n">result</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">scalar_input</span> <span class="k">else</span> <span class="n">result</span>
+        
+        <span class="k">return</span> <span class="n">derivative_func</span></div>
 </div>
 
 
@@ -263,6 +426,91 @@
             <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">scalar_input</span> <span class="k">else</span> <span class="n">result</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">scalar_input</span> <span class="k">else</span> <span class="n">result</span></div>
+
+    
+<div class="viewcode-block" id="LoessInterpolator.differentiate">
+<a class="viewcode-back" href="../../api.html#pydelt.interpolation.LoessInterpolator.differentiate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">differentiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a callable function that computes derivatives of the LOESS interpolation using numerical differentiation.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            order: Order of derivative (1 for first derivative, 2 for second, etc.)</span>
+<span class="sd">            mask: Optional mask for partial derivatives (boolean array or indices)</span>
+<span class="sd">                 If provided, only compute derivatives for selected points</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Callable function that takes input points and returns derivative values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp_funcs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;LoessInterpolator must be fit before calling differentiate().&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">order</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Derivative order must be &gt;= 1&quot;</span><span class="p">)</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">derivative_func</span><span class="p">(</span><span class="n">eval_points</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+            <span class="n">eval_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+            <span class="n">scalar_input</span> <span class="o">=</span> <span class="n">eval_points</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">scalar_input</span><span class="p">:</span>
+                <span class="n">eval_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">eval_points</span><span class="p">])</span>
+            
+            <span class="c1"># Apply mask if provided</span>
+            <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mask_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">mask_array</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+                    <span class="c1"># Boolean mask</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask_array</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">eval_points</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Boolean mask length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">mask_array</span><span class="p">)</span><span class="si">}</span><span class="s2"> doesn&#39;t match eval_points length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">eval_points</span> <span class="o">=</span> <span class="n">eval_points</span><span class="p">[</span><span class="n">mask_array</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Index mask</span>
+                    <span class="n">eval_points</span> <span class="o">=</span> <span class="n">eval_points</span><span class="p">[</span><span class="n">mask_array</span><span class="p">]</span>
+            
+            <span class="c1"># Use numerical differentiation with small step size</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="mf">1e-6</span>  <span class="c1"># Small step for numerical differentiation</span>
+            
+            <span class="c1"># Compute derivatives for each interpolation function</span>
+            <span class="n">derivs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">interp_func</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp_funcs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># First derivative: f&#39;(x) ≈ (f(x+h) - f(x-h)) / (2h)</span>
+                    <span class="n">f_plus</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">eval_points</span> <span class="o">+</span> <span class="n">h</span><span class="p">)</span>
+                    <span class="n">f_minus</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">eval_points</span> <span class="o">-</span> <span class="n">h</span><span class="p">)</span>
+                    <span class="n">deriv</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_plus</span> <span class="o">-</span> <span class="n">f_minus</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="c1"># Second derivative: f&#39;&#39;(x) ≈ (f(x+h) - 2f(x) + f(x-h)) / h²</span>
+                    <span class="n">f_plus</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">eval_points</span> <span class="o">+</span> <span class="n">h</span><span class="p">)</span>
+                    <span class="n">f_center</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+                    <span class="n">f_minus</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">eval_points</span> <span class="o">-</span> <span class="n">h</span><span class="p">)</span>
+                    <span class="n">deriv</span> <span class="o">=</span> <span class="p">(</span><span class="n">f_plus</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">f_center</span> <span class="o">+</span> <span class="n">f_minus</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Higher order derivatives using recursive numerical differentiation</span>
+                    <span class="k">def</span><span class="w"> </span><span class="nf">compute_numerical_derivative</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">order</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="p">(</span><span class="n">interp_func</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">h</span><span class="p">)</span> <span class="o">-</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">h</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c1"># Higher order derivatives using finite differences</span>
+                            <span class="k">return</span> <span class="p">(</span><span class="n">compute_numerical_derivative</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span> <span class="n">order</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> 
+                                   <span class="n">compute_numerical_derivative</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">h</span><span class="p">,</span> <span class="n">order</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+                    
+                    <span class="c1"># Apply to each evaluation point</span>
+                    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">eval_points</span><span class="p">):</span>
+                        <span class="n">deriv</span> <span class="o">=</span> <span class="n">compute_numerical_derivative</span><span class="p">(</span><span class="n">eval_points</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">deriv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">compute_numerical_derivative</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">eval_points</span><span class="p">])</span>
+                
+                <span class="n">derivs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">deriv</span><span class="p">)</span>
+            
+            <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">derivs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+            
+            <span class="c1"># Handle different result dimensions</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interp_funcs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">scalar_input</span> <span class="k">else</span> <span class="n">result</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">scalar_input</span> <span class="k">else</span> <span class="n">result</span>
+        
+        <span class="k">return</span> <span class="n">derivative_func</span></div>
 </div>
 
 
@@ -298,6 +546,55 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spline</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;FdaInterpolator must be fit before calling predict().&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">spline</span><span class="p">(</span><span class="n">new_time</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="FdaInterpolator.differentiate">
+<a class="viewcode-back" href="../../api.html#pydelt.interpolation.FdaInterpolator.differentiate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">differentiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a callable function that computes derivatives of the FDA spline interpolation.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            order: Order of derivative (1 for first derivative, 2 for second, etc.)</span>
+<span class="sd">            mask: Optional mask for partial derivatives (boolean array or indices)</span>
+<span class="sd">                 If provided, only compute derivatives for selected points</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Callable function that takes input points and returns derivative values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">spline</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;FdaInterpolator must be fit before calling differentiate().&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">order</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Derivative order must be &gt;= 1&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">order</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Derivative order </span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2"> exceeds spline degree </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">derivative_func</span><span class="p">(</span><span class="n">eval_points</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+            <span class="n">eval_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+            <span class="n">scalar_input</span> <span class="o">=</span> <span class="n">eval_points</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">scalar_input</span><span class="p">:</span>
+                <span class="n">eval_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">eval_points</span><span class="p">])</span>
+            
+            <span class="c1"># Apply mask if provided</span>
+            <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mask_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">mask_array</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+                    <span class="c1"># Boolean mask</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask_array</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">eval_points</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Boolean mask length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">mask_array</span><span class="p">)</span><span class="si">}</span><span class="s2"> doesn&#39;t match eval_points length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">eval_points</span> <span class="o">=</span> <span class="n">eval_points</span><span class="p">[</span><span class="n">mask_array</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Index mask</span>
+                    <span class="n">eval_points</span> <span class="o">=</span> <span class="n">eval_points</span><span class="p">[</span><span class="n">mask_array</span><span class="p">]</span>
+            
+            <span class="c1"># Compute derivative using spline&#39;s built-in derivative method</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spline</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">order</span><span class="p">)(</span><span class="n">eval_points</span><span class="p">)</span>
+            
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="k">if</span> <span class="n">scalar_input</span> <span class="ow">and</span> <span class="n">result</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">result</span>
+        
+        <span class="k">return</span> <span class="n">derivative_func</span></div>
 </div>
 
 
@@ -351,6 +648,122 @@
             <span class="n">h11</span> <span class="o">=</span> <span class="n">u</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="n">u</span><span class="o">**</span><span class="mi">2</span>
             <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">h00</span><span class="o">*</span><span class="n">s_prev</span> <span class="o">+</span> <span class="n">h10</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">d_prev</span> <span class="o">+</span> <span class="n">h01</span><span class="o">*</span><span class="n">s_next</span> <span class="o">+</span> <span class="n">h11</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">d_next</span>
         <span class="k">return</span> <span class="n">result</span> <span class="k">if</span> <span class="n">query_time</span><span class="o">.</span><span class="n">shape</span> <span class="k">else</span> <span class="n">result</span><span class="o">.</span><span class="n">item</span><span class="p">()</span></div>
+
+    
+<div class="viewcode-block" id="LlaInterpolator.differentiate">
+<a class="viewcode-back" href="../../api.html#pydelt.interpolation.LlaInterpolator.differentiate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">differentiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a callable function that computes derivatives of the LLA Hermite interpolation.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            order: Order of derivative (1 for first derivative, 2 for second, etc.)</span>
+<span class="sd">            mask: Optional mask for partial derivatives (boolean array or indices)</span>
+<span class="sd">                 If provided, only compute derivatives for selected points</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Callable function that takes input points and returns derivative values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;LlaInterpolator must be fit before calling differentiate().&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">order</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Derivative order must be &gt;= 1&quot;</span><span class="p">)</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">derivative_func</span><span class="p">(</span><span class="n">eval_points</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+            <span class="n">eval_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+            <span class="n">scalar_input</span> <span class="o">=</span> <span class="n">eval_points</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">scalar_input</span><span class="p">:</span>
+                <span class="n">eval_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">eval_points</span><span class="p">])</span>
+            
+            <span class="c1"># Apply mask if provided</span>
+            <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mask_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">mask_array</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+                    <span class="c1"># Boolean mask</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask_array</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">eval_points</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Boolean mask length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">mask_array</span><span class="p">)</span><span class="si">}</span><span class="s2"> doesn&#39;t match eval_points length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">eval_points</span> <span class="o">=</span> <span class="n">eval_points</span><span class="p">[</span><span class="n">mask_array</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Index mask</span>
+                    <span class="n">eval_points</span> <span class="o">=</span> <span class="n">eval_points</span><span class="p">[</span><span class="n">mask_array</span><span class="p">]</span>
+            
+            <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">eval_points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t_i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">eval_points</span><span class="p">):</span>
+                <span class="n">idx_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t_i</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">idx_next</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">idx_prev</span> <span class="o">=</span> <span class="n">idx_next</span>
+                <span class="k">elif</span> <span class="n">idx_next</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+                    <span class="n">idx_prev</span> <span class="o">=</span> <span class="n">idx_next</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">idx_prev</span> <span class="o">=</span> <span class="n">idx_next</span> <span class="o">-</span> <span class="mi">1</span>
+                
+                <span class="n">s_prev</span><span class="p">,</span> <span class="n">s_next</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">idx_prev</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">idx_next</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+                <span class="n">d_prev</span><span class="p">,</span> <span class="n">d_next</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">idx_prev</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">idx_next</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+                <span class="n">t_prev</span><span class="p">,</span> <span class="n">t_next</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">idx_prev</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">idx_next</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="n">t_next</span> <span class="o">-</span> <span class="n">t_prev</span>
+                <span class="n">u</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_i</span> <span class="o">-</span> <span class="n">t_prev</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span> <span class="k">if</span> <span class="n">h</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+                
+                <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># First derivative of Hermite interpolation</span>
+                    <span class="c1"># h&#39;00 = 6*u**2 - 6*u, h&#39;10 = 3*u**2 - 4*u + 1</span>
+                    <span class="c1"># h&#39;01 = -6*u**2 + 6*u, h&#39;11 = 3*u**2 - 2*u</span>
+                    <span class="n">h00_prime</span> <span class="o">=</span> <span class="mi">6</span><span class="o">*</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">6</span><span class="o">*</span><span class="n">u</span>
+                    <span class="n">h10_prime</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">u</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="n">h01_prime</span> <span class="o">=</span> <span class="o">-</span><span class="mi">6</span><span class="o">*</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">6</span><span class="o">*</span><span class="n">u</span>
+                    <span class="n">h11_prime</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">u</span>
+                    
+                    <span class="c1"># Scale by 1/h for proper derivative</span>
+                    <span class="k">if</span> <span class="n">h</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">h00_prime</span><span class="o">*</span><span class="n">s_prev</span> <span class="o">+</span> <span class="n">h10_prime</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">d_prev</span> <span class="o">+</span> 
+                                   <span class="n">h01_prime</span><span class="o">*</span><span class="n">s_next</span> <span class="o">+</span> <span class="n">h11_prime</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">d_next</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">d_prev</span>  <span class="c1"># Use stored derivative at point</span>
+                        
+                <span class="k">elif</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="c1"># Second derivative of Hermite interpolation</span>
+                    <span class="c1"># h&#39;&#39;00 = 12*u - 6, h&#39;&#39;10 = 6*u - 4</span>
+                    <span class="c1"># h&#39;&#39;01 = -12*u + 6, h&#39;&#39;11 = 6*u - 2</span>
+                    <span class="n">h00_double_prime</span> <span class="o">=</span> <span class="mi">12</span><span class="o">*</span><span class="n">u</span> <span class="o">-</span> <span class="mi">6</span>
+                    <span class="n">h10_double_prime</span> <span class="o">=</span> <span class="mi">6</span><span class="o">*</span><span class="n">u</span> <span class="o">-</span> <span class="mi">4</span>
+                    <span class="n">h01_double_prime</span> <span class="o">=</span> <span class="o">-</span><span class="mi">12</span><span class="o">*</span><span class="n">u</span> <span class="o">+</span> <span class="mi">6</span>
+                    <span class="n">h11_double_prime</span> <span class="o">=</span> <span class="mi">6</span><span class="o">*</span><span class="n">u</span> <span class="o">-</span> <span class="mi">2</span>
+                    
+                    <span class="c1"># Scale by 1/h^2 for proper second derivative</span>
+                    <span class="k">if</span> <span class="n">h</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">h00_double_prime</span><span class="o">*</span><span class="n">s_prev</span> <span class="o">+</span> <span class="n">h10_double_prime</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">d_prev</span> <span class="o">+</span> 
+                                   <span class="n">h01_double_prime</span><span class="o">*</span><span class="n">s_next</span> <span class="o">+</span> <span class="n">h11_double_prime</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">d_next</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Second derivative at isolated point</span>
+                        
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># For higher orders, use numerical differentiation with larger step size</span>
+                    <span class="n">h_num</span> <span class="o">=</span> <span class="mf">1e-4</span>  <span class="c1"># Larger step size for stability</span>
+                    
+                    <span class="c1"># Use iterative finite differences for higher order derivatives</span>
+                    <span class="k">def</span><span class="w"> </span><span class="nf">compute_derivative_iteratively</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">order</span><span class="p">):</span>
+                        <span class="c1"># Start with the function values</span>
+                        <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span> <span class="o">-</span> <span class="n">h_num</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">h_num</span><span class="p">]))</span>
+                        
+                        <span class="c1"># Apply finite differences iteratively</span>
+                        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+                            <span class="c1"># Central difference formula: f&#39;(x) ≈ (f(x+h) - f(x-h)) / (2h)</span>
+                            <span class="n">new_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">new_values</span><span class="p">)):</span>
+                                <span class="n">new_values</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">values</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">h_num</span><span class="p">)</span>
+                            <span class="n">values</span> <span class="o">=</span> <span class="n">new_values</span>
+                            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="k">return</span> <span class="mf">0.0</span>
+                        
+                        <span class="k">return</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
+                    
+                    <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">compute_derivative_iteratively</span><span class="p">(</span><span class="n">t_i</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+            
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="k">if</span> <span class="n">scalar_input</span> <span class="ow">and</span> <span class="n">result</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">result</span>
+        
+        <span class="k">return</span> <span class="n">derivative_func</span></div>
 </div>
 
 
@@ -403,6 +816,118 @@
             <span class="n">h11</span> <span class="o">=</span> <span class="n">u</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="n">u</span><span class="o">**</span><span class="mi">2</span>
             <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">h00</span><span class="o">*</span><span class="n">s_prev</span> <span class="o">+</span> <span class="n">h10</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">d_prev</span> <span class="o">+</span> <span class="n">h01</span><span class="o">*</span><span class="n">s_next</span> <span class="o">+</span> <span class="n">h11</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">d_next</span>
         <span class="k">return</span> <span class="n">result</span> <span class="k">if</span> <span class="n">query_time</span><span class="o">.</span><span class="n">shape</span> <span class="k">else</span> <span class="n">result</span><span class="o">.</span><span class="n">item</span><span class="p">()</span></div>
+
+    
+<div class="viewcode-block" id="GllaInterpolator.differentiate">
+<a class="viewcode-back" href="../../api.html#pydelt.interpolation.GllaInterpolator.differentiate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">differentiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a callable function that computes derivatives of the GLLA Hermite interpolation.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            order: Order of derivative (1 for first derivative, 2 for second, etc.)</span>
+<span class="sd">            mask: Optional mask for partial derivatives (boolean array or indices)</span>
+<span class="sd">                 If provided, only compute derivatives for selected points</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Callable function that takes input points and returns derivative values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;GllaInterpolator must be fit before calling differentiate().&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">order</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Derivative order must be &gt;= 1&quot;</span><span class="p">)</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">derivative_func</span><span class="p">(</span><span class="n">eval_points</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+            <span class="n">eval_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+            <span class="n">scalar_input</span> <span class="o">=</span> <span class="n">eval_points</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">scalar_input</span><span class="p">:</span>
+                <span class="n">eval_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">eval_points</span><span class="p">])</span>
+            
+            <span class="c1"># Apply mask if provided</span>
+            <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mask_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">mask_array</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+                    <span class="c1"># Boolean mask</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask_array</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">eval_points</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Boolean mask length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">mask_array</span><span class="p">)</span><span class="si">}</span><span class="s2"> doesn&#39;t match eval_points length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">eval_points</span> <span class="o">=</span> <span class="n">eval_points</span><span class="p">[</span><span class="n">mask_array</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Index mask</span>
+                    <span class="n">eval_points</span> <span class="o">=</span> <span class="n">eval_points</span><span class="p">[</span><span class="n">mask_array</span><span class="p">]</span>
+            
+            <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">eval_points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+            
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t_i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">eval_points</span><span class="p">):</span>
+                <span class="n">idx_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t_i</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">idx_next</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">idx_prev</span> <span class="o">=</span> <span class="n">idx_next</span>
+                <span class="k">elif</span> <span class="n">idx_next</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+                    <span class="n">idx_prev</span> <span class="o">=</span> <span class="n">idx_next</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">idx_prev</span> <span class="o">=</span> <span class="n">idx_next</span> <span class="o">-</span> <span class="mi">1</span>
+                
+                <span class="n">s_prev</span><span class="p">,</span> <span class="n">s_next</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">idx_prev</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">idx_next</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+                <span class="n">d_prev</span><span class="p">,</span> <span class="n">d_next</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">idx_prev</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">idx_next</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+                <span class="n">t_prev</span><span class="p">,</span> <span class="n">t_next</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">idx_prev</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">idx_next</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+                <span class="n">h</span> <span class="o">=</span> <span class="n">t_next</span> <span class="o">-</span> <span class="n">t_prev</span>
+                <span class="n">u</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_i</span> <span class="o">-</span> <span class="n">t_prev</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span> <span class="k">if</span> <span class="n">h</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+                
+                <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># First derivative of Hermite interpolation</span>
+                    <span class="n">h00_prime</span> <span class="o">=</span> <span class="mi">6</span><span class="o">*</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">6</span><span class="o">*</span><span class="n">u</span>
+                    <span class="n">h10_prime</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">u</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="n">h01_prime</span> <span class="o">=</span> <span class="o">-</span><span class="mi">6</span><span class="o">*</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">6</span><span class="o">*</span><span class="n">u</span>
+                    <span class="n">h11_prime</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">u</span>
+                    
+                    <span class="c1"># Scale by 1/h for proper derivative</span>
+                    <span class="k">if</span> <span class="n">h</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">h00_prime</span><span class="o">*</span><span class="n">s_prev</span> <span class="o">+</span> <span class="n">h10_prime</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">d_prev</span> <span class="o">+</span> 
+                                   <span class="n">h01_prime</span><span class="o">*</span><span class="n">s_next</span> <span class="o">+</span> <span class="n">h11_prime</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">d_next</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">d_prev</span>  <span class="c1"># Use stored derivative at point</span>
+                        
+                <span class="k">elif</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="c1"># Second derivative of Hermite interpolation</span>
+                    <span class="n">h00_double_prime</span> <span class="o">=</span> <span class="mi">12</span><span class="o">*</span><span class="n">u</span> <span class="o">-</span> <span class="mi">6</span>
+                    <span class="n">h10_double_prime</span> <span class="o">=</span> <span class="mi">6</span><span class="o">*</span><span class="n">u</span> <span class="o">-</span> <span class="mi">4</span>
+                    <span class="n">h01_double_prime</span> <span class="o">=</span> <span class="o">-</span><span class="mi">12</span><span class="o">*</span><span class="n">u</span> <span class="o">+</span> <span class="mi">6</span>
+                    <span class="n">h11_double_prime</span> <span class="o">=</span> <span class="mi">6</span><span class="o">*</span><span class="n">u</span> <span class="o">-</span> <span class="mi">2</span>
+                    
+                    <span class="c1"># Scale by 1/h^2 for proper second derivative</span>
+                    <span class="k">if</span> <span class="n">h</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">h00_double_prime</span><span class="o">*</span><span class="n">s_prev</span> <span class="o">+</span> <span class="n">h10_double_prime</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">d_prev</span> <span class="o">+</span> 
+                                   <span class="n">h01_double_prime</span><span class="o">*</span><span class="n">s_next</span> <span class="o">+</span> <span class="n">h11_double_prime</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">d_next</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Second derivative at isolated point</span>
+                        
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># For higher orders, use numerical differentiation with larger step size</span>
+                    <span class="n">h_num</span> <span class="o">=</span> <span class="mf">1e-4</span>  <span class="c1"># Larger step size for stability</span>
+                    
+                    <span class="c1"># Use iterative finite differences for higher order derivatives</span>
+                    <span class="k">def</span><span class="w"> </span><span class="nf">compute_derivative_iteratively</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">order</span><span class="p">):</span>
+                        <span class="c1"># Start with the function values</span>
+                        <span class="n">values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span> <span class="o">-</span> <span class="n">h_num</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">h_num</span><span class="p">]))</span>
+                        
+                        <span class="c1"># Apply finite differences iteratively</span>
+                        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+                            <span class="c1"># Central difference formula: f&#39;(x) ≈ (f(x+h) - f(x-h)) / (2h)</span>
+                            <span class="n">new_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">new_values</span><span class="p">)):</span>
+                                <span class="n">new_values</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">values</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">h_num</span><span class="p">)</span>
+                            <span class="n">values</span> <span class="o">=</span> <span class="n">new_values</span>
+                            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                                <span class="k">return</span> <span class="mf">0.0</span>
+                        
+                        <span class="k">return</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
+                    
+                    <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">compute_derivative_iteratively</span><span class="p">(</span><span class="n">t_i</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+            
+            <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="k">if</span> <span class="n">scalar_input</span> <span class="ow">and</span> <span class="n">result</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">result</span>
+        
+        <span class="k">return</span> <span class="n">derivative_func</span></div>
 </div>
 
 
@@ -566,6 +1091,134 @@
                 <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">pred</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="NeuralNetworkInterpolator.differentiate">
+<a class="viewcode-back" href="../../api.html#pydelt.interpolation.NeuralNetworkInterpolator.differentiate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">differentiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a callable function that computes derivatives using automatic differentiation.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            order: Order of derivative (1 for first derivative, 2 for second, etc.)</span>
+<span class="sd">            mask: Optional mask for partial derivatives (boolean array or indices)</span>
+<span class="sd">                 If provided, only compute derivatives for selected points</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Callable function that takes input points and returns derivative values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;NeuralNetworkInterpolator must be fit before calling differentiate().&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">order</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Derivative order must be &gt;= 1&quot;</span><span class="p">)</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">derivative_func</span><span class="p">(</span><span class="n">eval_points</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+            <span class="n">eval_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+            <span class="n">scalar_input</span> <span class="o">=</span> <span class="n">eval_points</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">scalar_input</span><span class="p">:</span>
+                <span class="n">eval_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">eval_points</span><span class="p">])</span>
+            
+            <span class="c1"># Apply mask if provided</span>
+            <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">mask_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">mask_array</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">bool</span><span class="p">:</span>
+                    <span class="c1"># Boolean mask</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask_array</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">eval_points</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Boolean mask length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">mask_array</span><span class="p">)</span><span class="si">}</span><span class="s2"> doesn&#39;t match eval_points length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">eval_points</span> <span class="o">=</span> <span class="n">eval_points</span><span class="p">[</span><span class="n">mask_array</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Index mask</span>
+                    <span class="n">eval_points</span> <span class="o">=</span> <span class="n">eval_points</span><span class="p">[</span><span class="n">mask_array</span><span class="p">]</span>
+            
+            <span class="c1"># Normalize input points</span>
+            <span class="n">t_norm</span> <span class="o">=</span> <span class="p">(</span><span class="n">eval_points</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_max</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_min</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_max</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_min</span> <span class="k">else</span> <span class="n">eval_points</span>
+            
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">framework</span> <span class="o">==</span> <span class="s1">&#39;pytorch&#39;</span><span class="p">:</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+                
+                <span class="c1"># Convert to tensor and enable gradient computation</span>
+                <span class="n">X</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">t_norm</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">requires_grad</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                
+                <span class="c1"># Forward pass</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+                
+                <span class="c1"># Compute derivatives using automatic differentiation</span>
+                <span class="n">current_grad</span> <span class="o">=</span> <span class="n">output</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="c1"># First derivative</span>
+                        <span class="n">grad_outputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">current_grad</span><span class="p">)</span>
+                        <span class="n">current_grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span>
+                            <span class="n">outputs</span><span class="o">=</span><span class="n">current_grad</span><span class="p">,</span>
+                            <span class="n">inputs</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
+                            <span class="n">grad_outputs</span><span class="o">=</span><span class="n">grad_outputs</span><span class="p">,</span>
+                            <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">order</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
+                            <span class="n">retain_graph</span><span class="o">=</span><span class="kc">True</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">order</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">False</span>
+                        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># Higher order derivatives</span>
+                        <span class="n">grad_outputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">current_grad</span><span class="p">)</span>
+                        <span class="n">current_grad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span>
+                            <span class="n">outputs</span><span class="o">=</span><span class="n">current_grad</span><span class="p">,</span>
+                            <span class="n">inputs</span><span class="o">=</span><span class="n">X</span><span class="p">,</span>
+                            <span class="n">grad_outputs</span><span class="o">=</span><span class="n">grad_outputs</span><span class="p">,</span>
+                            <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">order</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
+                            <span class="n">retain_graph</span><span class="o">=</span><span class="kc">True</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">order</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="kc">False</span>
+                        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                
+                <span class="c1"># Convert back to numpy and denormalize</span>
+                <span class="n">derivatives_norm</span> <span class="o">=</span> <span class="n">current_grad</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+                
+                <span class="c1"># Denormalize derivatives</span>
+                <span class="c1"># For nth order derivative: scale by (dt_norm/dt_real)^n * (ds_real/ds_norm)</span>
+                <span class="n">dt_scale</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_max</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_min</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_max</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_min</span> <span class="k">else</span> <span class="mf">1.0</span>
+                <span class="n">ds_scale</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s_max</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_min</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_max</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_min</span> <span class="k">else</span> <span class="mf">1.0</span>
+                
+                <span class="n">derivatives</span> <span class="o">=</span> <span class="n">derivatives_norm</span> <span class="o">*</span> <span class="p">(</span><span class="n">ds_scale</span> <span class="o">/</span> <span class="p">(</span><span class="n">dt_scale</span> <span class="o">**</span> <span class="n">order</span><span class="p">))</span>
+                
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">framework</span> <span class="o">==</span> <span class="s1">&#39;tensorflow&#39;</span><span class="p">:</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+                
+                <span class="c1"># Convert to tensor</span>
+                <span class="n">X</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span><span class="n">t_norm</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+                
+                <span class="c1"># Compute derivatives using GradientTape</span>
+                <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">()</span> <span class="k">as</span> <span class="n">tape</span><span class="p">:</span>
+                    <span class="n">tape</span><span class="o">.</span><span class="n">watch</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+                    
+                    <span class="c1"># For higher order derivatives, we need nested tapes</span>
+                    <span class="n">current_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+                    
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">current_grad</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">current_output</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">with</span> <span class="n">tf</span><span class="o">.</span><span class="n">GradientTape</span><span class="p">()</span> <span class="k">as</span> <span class="n">inner_tape</span><span class="p">:</span>
+                                <span class="n">inner_tape</span><span class="o">.</span><span class="n">watch</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+                                <span class="n">temp_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+                                <span class="n">temp_grad</span> <span class="o">=</span> <span class="n">inner_tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">temp_output</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+                                
+                            <span class="c1"># This is a simplified approach - for production, use tf.hessians for 2nd order</span>
+                            <span class="n">current_grad</span> <span class="o">=</span> <span class="n">tape</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">current_grad</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+                
+                <span class="c1"># Convert to numpy and denormalize</span>
+                <span class="n">derivatives_norm</span> <span class="o">=</span> <span class="n">current_grad</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+                
+                <span class="c1"># Denormalize derivatives</span>
+                <span class="n">dt_scale</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">t_max</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_min</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_max</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">t_min</span> <span class="k">else</span> <span class="mf">1.0</span>
+                <span class="n">ds_scale</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s_max</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_min</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_max</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_min</span> <span class="k">else</span> <span class="mf">1.0</span>
+                
+                <span class="n">derivatives</span> <span class="o">=</span> <span class="n">derivatives_norm</span> <span class="o">*</span> <span class="p">(</span><span class="n">ds_scale</span> <span class="o">/</span> <span class="p">(</span><span class="n">dt_scale</span> <span class="o">**</span> <span class="n">order</span><span class="p">))</span>
+                
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown framework: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">framework</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            
+            <span class="k">return</span> <span class="n">derivatives</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="k">if</span> <span class="n">scalar_input</span> <span class="ow">and</span> <span class="n">derivatives</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">derivatives</span>
+        
+        <span class="k">return</span> <span class="n">derivative_func</span></div>
 </div>
 
 

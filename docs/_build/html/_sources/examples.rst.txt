@@ -351,3 +351,48 @@ Working with multi-dimensional data:
    
    plt.tight_layout()
    plt.show()
+
+Example 6: Understanding Numerical Limitations
+----------------------------------------------
+
+Demonstrating critical point smoothing in multivariate derivatives:
+
+.. code-block:: python
+
+   import numpy as np
+   from pydelt.multivariate import MultivariateDerivatives
+   from pydelt.interpolation import SplineInterpolator
+   
+   # Function with known critical points: f(x,y) = (x-y)²
+   x = np.linspace(-3, 3, 25)
+   y = np.linspace(-3, 3, 25)
+   X, Y = np.meshgrid(x, y)
+   Z = (X - Y)**2  # Zero gradient along x=y line
+   
+   # Fit multivariate derivatives
+   input_data = np.column_stack([X.flatten(), Y.flatten()])
+   output_data = Z.flatten()
+   
+   mv = MultivariateDerivatives(SplineInterpolator, smoothing=0.1)
+   mv.fit(input_data, output_data)
+   
+   # Test at critical points where gradient should be zero
+   critical_points = np.array([[-3, -3], [3, 3]])  # Should have zero gradient
+   
+   gradient_func = mv.gradient()
+   grad_critical = gradient_func(critical_points)
+   
+   print("Critical Points (should be ~[0, 0]):")
+   for i, point in enumerate(critical_points):
+       print(f"  Point {point}: Numerical gradient {grad_critical[i]:.3f}")
+   
+   print("\nKey Insight:")
+   print("  Numerical methods smooth out zero gradients at critical points.")
+   print("  This is a fundamental limitation of interpolation-based derivatives.")
+
+**Key Takeaways:**
+
+* Numerical methods cannot perfectly capture sharp mathematical features
+* Critical points often show non-zero numerical gradients due to smoothing
+* Always validate numerical results against analytical solutions when possible
+* Consider neural network methods for exact derivatives at critical points

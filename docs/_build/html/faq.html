@@ -1,0 +1,250 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frequently Asked Questions &mdash; pydelt 0.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=6c02275b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Changelog" href="changelog.html" />
+    <link rel="prev" title="API Reference" href="api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#multivariate-derivatives">Multivariate Derivatives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#numerical-accuracy">Numerical Accuracy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-and-memory">Performance and Memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#error-messages-and-troubleshooting">Error Messages and Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-with-other-libraries">Integration with Other Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-help">Getting Help</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Frequently Asked Questions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/faq.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="frequently-asked-questions">
+<h1>Frequently Asked Questions<a class="headerlink" href="#frequently-asked-questions" title="Link to this heading"></a></h1>
+<p>This section addresses common questions and issues when using pydelt.</p>
+<section id="multivariate-derivatives">
+<h2>Multivariate Derivatives<a class="headerlink" href="#multivariate-derivatives" title="Link to this heading"></a></h2>
+<p><strong>Q: Why do I get non-zero gradients at points where the gradient should be zero?</strong></p>
+<p>A: This is due to numerical smoothing in interpolation methods. For example, with the function f(x,y) = (x-y)², the gradient should be zero along the line x=y, but numerical methods will show small non-zero values due to smoothing effects.</p>
+<p><strong>Solution:</strong>
+- Use higher resolution sampling near critical points
+- Reduce smoothing parameters (but beware of overfitting)
+- Validate against analytical solutions when possible
+- Consider neural network methods with automatic differentiation</p>
+<p><strong>Q: How accurate are the multivariate derivatives?</strong></p>
+<p>A: Accuracy depends on several factors:
+- <strong>Function smoothness</strong>: Smooth functions give better results
+- <strong>Sampling density</strong>: More data points improve accuracy
+- <strong>Interpolation method</strong>: LLA/GLLA typically most accurate, LOWESS/LOESS moderate
+- <strong>Distance from boundaries</strong>: Accuracy decreases near domain edges</p>
+<p><strong>Q: When should I use different interpolation methods for multivariate derivatives?</strong></p>
+<p>A: Choose based on your needs:
+- <strong>SplineInterpolator</strong>: Good balance of speed and accuracy
+- <strong>LlaInterpolator/GllaInterpolator</strong>: Best accuracy for smooth functions
+- <strong>LowessInterpolator</strong>: Robust to outliers, moderate accuracy
+- <strong>NeuralNetworkInterpolator</strong>: Best for exact derivatives and complex functions</p>
+<p><strong>Q: Can I compute mixed partial derivatives?</strong></p>
+<p>A: Traditional interpolation methods approximate mixed partials as zero. For exact mixed partials, use neural network methods with automatic differentiation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.multivariate</span><span class="w"> </span><span class="kn">import</span> <span class="n">NeuralNetworkMultivariateDerivatives</span>
+
+<span class="c1"># This will provide exact mixed partial derivatives</span>
+<span class="n">nn_mv</span> <span class="o">=</span> <span class="n">NeuralNetworkMultivariateDerivatives</span><span class="p">()</span>
+<span class="n">nn_mv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">output_data</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="numerical-accuracy">
+<h2>Numerical Accuracy<a class="headerlink" href="#numerical-accuracy" title="Link to this heading"></a></h2>
+<p><strong>Q: Why do my derivatives look “smoothed out” compared to the analytical solution?</strong></p>
+<p>A: All numerical interpolation methods apply some degree of smoothing to handle noise and ensure stability. This smoothing:
+- Reduces sharp features and discontinuities
+- Makes critical points appear “rounded”
+- Can mask important mathematical properties</p>
+<p><strong>Q: How can I improve derivative accuracy?</strong></p>
+<p>A: Try these strategies:
+1. <strong>Increase sampling density</strong> near regions of interest
+2. <strong>Reduce smoothing parameters</strong> (e.g., lower <cite>smoothing</cite> in SplineInterpolator)
+3. <strong>Use analytical derivatives</strong> when available for validation
+4. <strong>Choose appropriate interpolation method</strong> for your function type
+5. <strong>Consider neural networks</strong> for complex multivariate functions</p>
+<p><strong>Q: What causes boundary effects in derivatives?</strong></p>
+<p>A: Near the edges of your data domain:
+- Interpolation has fewer neighboring points to work with
+- Extrapolation may be required, reducing accuracy
+- Edge effects from smoothing become more pronounced</p>
+<p><strong>Solution:</strong> Extend your sampling domain beyond the region where you need accurate derivatives.</p>
+</section>
+<section id="performance-and-memory">
+<h2>Performance and Memory<a class="headerlink" href="#performance-and-memory" title="Link to this heading"></a></h2>
+<p><strong>Q: My multivariate derivative computation is slow. How can I speed it up?</strong></p>
+<p>A: Performance optimization strategies:
+1. <strong>Reduce data size</strong> if possible while maintaining accuracy
+2. <strong>Use SplineInterpolator</strong> for fastest computation
+3. <strong>Pre-compute derivatives</strong> at fixed evaluation points
+4. <strong>Consider neural networks</strong> for batch processing large datasets</p>
+<p><strong>Q: I’m running out of memory with large datasets. What should I do?</strong></p>
+<p>A: Memory management approaches:
+1. <strong>Process data in chunks</strong> rather than all at once
+2. <strong>Use lower-resolution sampling</strong> for initial exploration
+3. <strong>Consider neural network methods</strong> which can handle larger datasets more efficiently</p>
+</section>
+<section id="error-messages-and-troubleshooting">
+<h2>Error Messages and Troubleshooting<a class="headerlink" href="#error-messages-and-troubleshooting" title="Link to this heading"></a></h2>
+<p><strong>Q: I get “Interpolation failed” errors. What’s wrong?</strong></p>
+<p>A: Common causes and solutions:
+- <strong>Duplicate input points</strong>: Remove or average duplicate x-values
+- <strong>Insufficient data</strong>: Ensure you have enough points for the chosen method
+- <strong>Extreme smoothing</strong>: Try reducing smoothing parameters
+- <strong>Data scaling issues</strong>: Consider normalizing your input/output data</p>
+<p><strong>Q: My Hessian computation returns unexpected results. Why?</strong></p>
+<p>A: The Hessian implementation computes only diagonal elements (pure second derivatives). Mixed partial derivatives are approximated as zero for traditional methods. For full Hessian matrices, use neural network methods.</p>
+<p><strong>Q: Neural network derivatives are inconsistent between runs. Is this normal?</strong></p>
+<p>A: Yes, this is expected due to:
+- Random weight initialization
+- Stochastic training process
+- Local minima in optimization</p>
+<p>For more consistent results, set random seeds or use multiple training runs with averaging.</p>
+</section>
+<section id="integration-with-other-libraries">
+<h2>Integration with Other Libraries<a class="headerlink" href="#integration-with-other-libraries" title="Link to this heading"></a></h2>
+<p><strong>Q: Can I use pydelt with pandas DataFrames?</strong></p>
+<p>A: Yes, convert to numpy arrays:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Convert DataFrame to numpy arrays</span>
+<span class="n">input_data</span> <span class="o">=</span> <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">output_data</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+</pre></div>
+</div>
+<p><strong>Q: How do I integrate with scipy optimization routines?</strong></p>
+<p>A: Use pydelt derivatives as objective function gradients:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.multivariate</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultivariateDerivatives</span>
+
+<span class="c1"># Fit derivatives</span>
+<span class="n">mv</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span><span class="n">SplineInterpolator</span><span class="p">)</span>
+<span class="n">mv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">output_data</span><span class="p">)</span>
+<span class="n">gradient_func</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">gradient</span><span class="p">()</span>
+
+<span class="c1"># Use in optimization</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">objective_func</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">jac</span><span class="o">=</span><span class="n">gradient_func</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Q: Can I use pydelt with JAX or other autodiff libraries?</strong></p>
+<p>A: pydelt focuses on interpolation-based derivatives. For automatic differentiation, use JAX, PyTorch, or TensorFlow directly. However, you can use pydelt to validate autodiff results or handle cases where analytical functions aren’t available.</p>
+</section>
+<section id="getting-help">
+<h2>Getting Help<a class="headerlink" href="#getting-help" title="Link to this heading"></a></h2>
+<p><strong>Q: I found a bug or have a feature request. Where should I report it?</strong></p>
+<p>A: Please report issues on the GitHub repository: <a class="reference external" href="https://github.com/yourusername/pydelt">https://github.com/yourusername/pydelt</a></p>
+<p><strong>Q: How can I contribute to pydelt?</strong></p>
+<p>A: Contributions are welcome! See the contributing guidelines in the repository for details on:
+- Code style and testing requirements
+- Documentation standards
+- Pull request process</p>
+<p><strong>Q: Where can I find more examples?</strong></p>
+<p>A: Check out:
+- The examples section in this documentation
+- The <cite>/local/tests/</cite> directory for visual test examples
+- The GitHub repository for additional demos and notebooks</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api.html" class="btn btn-neutral float-left" title="API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="changelog.html" class="btn btn-neutral float-right" title="Changelog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

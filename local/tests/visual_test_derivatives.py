@@ -70,10 +70,10 @@ def visual_test_gold_sine():
     """Visual test of GOLD derivative on sine function."""
     time = np.linspace(0, 10, 100)
     signal = np.sin(time)
-    result = gold(signal, time, embedding=5, n=2)
+    result = gold(time, signal, embedding=5, n=2)
     
     # Extract first derivative and corresponding time points
-    derivative = result['dsignal'][:, 1]
+    derivative = result['doutput'][:, 1]
     # Account for boundary effects
     valid_time = time[2:-2][:derivative.shape[0]]
     
@@ -107,10 +107,10 @@ def visual_test_glla_sine():
     """Visual test of GLLA derivative on sine function."""
     time = np.linspace(0, 10, 100)
     signal = np.sin(time)
-    result = glla(signal, time, embedding=5, n=2)
+    result = glla(time, signal, embedding=5, n=2)
     
     # Extract first derivative and corresponding time points
-    derivative = result['dsignal'][:, 1]
+    derivative = result['doutput'][:, 1]
     # Account for boundary effects
     valid_time = time[2:-2][:derivative.shape[0]]
     
@@ -144,10 +144,10 @@ def visual_test_fda_sine():
     """Visual test of FDA derivative on sine function."""
     time = np.linspace(0, 10, 100)
     signal = np.sin(time)
-    result = fda(signal, time)
+    result = fda(time, signal)
     
     # Extract first derivative
-    derivative = result['dsignal'][:, 1]
+    derivative = result['doutput'][:, 1]
     
     # Expected derivative of sine is cosine
     expected = np.cos(time)
@@ -183,16 +183,16 @@ def visual_test_algorithm_comparison():
     # Calculate derivatives using different methods
     lla_derivative, _ = lla(time.tolist(), signal.tolist(), window_size=5)
     
-    gold_result = gold(signal, time, embedding=5, n=2)
-    gold_derivative = gold_result['dsignal'][:, 1]
+    gold_result = gold(time, signal, embedding=5, n=2)
+    gold_derivative = gold_result['doutput'][:, 1]
     gold_time = time[2:-2][:gold_derivative.shape[0]]
     
-    glla_result = glla(signal, time, embedding=5, n=2)
-    glla_derivative = glla_result['dsignal'][:, 1]
+    glla_result = glla(time, signal, embedding=5, n=2)
+    glla_derivative = glla_result['doutput'][:, 1]
     glla_time = time[2:-2][:glla_derivative.shape[0]]
     
-    fda_result = fda(signal, time)
-    fda_derivative = fda_result['dsignal'][:, 1]
+    fda_result = fda(time, signal)
+    fda_derivative = fda_result['doutput'][:, 1]
     
     # Expected derivative of sine is cosine
     expected = np.cos(time)
@@ -306,17 +306,17 @@ def visual_test_noise_comparison():
         # Calculate derivatives using different methods
         lla_derivative, _ = lla(time.tolist(), noisy_signal.tolist(), window_size=5)
         
-        gold_result = gold(noisy_signal, time, embedding=5, n=2)
-        gold_derivative = gold_result['dsignal'][:, 1]
+        gold_result = gold(time, noisy_signal, embedding=5, n=2)
+        gold_derivative = gold_result['doutput'][:, 1]
         gold_time = time[2:-2][:gold_derivative.shape[0]]
         gold_expected = np.cos(gold_time)
         
-        glla_result = glla(noisy_signal, time, embedding=5, n=2)
-        glla_derivative = glla_result['dsignal'][:, 1]
+        glla_result = glla(time, noisy_signal, embedding=5, n=2)
+        glla_derivative = glla_result['doutput'][:, 1]
         glla_time = time[2:-2][:glla_derivative.shape[0]]
         
-        fda_result = fda(noisy_signal, time)
-        fda_derivative = fda_result['dsignal'][:, 1]
+        fda_result = fda(time, noisy_signal)
+        fda_derivative = fda_result['doutput'][:, 1]
         
         # Add traces for each method in the first column
         fig.add_trace(

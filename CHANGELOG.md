@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.0] - 2025-08-03
+
+### Added
+- **Universal Differentiation Interface**: Implemented consistent `.differentiate(order, mask)` method across all interpolators
+- **Multivariate Calculus Support**: Added comprehensive multivariate derivatives module
+  - `gradient()`: Computes ∇f for scalar functions
+  - `jacobian()`: Computes J_f for vector-valued functions
+  - `hessian()`: Computes H_f for second-order derivatives
+  - `laplacian()`: Computes ∇²f = tr(H_f) for scalar functions
+- **Vector & Tensor Operations**: Full support for vector-valued functions and tensor calculus
+- **Enhanced Documentation**: Comprehensive FAQ and examples for numerical limitations
+
+### Changed
+- **Reframed Library Focus**: Expanded from time series derivatives to dynamical systems & differential equations approximation
+- **Enhanced Examples**: Added comprehensive multivariate derivative examples and visualizations
+- **Improved Documentation**: Updated all documentation to reflect the new capabilities and focus
+
+### Technical Details
+- Implemented `MultivariateDerivatives` class with robust error handling and consistent output shapes
+- Added domain coverage visualization tools for educational purposes
+- Enhanced all interpolators with analytical or numerical differentiation methods
+- Added masking support for partial derivative computation
+
 ## [0.4.0] - 2025-07-26
 
 ### Fixed

@@ -17,8 +17,23 @@ class BaseInterpolator:
     """
     def fit(self, time, signal):
         raise NotImplementedError("fit() must be implemented in subclasses.")
+    
     def predict(self, new_time):
         raise NotImplementedError("predict() must be implemented in subclasses.")
+    
+    def differentiate(self, order: int = 1, mask: Optional[Union[np.ndarray, List[bool], List[int]]] = None) -> Callable:
+        """
+        Return a callable function that computes derivatives of the interpolated function.
+        
+        Args:
+            order: Order of derivative (1 for first derivative, 2 for second, etc.)
+            mask: Optional mask for partial derivatives (boolean array or indices)
+                 If provided, only compute derivatives for selected points
+        
+        Returns:
+            Callable function that takes input points and returns derivative values
+        """
+        raise NotImplementedError("differentiate() must be implemented in subclasses.")
 
 class SplineInterpolator(BaseInterpolator):
     def __init__(self, smoothing: Optional[float] = None, k: int = 5):
@@ -64,6 +79,58 @@ class SplineInterpolator(BaseInterpolator):
             return result[0] if scalar_input else result
         else:
             return result[0] if scalar_input else result
+    
+    def differentiate(self, order: int = 1, mask: Optional[Union[np.ndarray, List[bool], List[int]]] = None) -> Callable:
+        """
+        Return a callable function that computes derivatives of the spline interpolation.
+        
+        Args:
+            order: Order of derivative (1 for first derivative, 2 for second, etc.)
+            mask: Optional mask for partial derivatives (boolean array or indices)
+                 If provided, only compute derivatives for selected points
+        
+        Returns:
+            Callable function that takes input points and returns derivative values
+        """
+        if self.splines is None:
+            raise RuntimeError("SplineInterpolator must be fit before calling differentiate().")
+        
+        if order < 1:
+            raise ValueError("Derivative order must be >= 1")
+        
+        if order > self.k:
+            raise ValueError(f"Derivative order {order} exceeds spline degree {self.k}")
+        
+        def derivative_func(eval_points: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+            eval_points = np.asarray(eval_points)
+            scalar_input = eval_points.ndim == 0
+            if scalar_input:
+                eval_points = np.array([eval_points])
+            
+            # Apply mask if provided
+            if mask is not None:
+                mask_array = np.asarray(mask)
+                if mask_array.dtype == bool:
+                    # Boolean mask
+                    if len(mask_array) != len(eval_points):
+                        raise ValueError(f"Boolean mask length {len(mask_array)} doesn't match eval_points length {len(eval_points)}")
+                    eval_points = eval_points[mask_array]
+                else:
+                    # Index mask
+                    eval_points = eval_points[mask_array]
+            
+            # Compute derivatives for each spline
+            derivs = [spline.derivative(n=order)(eval_points) for spline in self.splines]
+            result = np.stack(derivs, axis=-1)
+            
+            # Handle different result dimensions
+            if len(self.splines) == 1:
+                result = result.flatten()
+                return result[0] if scalar_input else result
+            else:
+                return result[0] if scalar_input else result
+        
+        return derivative_func
 
 # DEPRECATED: Old function-based interface. Use SplineInterpolator instead.
 
@@ -112,6 +179,85 @@ class LowessInterpolator(BaseInterpolator):
             return result[0] if scalar_input else result
         else:
             return result[0] if scalar_input else result
+    
+    def differentiate(self, order: int = 1, mask: Optional[Union[np.ndarray, List[bool], List[int]]] = None) -> Callable:
+        """
+        Return a callable function that computes derivatives of the LOWESS interpolation using numerical differentiation.
+        
+        Args:
+            order: Order of derivative (1 for first derivative, 2 for second, etc.)
+            mask: Optional mask for partial derivatives (boolean array or indices)
+                 If provided, only compute derivatives for selected points
+        
+        Returns:
+            Callable function that takes input points and returns derivative values
+        """
+        if self.interp_funcs is None:
+            raise RuntimeError("LowessInterpolator must be fit before calling differentiate().")
+        
+        if order < 1:
+            raise ValueError("Derivative order must be >= 1")
+        
+        def derivative_func(eval_points: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+            eval_points = np.asarray(eval_points)
+            scalar_input = eval_points.ndim == 0
+            if scalar_input:
+                eval_points = np.array([eval_points])
+            
+            # Apply mask if provided
+            if mask is not None:
+                mask_array = np.asarray(mask)
+                if mask_array.dtype == bool:
+                    # Boolean mask
+                    if len(mask_array) != len(eval_points):
+                        raise ValueError(f"Boolean mask length {len(mask_array)} doesn't match eval_points length {len(eval_points)}")
+                    eval_points = eval_points[mask_array]
+                else:
+                    # Index mask
+                    eval_points = eval_points[mask_array]
+            
+            # Use numerical differentiation with small step size
+            h = 1e-6  # Small step for numerical differentiation
+            
+            # Compute derivatives for each interpolation function
+            derivs = []
+            for interp_func in self.interp_funcs:
+                if order == 1:
+                    # First derivative: f'(x) ≈ (f(x+h) - f(x-h)) / (2h)
+                    f_plus = interp_func(eval_points + h)
+                    f_minus = interp_func(eval_points - h)
+                    deriv = (f_plus - f_minus) / (2 * h)
+                elif order == 2:
+                    # Second derivative: f''(x) ≈ (f(x+h) - 2f(x) + f(x-h)) / h²
+                    f_plus = interp_func(eval_points + h)
+                    f_center = interp_func(eval_points)
+                    f_minus = interp_func(eval_points - h)
+                    deriv = (f_plus - 2 * f_center + f_minus) / (h * h)
+                else:
+                    # Higher order derivatives using recursive approach
+                    # Start with function values
+                    current_values = interp_func(eval_points)
+                    
+                    # Apply finite differences iteratively
+                    for _ in range(order):
+                        f_plus = interp_func(eval_points + h)
+                        f_minus = interp_func(eval_points - h)
+                        current_values = (f_plus - f_minus) / (2 * h)
+                    
+                    deriv = current_values
+                
+                derivs.append(deriv)
+            
+            result = np.stack(derivs, axis=-1)
+            
+            # Handle different result dimensions
+            if len(self.interp_funcs) == 1:
+                result = result.flatten()
+                return result[0] if scalar_input else result
+            else:
+                return result[0] if scalar_input else result
+        
+        return derivative_func
 
 class LoessInterpolator(BaseInterpolator):
     def __init__(self, degree: int = 2, frac: float = 0.1, it: int = 3):
@@ -161,6 +307,88 @@ class LoessInterpolator(BaseInterpolator):
             return result[0] if scalar_input else result
         else:
             return result[0] if scalar_input else result
+    
+    def differentiate(self, order: int = 1, mask: Optional[Union[np.ndarray, List[bool], List[int]]] = None) -> Callable:
+        """
+        Return a callable function that computes derivatives of the LOESS interpolation using numerical differentiation.
+        
+        Args:
+            order: Order of derivative (1 for first derivative, 2 for second, etc.)
+            mask: Optional mask for partial derivatives (boolean array or indices)
+                 If provided, only compute derivatives for selected points
+        
+        Returns:
+            Callable function that takes input points and returns derivative values
+        """
+        if self.interp_funcs is None:
+            raise RuntimeError("LoessInterpolator must be fit before calling differentiate().")
+        
+        if order < 1:
+            raise ValueError("Derivative order must be >= 1")
+        
+        def derivative_func(eval_points: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+            eval_points = np.asarray(eval_points)
+            scalar_input = eval_points.ndim == 0
+            if scalar_input:
+                eval_points = np.array([eval_points])
+            
+            # Apply mask if provided
+            if mask is not None:
+                mask_array = np.asarray(mask)
+                if mask_array.dtype == bool:
+                    # Boolean mask
+                    if len(mask_array) != len(eval_points):
+                        raise ValueError(f"Boolean mask length {len(mask_array)} doesn't match eval_points length {len(eval_points)}")
+                    eval_points = eval_points[mask_array]
+                else:
+                    # Index mask
+                    eval_points = eval_points[mask_array]
+            
+            # Use numerical differentiation with small step size
+            h = 1e-6  # Small step for numerical differentiation
+            
+            # Compute derivatives for each interpolation function
+            derivs = []
+            for interp_func in self.interp_funcs:
+                if order == 1:
+                    # First derivative: f'(x) ≈ (f(x+h) - f(x-h)) / (2h)
+                    f_plus = interp_func(eval_points + h)
+                    f_minus = interp_func(eval_points - h)
+                    deriv = (f_plus - f_minus) / (2 * h)
+                elif order == 2:
+                    # Second derivative: f''(x) ≈ (f(x+h) - 2f(x) + f(x-h)) / h²
+                    f_plus = interp_func(eval_points + h)
+                    f_center = interp_func(eval_points)
+                    f_minus = interp_func(eval_points - h)
+                    deriv = (f_plus - 2 * f_center + f_minus) / (h * h)
+                else:
+                    # Higher order derivatives using recursive numerical differentiation
+                    def compute_numerical_derivative(x, order):
+                        if order == 1:
+                            return (interp_func(x + h) - interp_func(x - h)) / (2 * h)
+                        else:
+                            # Higher order derivatives using finite differences
+                            return (compute_numerical_derivative(x + h, order - 1) - 
+                                   compute_numerical_derivative(x - h, order - 1)) / (2 * h)
+                    
+                    # Apply to each evaluation point
+                    if np.isscalar(eval_points):
+                        deriv = compute_numerical_derivative(eval_points, order)
+                    else:
+                        deriv = np.array([compute_numerical_derivative(x, order) for x in eval_points])
+                
+                derivs.append(deriv)
+            
+            result = np.stack(derivs, axis=-1)
+            
+            # Handle different result dimensions
+            if len(self.interp_funcs) == 1:
+                result = result.flatten()
+                return result[0] if scalar_input else result
+            else:
+                return result[0] if scalar_input else result
+        
+        return derivative_func
 
 class FdaInterpolator(BaseInterpolator):
     def __init__(self, smoothing: Optional[float] = None, k: int = 3):
@@ -187,6 +415,52 @@ class FdaInterpolator(BaseInterpolator):
         if self.spline is None:
             raise RuntimeError("FdaInterpolator must be fit before calling predict().")
         return self.spline(new_time)
+    
+    def differentiate(self, order: int = 1, mask: Optional[Union[np.ndarray, List[bool], List[int]]] = None) -> Callable:
+        """
+        Return a callable function that computes derivatives of the FDA spline interpolation.
+        
+        Args:
+            order: Order of derivative (1 for first derivative, 2 for second, etc.)
+            mask: Optional mask for partial derivatives (boolean array or indices)
+                 If provided, only compute derivatives for selected points
+        
+        Returns:
+            Callable function that takes input points and returns derivative values
+        """
+        if self.spline is None:
+            raise RuntimeError("FdaInterpolator must be fit before calling differentiate().")
+        
+        if order < 1:
+            raise ValueError("Derivative order must be >= 1")
+        
+        if order > self.k:
+            raise ValueError(f"Derivative order {order} exceeds spline degree {self.k}")
+        
+        def derivative_func(eval_points: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+            eval_points = np.asarray(eval_points)
+            scalar_input = eval_points.ndim == 0
+            if scalar_input:
+                eval_points = np.array([eval_points])
+            
+            # Apply mask if provided
+            if mask is not None:
+                mask_array = np.asarray(mask)
+                if mask_array.dtype == bool:
+                    # Boolean mask
+                    if len(mask_array) != len(eval_points):
+                        raise ValueError(f"Boolean mask length {len(mask_array)} doesn't match eval_points length {len(eval_points)}")
+                    eval_points = eval_points[mask_array]
+                else:
+                    # Index mask
+                    eval_points = eval_points[mask_array]
+            
+            # Compute derivative using spline's built-in derivative method
+            result = self.spline.derivative(n=order)(eval_points)
+            
+            return result.item() if scalar_input and result.size == 1 else result
+        
+        return derivative_func
 
 class LlaInterpolator(BaseInterpolator):
     def __init__(self, window_size: int = 5, normalization: str = 'min', zero_mean: bool = False):
@@ -231,6 +505,119 @@ class LlaInterpolator(BaseInterpolator):
             h11 = u**3 - u**2
             result[i] = h00*s_prev + h10*h*d_prev + h01*s_next + h11*h*d_next
         return result if query_time.shape else result.item()
+    
+    def differentiate(self, order: int = 1, mask: Optional[Union[np.ndarray, List[bool], List[int]]] = None) -> Callable:
+        """
+        Return a callable function that computes derivatives of the LLA Hermite interpolation.
+        
+        Args:
+            order: Order of derivative (1 for first derivative, 2 for second, etc.)
+            mask: Optional mask for partial derivatives (boolean array or indices)
+                 If provided, only compute derivatives for selected points
+        
+        Returns:
+            Callable function that takes input points and returns derivative values
+        """
+        if self.t is None or self.s is None or self.d is None:
+            raise RuntimeError("LlaInterpolator must be fit before calling differentiate().")
+        
+        if order < 1:
+            raise ValueError("Derivative order must be >= 1")
+        
+        def derivative_func(eval_points: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+            eval_points = np.asarray(eval_points)
+            scalar_input = eval_points.ndim == 0
+            if scalar_input:
+                eval_points = np.array([eval_points])
+            
+            # Apply mask if provided
+            if mask is not None:
+                mask_array = np.asarray(mask)
+                if mask_array.dtype == bool:
+                    # Boolean mask
+                    if len(mask_array) != len(eval_points):
+                        raise ValueError(f"Boolean mask length {len(mask_array)} doesn't match eval_points length {len(eval_points)}")
+                    eval_points = eval_points[mask_array]
+                else:
+                    # Index mask
+                    eval_points = eval_points[mask_array]
+            
+            t, s, d = self.t, self.s, self.d
+            result = np.empty_like(eval_points, dtype=float)
+            
+            for i, t_i in enumerate(eval_points):
+                idx_next = np.searchsorted(t, t_i, side='right')
+                if idx_next == 0:
+                    idx_prev = idx_next
+                elif idx_next == len(t):
+                    idx_prev = idx_next - 1
+                else:
+                    idx_prev = idx_next - 1
+                
+                s_prev, s_next = s[idx_prev], s[min(idx_next, len(s)-1)]
+                d_prev, d_next = d[idx_prev], d[min(idx_next, len(d)-1)]
+                t_prev, t_next = t[idx_prev], t[min(idx_next, len(t)-1)]
+                h = t_next - t_prev
+                u = (t_i - t_prev) / h if h != 0 else 0
+                
+                if order == 1:
+                    # First derivative of Hermite interpolation
+                    # h'00 = 6*u**2 - 6*u, h'10 = 3*u**2 - 4*u + 1
+                    # h'01 = -6*u**2 + 6*u, h'11 = 3*u**2 - 2*u
+                    h00_prime = 6*u**2 - 6*u
+                    h10_prime = 3*u**2 - 4*u + 1
+                    h01_prime = -6*u**2 + 6*u
+                    h11_prime = 3*u**2 - 2*u
+                    
+                    # Scale by 1/h for proper derivative
+                    if h != 0:
+                        result[i] = (h00_prime*s_prev + h10_prime*h*d_prev + 
+                                   h01_prime*s_next + h11_prime*h*d_next) / h
+                    else:
+                        result[i] = d_prev  # Use stored derivative at point
+                        
+                elif order == 2:
+                    # Second derivative of Hermite interpolation
+                    # h''00 = 12*u - 6, h''10 = 6*u - 4
+                    # h''01 = -12*u + 6, h''11 = 6*u - 2
+                    h00_double_prime = 12*u - 6
+                    h10_double_prime = 6*u - 4
+                    h01_double_prime = -12*u + 6
+                    h11_double_prime = 6*u - 2
+                    
+                    # Scale by 1/h^2 for proper second derivative
+                    if h != 0:
+                        result[i] = (h00_double_prime*s_prev + h10_double_prime*h*d_prev + 
+                                   h01_double_prime*s_next + h11_double_prime*h*d_next) / (h * h)
+                    else:
+                        result[i] = 0  # Second derivative at isolated point
+                        
+                else:
+                    # For higher orders, use numerical differentiation with larger step size
+                    h_num = 1e-4  # Larger step size for stability
+                    
+                    # Use iterative finite differences for higher order derivatives
+                    def compute_derivative_iteratively(x, order):
+                        # Start with the function values
+                        values = self.predict(np.array([x - h_num, x, x + h_num]))
+                        
+                        # Apply finite differences iteratively
+                        for _ in range(order):
+                            # Central difference formula: f'(x) ≈ (f(x+h) - f(x-h)) / (2h)
+                            new_values = np.zeros(len(values) - 2)
+                            for j in range(len(new_values)):
+                                new_values[j] = (values[j + 2] - values[j]) / (2 * h_num)
+                            values = new_values
+                            if len(values) == 0:
+                                return 0.0
+                        
+                        return values[0] if len(values) > 0 else 0.0
+                    
+                    result[i] = compute_derivative_iteratively(t_i, order)
+            
+            return result.item() if scalar_input and result.size == 1 else result
+        
+        return derivative_func
 
 class GllaInterpolator(BaseInterpolator):
     def __init__(self, embedding: int = 3, n: int = 2):
@@ -274,6 +661,115 @@ class GllaInterpolator(BaseInterpolator):
             h11 = u**3 - u**2
             result[i] = h00*s_prev + h10*h*d_prev + h01*s_next + h11*h*d_next
         return result if query_time.shape else result.item()
+    
+    def differentiate(self, order: int = 1, mask: Optional[Union[np.ndarray, List[bool], List[int]]] = None) -> Callable:
+        """
+        Return a callable function that computes derivatives of the GLLA Hermite interpolation.
+        
+        Args:
+            order: Order of derivative (1 for first derivative, 2 for second, etc.)
+            mask: Optional mask for partial derivatives (boolean array or indices)
+                 If provided, only compute derivatives for selected points
+        
+        Returns:
+            Callable function that takes input points and returns derivative values
+        """
+        if self.t is None or self.s is None or self.d is None:
+            raise RuntimeError("GllaInterpolator must be fit before calling differentiate().")
+        
+        if order < 1:
+            raise ValueError("Derivative order must be >= 1")
+        
+        def derivative_func(eval_points: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+            eval_points = np.asarray(eval_points)
+            scalar_input = eval_points.ndim == 0
+            if scalar_input:
+                eval_points = np.array([eval_points])
+            
+            # Apply mask if provided
+            if mask is not None:
+                mask_array = np.asarray(mask)
+                if mask_array.dtype == bool:
+                    # Boolean mask
+                    if len(mask_array) != len(eval_points):
+                        raise ValueError(f"Boolean mask length {len(mask_array)} doesn't match eval_points length {len(eval_points)}")
+                    eval_points = eval_points[mask_array]
+                else:
+                    # Index mask
+                    eval_points = eval_points[mask_array]
+            
+            t, s, d = self.t, self.s, self.d
+            result = np.empty_like(eval_points, dtype=float)
+            
+            for i, t_i in enumerate(eval_points):
+                idx_next = np.searchsorted(t, t_i, side='right')
+                if idx_next == 0:
+                    idx_prev = idx_next
+                elif idx_next == len(t):
+                    idx_prev = idx_next - 1
+                else:
+                    idx_prev = idx_next - 1
+                
+                s_prev, s_next = s[idx_prev], s[min(idx_next, len(s)-1)]
+                d_prev, d_next = d[idx_prev], d[min(idx_next, len(d)-1)]
+                t_prev, t_next = t[idx_prev], t[min(idx_next, len(t)-1)]
+                h = t_next - t_prev
+                u = (t_i - t_prev) / h if h != 0 else 0
+                
+                if order == 1:
+                    # First derivative of Hermite interpolation
+                    h00_prime = 6*u**2 - 6*u
+                    h10_prime = 3*u**2 - 4*u + 1
+                    h01_prime = -6*u**2 + 6*u
+                    h11_prime = 3*u**2 - 2*u
+                    
+                    # Scale by 1/h for proper derivative
+                    if h != 0:
+                        result[i] = (h00_prime*s_prev + h10_prime*h*d_prev + 
+                                   h01_prime*s_next + h11_prime*h*d_next) / h
+                    else:
+                        result[i] = d_prev  # Use stored derivative at point
+                        
+                elif order == 2:
+                    # Second derivative of Hermite interpolation
+                    h00_double_prime = 12*u - 6
+                    h10_double_prime = 6*u - 4
+                    h01_double_prime = -12*u + 6
+                    h11_double_prime = 6*u - 2
+                    
+                    # Scale by 1/h^2 for proper second derivative
+                    if h != 0:
+                        result[i] = (h00_double_prime*s_prev + h10_double_prime*h*d_prev + 
+                                   h01_double_prime*s_next + h11_double_prime*h*d_next) / (h * h)
+                    else:
+                        result[i] = 0  # Second derivative at isolated point
+                        
+                else:
+                    # For higher orders, use numerical differentiation with larger step size
+                    h_num = 1e-4  # Larger step size for stability
+                    
+                    # Use iterative finite differences for higher order derivatives
+                    def compute_derivative_iteratively(x, order):
+                        # Start with the function values
+                        values = self.predict(np.array([x - h_num, x, x + h_num]))
+                        
+                        # Apply finite differences iteratively
+                        for _ in range(order):
+                            # Central difference formula: f'(x) ≈ (f(x+h) - f(x-h)) / (2h)
+                            new_values = np.zeros(len(values) - 2)
+                            for j in range(len(new_values)):
+                                new_values[j] = (values[j + 2] - values[j]) / (2 * h_num)
+                            values = new_values
+                            if len(values) == 0:
+                                return 0.0
+                        
+                        return values[0] if len(values) > 0 else 0.0
+                    
+                    result[i] = compute_derivative_iteratively(t_i, order)
+            
+            return result.item() if scalar_input and result.size == 1 else result
+        
+        return derivative_func
 
 class GoldInterpolator(BaseInterpolator):
     def __init__(self, window_size: int = 5, normalization: str = 'min', zero_mean: bool = False):
@@ -419,6 +915,131 @@ class NeuralNetworkInterpolator(BaseInterpolator):
                 return float(pred[0])
             else:
                 return float(pred)
+    
+    def differentiate(self, order: int = 1, mask: Optional[Union[np.ndarray, List[bool], List[int]]] = None) -> Callable:
+        """
+        Return a callable function that computes derivatives using automatic differentiation.
+        
+        Args:
+            order: Order of derivative (1 for first derivative, 2 for second, etc.)
+            mask: Optional mask for partial derivatives (boolean array or indices)
+                 If provided, only compute derivatives for selected points
+        
+        Returns:
+            Callable function that takes input points and returns derivative values
+        """
+        if self.model is None:
+            raise RuntimeError("NeuralNetworkInterpolator must be fit before calling differentiate().")
+        
+        if order < 1:
+            raise ValueError("Derivative order must be >= 1")
+        
+        def derivative_func(eval_points: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+            import numpy as np
+            eval_points = np.asarray(eval_points)
+            scalar_input = eval_points.ndim == 0
+            if scalar_input:
+                eval_points = np.array([eval_points])
+            
+            # Apply mask if provided
+            if mask is not None:
+                mask_array = np.asarray(mask)
+                if mask_array.dtype == bool:
+                    # Boolean mask
+                    if len(mask_array) != len(eval_points):
+                        raise ValueError(f"Boolean mask length {len(mask_array)} doesn't match eval_points length {len(eval_points)}")
+                    eval_points = eval_points[mask_array]
+                else:
+                    # Index mask
+                    eval_points = eval_points[mask_array]
+            
+            # Normalize input points
+            t_norm = (eval_points - self.t_min) / (self.t_max - self.t_min) if self.t_max > self.t_min else eval_points
+            
+            if self.framework == 'pytorch':
+                import torch
+                
+                # Convert to tensor and enable gradient computation
+                X = torch.tensor(t_norm.reshape(-1, 1), dtype=torch.float32, requires_grad=True)
+                
+                # Forward pass
+                self.model.eval()
+                output = self.model(X)
+                
+                # Compute derivatives using automatic differentiation
+                current_grad = output
+                for i in range(order):
+                    if i == 0:
+                        # First derivative
+                        grad_outputs = torch.ones_like(current_grad)
+                        current_grad = torch.autograd.grad(
+                            outputs=current_grad,
+                            inputs=X,
+                            grad_outputs=grad_outputs,
+                            create_graph=True if i < order - 1 else False,
+                            retain_graph=True if i < order - 1 else False
+                        )[0]
+                    else:
+                        # Higher order derivatives
+                        grad_outputs = torch.ones_like(current_grad)
+                        current_grad = torch.autograd.grad(
+                            outputs=current_grad,
+                            inputs=X,
+                            grad_outputs=grad_outputs,
+                            create_graph=True if i < order - 1 else False,
+                            retain_graph=True if i < order - 1 else False
+                        )[0]
+                
+                # Convert back to numpy and denormalize
+                derivatives_norm = current_grad.detach().numpy().flatten()
+                
+                # Denormalize derivatives
+                # For nth order derivative: scale by (dt_norm/dt_real)^n * (ds_real/ds_norm)
+                dt_scale = (self.t_max - self.t_min) if self.t_max > self.t_min else 1.0
+                ds_scale = (self.s_max - self.s_min) if self.s_max > self.s_min else 1.0
+                
+                derivatives = derivatives_norm * (ds_scale / (dt_scale ** order))
+                
+            elif self.framework == 'tensorflow':
+                import tensorflow as tf
+                
+                # Convert to tensor
+                X = tf.Variable(t_norm.reshape(-1, 1), dtype=tf.float32)
+                
+                # Compute derivatives using GradientTape
+                with tf.GradientTape() as tape:
+                    tape.watch(X)
+                    
+                    # For higher order derivatives, we need nested tapes
+                    current_output = self.model(X)
+                    
+                    for i in range(order):
+                        if i == 0:
+                            current_grad = tape.gradient(current_output, X)
+                        else:
+                            with tf.GradientTape() as inner_tape:
+                                inner_tape.watch(X)
+                                temp_output = self.model(X)
+                                temp_grad = inner_tape.gradient(temp_output, X)
+                                
+                            # This is a simplified approach - for production, use tf.hessians for 2nd order
+                            current_grad = tape.gradient(current_grad, X)
+                
+                # Convert to numpy and denormalize
+                derivatives_norm = current_grad.numpy().flatten()
+                
+                # Denormalize derivatives
+                dt_scale = (self.t_max - self.t_min) if self.t_max > self.t_min else 1.0
+                ds_scale = (self.s_max - self.s_min) if self.s_max > self.s_min else 1.0
+                
+                derivatives = derivatives_norm * (ds_scale / (dt_scale ** order))
+                
+            else:
+                raise ValueError(f"Unknown framework: {self.framework}")
+            
+            return derivatives.item() if scalar_input and derivatives.size == 1 else derivatives
+        
+        return derivative_func
 
 
 

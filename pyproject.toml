@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pydelt"
-version = "0.4.0"
-description = "Python package for calculating derivatives of time series data using various methods"
+version = "0.5.0"
+description = "Python package for dynamical systems analysis, differential equations approximation, and multivariate calculus"
 authors = [
   { name="Michael Harrison Lee", email="leemichael289@gmail.com" },
 ]
@@ -25,14 +25,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Mathematics",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-keywords = ["derivatives", "time-series", "numerical-analysis", "interpolation", "integration", "machine-learning"]
-
-[project.urls]
-Homepage = "https://github.com/MikeHLee/pydelt"
-Documentation = "https://pydelt.readthedocs.io/"
-Repository = "https://github.com/MikeHLee/pydelt.git"
-Issues = "https://github.com/MikeHLee/pydelt/issues"
-Changelog = "https://github.com/MikeHLee/pydelt/blob/main/CHANGELOG.md"
+keywords = ["derivatives", "dynamical-systems", "differential-equations", "multivariate-calculus", "numerical-analysis", "interpolation", "integration", "machine-learning", "gradient", "jacobian", "hessian"]
 dependencies = [
     "numpy>=1.20.0",
     "pandas>=1.3.0",
@@ -40,6 +33,13 @@ dependencies = [
     "plotly>=5.0.0",
     "statsmodels>=0.13.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/MikeHLee/pydelt"
+Documentation = "https://pydelt.readthedocs.io/"
+Repository = "https://github.com/MikeHLee/pydelt.git"
+Issues = "https://github.com/MikeHLee/pydelt/issues"
+Changelog = "https://github.com/MikeHLee/pydelt/blob/main/CHANGELOG.md"
 
 [tool.hatch.build]
 exclude = [

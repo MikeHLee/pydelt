@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pydelt: Python Derivatives for Time Series &mdash; pydelt 0.4.0 documentation</title>
+  <title>pydelt: Dynamical Systems &amp; Differential Equations Approximation &mdash; pydelt 0.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -47,6 +47,7 @@
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 </ul>
 
@@ -64,7 +65,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">pydelt: Python Derivatives for Time Series</li>
+      <li class="breadcrumb-item active">pydelt: Dynamical Systems &amp; Differential Equations Approximation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -74,18 +75,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="pydelt-python-derivatives-for-time-series">
-<h1>pydelt: Python Derivatives for Time Series<a class="headerlink" href="#pydelt-python-derivatives-for-time-series" title="Link to this heading"></a></h1>
-<p><strong>pydelt</strong> is a comprehensive Python package for calculating derivatives of time series data using various numerical and machine learning methods.</p>
-<section id="key-features">
-<h2>🚀 <strong>Key Features</strong><a class="headerlink" href="#key-features" title="Link to this heading"></a></h2>
+  <section id="pydelt-dynamical-systems-differential-equations-approximation">
+<h1>pydelt: Dynamical Systems &amp; Differential Equations Approximation<a class="headerlink" href="#pydelt-dynamical-systems-differential-equations-approximation" title="Link to this heading"></a></h1>
+<p><strong>pydelt</strong> is a comprehensive Python package for approximating derivatives and solving differential equations from data, with applications in dynamical systems analysis, time series modeling, and scientific computing.</p>
+<section id="core-capabilities">
+<h2>🚀 <strong>Core Capabilities</strong><a class="headerlink" href="#core-capabilities" title="Link to this heading"></a></h2>
 <ul class="simple">
-<li><p><strong>Multiple derivative methods</strong>: Finite differences, local linear approximation, Gaussian processes, and neural networks</p></li>
-<li><p><strong>Advanced interpolation</strong>: Splines, LOWESS, LOESS, and neural network-based interpolation</p></li>
-<li><p><strong>Automatic differentiation</strong>: PyTorch and TensorFlow backends for gradient computation</p></li>
-<li><p><strong>Integration capabilities</strong>: Numerical integration with error estimation</p></li>
-<li><p><strong>Multivariate support</strong>: Handle multi-dimensional time series data</p></li>
-<li><p><strong>Robust error handling</strong>: Comprehensive input validation and error messages</p></li>
+<li><p><strong>Universal Differentiation Interface</strong>: Consistent API across all interpolation methods with <cite>.differentiate(order, mask)</cite> support</p></li>
+<li><p><strong>Multivariate Calculus</strong>: Gradient (∇f), Jacobian (∂f/∂x), Hessian (∂²f/∂x²), and Laplacian (∇²f) computation</p></li>
+<li><p><strong>Higher-Order Derivatives</strong>: Support for arbitrary-order derivatives with analytical and numerical methods</p></li>
+<li><p><strong>Advanced Interpolation</strong>: Splines, LOWESS, LOESS, Local Linear Approximation (LLA), and neural network-based methods</p></li>
+<li><p><strong>Automatic Differentiation</strong>: PyTorch and TensorFlow backends for exact gradient computation</p></li>
+<li><p><strong>Vector &amp; Tensor Operations</strong>: Full support for vector-valued functions and tensor calculus</p></li>
+<li><p><strong>Time Series Applications</strong>: Specialized methods for temporal data analysis and dynamical systems identification</p></li>
 </ul>
 </section>
 <section id="installation">
@@ -95,24 +97,74 @@
 </pre></div>
 </div>
 </section>
-<section id="quick-start">
-<h2>🔧 <strong>Quick Start</strong><a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
+<section id="quick-start-examples">
+<h2>🔧 <strong>Quick Start Examples</strong><a class="headerlink" href="#quick-start-examples" title="Link to this heading"></a></h2>
+<p><strong>1. Universal Differentiation Interface</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.derivatives</span><span class="w"> </span><span class="kn">import</span> <span class="n">lla</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
 
-<span class="c1"># Generate sample data</span>
+<span class="c1"># Generate sample data: f(t) = sin(t)</span>
 <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
 <span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
 
-<span class="c1"># Calculate derivative using Local Linear Approximation</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">lla</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">signal</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">derivative</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Extract derivatives</span>
+<span class="c1"># Universal API: fit interpolator and compute derivatives</span>
+<span class="n">interpolator</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">interpolator</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">signal</span><span class="p">)</span>
+<span class="n">derivative_func</span> <span class="o">=</span> <span class="n">interpolator</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-<span class="c1"># The derivative of sin(x) should be approximately cos(x)</span>
-<span class="n">expected</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max error: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">derivative</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">expected</span><span class="p">))</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Evaluate derivative at any points</span>
+<span class="n">derivatives</span> <span class="o">=</span> <span class="n">derivative_func</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max error vs cos(t): </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">derivatives</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">time</span><span class="p">)))</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p><strong>2. Multivariate Calculus</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.multivariate</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultivariateDerivatives</span>
+
+<span class="c1"># Generate 2D data: f(x,y) = x² + y²</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">X</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">Y</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="c1"># Fit multivariate derivatives</span>
+<span class="n">input_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span>
+<span class="n">output_data</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+<span class="n">mv</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span><span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">mv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">output_data</span><span class="p">)</span>
+
+<span class="c1"># Compute gradient: ∇f = [2x, 2y]</span>
+<span class="n">gradient_func</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">gradient</span><span class="p">()</span>
+<span class="n">test_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]])</span>
+<span class="n">gradient</span> <span class="o">=</span> <span class="n">gradient_func</span><span class="p">(</span><span class="n">test_point</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gradient at (1,1): </span><span class="si">{</span><span class="n">gradient</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> (expected: [2, 2])&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>3. Time Series Application</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.derivatives</span><span class="w"> </span><span class="kn">import</span> <span class="n">lla</span>
+
+<span class="c1"># Traditional time series derivative (legacy API)</span>
+<span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">lla</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">signal</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">derivative</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Extract derivatives</span>
+</pre></div>
+</div>
+</section>
+<section id="applications-in-dynamical-systems">
+<h2>🌌 <strong>Applications in Dynamical Systems</strong><a class="headerlink" href="#applications-in-dynamical-systems" title="Link to this heading"></a></h2>
+<p><strong>pydelt</strong> excels in analyzing dynamical systems and differential equations from data:</p>
+<ul class="simple">
+<li><p><strong>System Identification</strong>: Reconstruct differential equations from time series observations</p></li>
+<li><p><strong>Phase Space Reconstruction</strong>: Compute derivatives for embedding dimension analysis</p></li>
+<li><p><strong>Stability Analysis</strong>: Calculate Jacobians and eigenvalues for equilibrium point classification</p></li>
+<li><p><strong>Bifurcation Analysis</strong>: Track parameter-dependent changes in system behavior</p></li>
+<li><p><strong>Control Theory</strong>: Design controllers using derivative information from system responses</p></li>
+<li><p><strong>Fluid Dynamics</strong>: Analyze velocity fields and compute vorticity, divergence, and strain tensors</p></li>
+<li><p><strong>Continuum Mechanics</strong>: Calculate stress and strain derivatives for material property estimation</p></li>
+<li><p><strong>Signal Processing</strong>: Extract instantaneous frequency and phase derivatives from complex signals</p></li>
+</ul>
+<p><strong>Time Series as a Special Case</strong>: Traditional time series derivative analysis is just one application of our broader dynamical systems framework. The universal differentiation interface seamlessly handles both temporal data and general multivariate functions.</p>
 </section>
 <section id="documentation-contents">
 <h2>📚 <strong>Documentation Contents</strong><a class="headerlink" href="#documentation-contents" title="Link to this heading"></a></h2>
@@ -134,6 +186,7 @@
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#interpolation">Interpolation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#integration">Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#multivariate-data">Multivariate Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#important-limitations">Important Limitations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#error-handling">Error Handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#next-steps">Next Steps</a></li>
 </ul>
@@ -144,6 +197,7 @@
 <li class="toctree-l2"><a class="reference internal" href="examples.html#example-3-noisy-data-processing">Example 3: Noisy Data Processing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#example-4-integration-and-roundtrip-accuracy">Example 4: Integration and Roundtrip Accuracy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#example-5-multivariate-time-series">Example 5: Multivariate Time Series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#example-6-understanding-numerical-limitations">Example 6: Understanding Numerical Limitations</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
@@ -151,6 +205,15 @@
 <li class="toctree-l2"><a class="reference internal" href="api.html#module-pydelt.interpolation">Interpolation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#module-pydelt.derivatives">Derivatives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#module-pydelt.integrals">Integrals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#multivariate-derivatives">Multivariate Derivatives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#numerical-accuracy">Numerical Accuracy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#performance-and-memory">Performance and Memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#error-messages-and-troubleshooting">Error Messages and Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#integration-with-other-libraries">Integration with Other Libraries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#getting-help">Getting Help</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a><ul>

@@ -51,12 +51,14 @@
 <li class="toctree-l2"><a class="reference internal" href="#interpolation">Interpolation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#integration">Integration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#multivariate-data">Multivariate Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#important-limitations">Important Limitations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#error-handling">Error Handling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#next-steps">Next Steps</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
 </ul>
 
@@ -200,6 +202,39 @@
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Multivariate derivative error: </span><span class="si">{</span><span class="n">error</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</section>
+<section id="important-limitations">
+<h2>Important Limitations<a class="headerlink" href="#important-limitations" title="Link to this heading"></a></h2>
+<p>When working with multivariate derivatives, be aware of these numerical limitations:</p>
+<p><strong>Critical Point Smoothing</strong></p>
+<p>Numerical interpolation methods smooth out sharp mathematical features:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example: f(x,y) = (x-y)² has zero gradient along x=y line</span>
+<span class="c1"># But numerical methods will give non-zero gradients everywhere</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.multivariate</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultivariateDerivatives</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+
+<span class="c1"># At point (-3,-3), gradient should be [0, 0] mathematically</span>
+<span class="c1"># But numerical result will be non-zero due to smoothing</span>
+
+<span class="c1"># Always validate against analytical solutions when possible</span>
+<span class="n">analytical_gradient</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">y</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">y</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">]</span>  <span class="c1"># For f(x,y) = x² + y² - 2xy</span>
+</pre></div>
+</div>
+<p><strong>When to Be Cautious:</strong></p>
+<ul class="simple">
+<li><p>Functions with sharp valleys or ridges</p></li>
+<li><p>Optimization problems where exact critical points matter</p></li>
+<li><p>Near boundaries of the interpolation domain</p></li>
+<li><p>Functions with discontinuities or sharp transitions</p></li>
+</ul>
+<p><strong>Mitigation Strategies:</strong></p>
+<ul class="simple">
+<li><p>Use higher resolution sampling near critical points</p></li>
+<li><p>Reduce smoothing parameters (but beware of overfitting)</p></li>
+<li><p>Compare numerical results with analytical solutions</p></li>
+<li><p>Consider neural network methods for exact derivatives</p></li>
+</ul>
 </section>
 <section id="error-handling">
 <h2>Error Handling<a class="headerlink" href="#error-handling" title="Link to this heading"></a></h2>
