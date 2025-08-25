@@ -1,0 +1,590 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stochastic Computing &amp; Probabilistic Derivatives &mdash; pydelt 0.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=6c02275b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="Multivariate Calculus &amp; Vector Operations" href="multivariate_calculus.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Progressive Learning Path:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Stochastic Computing &amp; Probabilistic Derivatives</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#core-concepts">🎲 <strong>Core Concepts</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stochastic-link-functions">🔧 <strong>Stochastic Link Functions</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-1-stock-price-derivatives-geometric-brownian-motion">💰 <strong>Example 1: Stock Price Derivatives (Geometric Brownian Motion)</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-2-interest-rate-modeling">🏦 <strong>Example 2: Interest Rate Modeling</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-3-population-dynamics-with-uncertainty">🧬 <strong>Example 3: Population Dynamics with Uncertainty</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-stochastic-features">⚙️ <strong>Advanced Stochastic Features</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#best-practices">🎓 <strong>Best Practices</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#limitations-considerations">⚠️ <strong>Limitations &amp; Considerations</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#research-applications">🔬 <strong>Research Applications</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-with-other-features">🔗 <strong>Integration with Other Features</strong></a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Stochastic Computing &amp; Probabilistic Derivatives</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/stochastic_computing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="stochastic-computing-probabilistic-derivatives">
+<h1>Stochastic Computing &amp; Probabilistic Derivatives<a class="headerlink" href="#stochastic-computing-probabilistic-derivatives" title="Link to this heading"></a></h1>
+<p>Stochastic computing extends numerical differentiation to probabilistic settings, enabling uncertainty quantification and risk analysis. By applying stochastic link functions and calculus corrections, derivatives can reflect the underlying probability distributions of the data, making this essential for financial modeling, risk management, and scientific applications with inherent uncertainty.</p>
+<section id="core-concepts">
+<h2>🎲 <strong>Core Concepts</strong><a class="headerlink" href="#core-concepts" title="Link to this heading"></a></h2>
+<p><strong>Stochastic Link Functions</strong> transform deterministic derivatives to account for the probabilistic nature of the underlying data. Instead of computing derivatives of f(x), we compute derivatives that reflect the expected behavior when data follows a specific probability distribution.</p>
+<p><strong>Itô’s Lemma</strong> provides correction terms for stochastic calculus when the underlying process follows a stochastic differential equation. For a function f(X_t) where X_t follows a diffusion process:</p>
+<div class="math notranslate nohighlight">
+\[df = f'(X_t)dX_t + \frac{1}{2}f''(X_t)(dX_t)^2\]</div>
+<p><strong>Stratonovich Integral</strong> offers an alternative interpretation of stochastic integration that preserves the classical chain rule, useful when the noise is “physical” rather than mathematical.</p>
+<p><strong>Financial Applications</strong>: Essential for option pricing, risk management, and volatility modeling where asset prices follow geometric Brownian motion or other stochastic processes.</p>
+</section>
+<section id="stochastic-link-functions">
+<h2>🔧 <strong>Stochastic Link Functions</strong><a class="headerlink" href="#stochastic-link-functions" title="Link to this heading"></a></h2>
+<p>pydelt supports six probability distributions as stochastic link functions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+
+<span class="c1"># Create interpolator</span>
+<span class="n">interpolator</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">interpolator</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">time_data</span><span class="p">,</span> <span class="n">price_data</span><span class="p">)</span>
+
+<span class="c1"># Set stochastic link function</span>
+<span class="n">interpolator</span><span class="o">.</span><span class="n">set_stochastic_link</span><span class="p">(</span>
+    <span class="n">link_function</span><span class="o">=</span><span class="s1">&#39;lognormal&#39;</span><span class="p">,</span>  <span class="c1"># Distribution type</span>
+    <span class="n">sigma</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>                  <span class="c1"># Distribution parameter</span>
+    <span class="n">method</span><span class="o">=</span><span class="s1">&#39;ito&#39;</span>                <span class="c1"># Stochastic calculus method</span>
+<span class="p">)</span>
+
+<span class="c1"># Derivatives now include stochastic corrections</span>
+<span class="n">stochastic_deriv</span> <span class="o">=</span> <span class="n">interpolator</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">derivatives</span> <span class="o">=</span> <span class="n">stochastic_deriv</span><span class="p">(</span><span class="n">evaluation_points</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Available Distributions</strong>:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Distribution</p></th>
+<th class="head"><p>Parameters</p></th>
+<th class="head"><p>Typical Applications</p></th>
+<th class="head"><p>Key Properties</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">normal</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sigma</span></code></p></td>
+<td><p>Interest rates, errors</p></td>
+<td><p>Symmetric, unbounded</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lognormal</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sigma</span></code></p></td>
+<td><p>Stock prices, volumes</p></td>
+<td><p>Positive, right-skewed</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gamma</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">alpha,</span> <span class="pre">beta</span></code></p></td>
+<td><p>Waiting times, rates</p></td>
+<td><p>Positive, flexible shape</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">beta</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">alpha,</span> <span class="pre">beta</span></code></p></td>
+<td><p>Proportions, ratios</p></td>
+<td><p>Bounded [0,1]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">exponential</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lambda</span></code></p></td>
+<td><p>Survival times</p></td>
+<td><p>Memoryless, decreasing</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">poisson</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lambda</span></code></p></td>
+<td><p>Count processes</p></td>
+<td><p>Discrete, non-negative</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="example-1-stock-price-derivatives-geometric-brownian-motion">
+<h2>💰 <strong>Example 1: Stock Price Derivatives (Geometric Brownian Motion)</strong><a class="headerlink" href="#example-1-stock-price-derivatives-geometric-brownian-motion" title="Link to this heading"></a></h2>
+<p><strong>Classic Application</strong>: Computing option Greeks with stochastic corrections.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+
+<span class="c1"># Simulate geometric Brownian motion stock price</span>
+<span class="c1"># dS_t = μS_t dt + σS_t dW_t</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">1.0</span>          <span class="c1"># 1 year</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">252</span>          <span class="c1"># Daily observations</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">T</span> <span class="o">/</span> <span class="n">N</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="mf">0.05</span>        <span class="c1"># Expected return (5%)</span>
+<span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.2</span>      <span class="c1"># Volatility (20%)</span>
+<span class="n">S0</span> <span class="o">=</span> <span class="mi">100</span>         <span class="c1"># Initial stock price</span>
+
+<span class="c1"># Generate price path</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>  <span class="c1"># Brownian motion</span>
+<span class="n">S</span> <span class="o">=</span> <span class="n">S0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">((</span><span class="n">mu</span> <span class="o">-</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">t</span> <span class="o">+</span> <span class="n">sigma</span><span class="o">*</span><span class="n">W</span><span class="p">)</span>  <span class="c1"># GBM solution</span>
+
+<span class="c1"># Fit interpolator</span>
+<span class="n">spline</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="n">spline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span>
+
+<span class="c1"># Compare regular vs stochastic derivatives</span>
+<span class="n">regular_deriv_func</span> <span class="o">=</span> <span class="n">spline</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">regular_derivatives</span> <span class="o">=</span> <span class="n">regular_deriv_func</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Set log-normal stochastic link (appropriate for stock prices)</span>
+<span class="n">spline</span><span class="o">.</span><span class="n">set_stochastic_link</span><span class="p">(</span><span class="s1">&#39;lognormal&#39;</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;ito&#39;</span><span class="p">)</span>
+<span class="n">stochastic_deriv_func</span> <span class="o">=</span> <span class="n">spline</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">stochastic_derivatives</span> <span class="o">=</span> <span class="n">stochastic_deriv_func</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Also try Stratonovich method</span>
+<span class="n">spline</span><span class="o">.</span><span class="n">set_stochastic_link</span><span class="p">(</span><span class="s1">&#39;lognormal&#39;</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;stratonovich&#39;</span><span class="p">)</span>
+<span class="n">stratonovich_deriv_func</span> <span class="o">=</span> <span class="n">spline</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">stratonovich_derivatives</span> <span class="o">=</span> <span class="n">stratonovich_deriv_func</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Analysis</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stock Price Derivative Analysis:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Regular derivative mean: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">regular_derivatives</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Itô stochastic derivative mean: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">stochastic_derivatives</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stratonovich derivative mean: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">stratonovich_derivatives</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Theoretical expectation: E[dS/dt] = μS for GBM</span>
+<span class="n">theoretical_mean</span> <span class="o">=</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">S</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Theoretical mean (μS): </span><span class="si">{</span><span class="n">theoretical_mean</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Compute differences</span>
+<span class="n">ito_correction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">stochastic_derivatives</span> <span class="o">-</span> <span class="n">regular_derivatives</span><span class="p">)</span>
+<span class="n">stratonovich_correction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">stratonovich_derivatives</span> <span class="o">-</span> <span class="n">regular_derivatives</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Stochastic Corrections:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Itô correction: </span><span class="si">{</span><span class="n">ito_correction</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stratonovich correction: </span><span class="si">{</span><span class="n">stratonovich_correction</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Option Greeks approximation</span>
+<span class="c1"># Delta (price sensitivity) ≈ derivative w.r.t. underlying</span>
+<span class="n">current_price</span> <span class="o">=</span> <span class="n">S</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">current_delta_regular</span> <span class="o">=</span> <span class="n">regular_derivatives</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">current_price</span>
+<span class="n">current_delta_stochastic</span> <span class="o">=</span> <span class="n">stochastic_derivatives</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">current_price</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Option Greeks Approximation:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Regular Delta: </span><span class="si">{</span><span class="n">current_delta_regular</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stochastic Delta: </span><span class="si">{</span><span class="n">current_delta_stochastic</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-2-interest-rate-modeling">
+<h2>🏦 <strong>Example 2: Interest Rate Modeling</strong><a class="headerlink" href="#example-2-interest-rate-modeling" title="Link to this heading"></a></h2>
+<p><strong>Application</strong>: Modeling interest rate derivatives with mean reversion.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Vasicek interest rate model simulation</span>
+<span class="c1"># dr_t = κ(θ - r_t)dt + σ dW_t</span>
+<span class="c1"># κ: mean reversion speed, θ: long-term mean, σ: volatility</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">vasicek_simulation</span><span class="p">(</span><span class="n">r0</span><span class="p">,</span> <span class="n">kappa</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulate Vasicek interest rate model&quot;&quot;&quot;</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">T</span> <span class="o">/</span> <span class="n">N</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">r0</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="n">dW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">kappa</span><span class="o">*</span><span class="p">(</span><span class="n">theta</span> <span class="o">-</span> <span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">*</span><span class="n">dt</span> <span class="o">+</span> <span class="n">sigma</span><span class="o">*</span><span class="n">dW</span>
+
+    <span class="k">return</span> <span class="n">t</span><span class="p">,</span> <span class="n">r</span>
+
+<span class="c1"># Model parameters</span>
+<span class="n">r0</span> <span class="o">=</span> <span class="mf">0.03</span>      <span class="c1"># Initial rate (3%)</span>
+<span class="n">kappa</span> <span class="o">=</span> <span class="mf">0.5</span>    <span class="c1"># Mean reversion speed</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="mf">0.04</span>   <span class="c1"># Long-term mean (4%)</span>
+<span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.01</span>   <span class="c1"># Volatility (1%)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">5.0</span>        <span class="c1"># 5 years</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">1000</span>       <span class="c1"># Time steps</span>
+
+<span class="c1"># Simulate interest rate path</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="n">t</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">vasicek_simulation</span><span class="p">(</span><span class="n">r0</span><span class="p">,</span> <span class="n">kappa</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+
+<span class="c1"># Fit with different interpolators</span>
+<span class="n">spline_rates</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+<span class="n">spline_rates</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span>
+
+<span class="c1"># Normal distribution appropriate for interest rates (can be negative)</span>
+<span class="n">spline_rates</span><span class="o">.</span><span class="n">set_stochastic_link</span><span class="p">(</span><span class="s1">&#39;normal&#39;</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;ito&#39;</span><span class="p">)</span>
+
+<span class="c1"># Compute rate derivatives (duration-like measures)</span>
+<span class="n">rate_deriv_func</span> <span class="o">=</span> <span class="n">spline_rates</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">rate_derivatives</span> <span class="o">=</span> <span class="n">rate_deriv_func</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Second derivatives (convexity-like measures)</span>
+<span class="n">rate_second_deriv_func</span> <span class="o">=</span> <span class="n">spline_rates</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">rate_second_derivatives</span> <span class="o">=</span> <span class="n">rate_second_deriv_func</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Theoretical drift: E[dr/dt] = κ(θ - r)</span>
+<span class="n">theoretical_drift</span> <span class="o">=</span> <span class="n">kappa</span> <span class="o">*</span> <span class="p">(</span><span class="n">theta</span> <span class="o">-</span> <span class="n">r</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Interest Rate Analysis:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean rate: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Rate volatility: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean derivative: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">rate_derivatives</span><span class="p">)</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Theoretical mean drift: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">theoretical_drift</span><span class="p">)</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Duration and convexity approximations</span>
+<span class="n">current_rate</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">duration_approx</span> <span class="o">=</span> <span class="o">-</span><span class="n">rate_derivatives</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">current_rate</span>
+<span class="n">convexity_approx</span> <span class="o">=</span> <span class="n">rate_second_derivatives</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">current_rate</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Bond Risk Measures (approximations):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Modified duration: </span><span class="si">{</span><span class="n">duration_approx</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Convexity: </span><span class="si">{</span><span class="n">convexity_approx</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-3-population-dynamics-with-uncertainty">
+<h2>🧬 <strong>Example 3: Population Dynamics with Uncertainty</strong><a class="headerlink" href="#example-3-population-dynamics-with-uncertainty" title="Link to this heading"></a></h2>
+<p><strong>Application</strong>: Biological population modeling with environmental stochasticity.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Stochastic logistic growth with environmental noise</span>
+<span class="c1"># dN/dt = rN(1 - N/K) + σN ξ(t)</span>
+<span class="c1"># where ξ(t) is white noise</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">stochastic_logistic</span><span class="p">(</span><span class="n">N0</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N_steps</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulate stochastic logistic growth&quot;&quot;&quot;</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">T</span> <span class="o">/</span> <span class="n">N_steps</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N_steps</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N_steps</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">N</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">N0</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_steps</span><span class="p">):</span>
+        <span class="c1"># Deterministic growth</span>
+        <span class="n">growth</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">N</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">N</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="n">K</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt</span>
+        <span class="c1"># Stochastic perturbation</span>
+        <span class="n">noise</span> <span class="o">=</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">N</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">N</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">growth</span> <span class="o">+</span> <span class="n">noise</span><span class="p">)</span>  <span class="c1"># Prevent negative population</span>
+
+    <span class="k">return</span> <span class="n">t</span><span class="p">,</span> <span class="n">N</span>
+
+<span class="c1"># Population parameters</span>
+<span class="n">N0</span> <span class="o">=</span> <span class="mi">10</span>        <span class="c1"># Initial population</span>
+<span class="n">r</span> <span class="o">=</span> <span class="mf">0.5</span>        <span class="c1"># Growth rate</span>
+<span class="n">K</span> <span class="o">=</span> <span class="mi">1000</span>       <span class="c1"># Carrying capacity</span>
+<span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.1</span>    <span class="c1"># Environmental noise strength</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mi">20</span>         <span class="c1"># Time horizon</span>
+<span class="n">N_steps</span> <span class="o">=</span> <span class="mi">500</span>  <span class="c1"># Time steps</span>
+
+<span class="c1"># Simulate population</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">456</span><span class="p">)</span>
+<span class="n">t</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">stochastic_logistic</span><span class="p">(</span><span class="n">N0</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N_steps</span><span class="p">)</span>
+
+<span class="c1"># Fit interpolator</span>
+<span class="n">population_interp</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">population_interp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+
+<span class="c1"># Use gamma distribution (positive values, flexible shape)</span>
+<span class="c1"># Gamma parameters chosen to match population characteristics</span>
+<span class="n">alpha</span> <span class="o">=</span> <span class="mf">4.0</span>  <span class="c1"># Shape parameter</span>
+<span class="n">beta</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>  <span class="c1"># Rate parameter (scale = 1/beta)</span>
+
+<span class="n">population_interp</span><span class="o">.</span><span class="n">set_stochastic_link</span><span class="p">(</span><span class="s1">&#39;gamma&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;ito&#39;</span><span class="p">)</span>
+
+<span class="c1"># Compute growth rates</span>
+<span class="n">growth_rate_func</span> <span class="o">=</span> <span class="n">population_interp</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">stochastic_growth_rates</span> <span class="o">=</span> <span class="n">growth_rate_func</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Compare with deterministic logistic growth rate</span>
+<span class="n">deterministic_growth_rates</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">N</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">N</span><span class="o">/</span><span class="n">K</span><span class="p">)</span>
+
+<span class="c1"># Per capita growth rates</span>
+<span class="n">per_capita_stochastic</span> <span class="o">=</span> <span class="n">stochastic_growth_rates</span> <span class="o">/</span> <span class="n">N</span>
+<span class="n">per_capita_deterministic</span> <span class="o">=</span> <span class="n">deterministic_growth_rates</span> <span class="o">/</span> <span class="n">N</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Population Dynamics Analysis:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final population: </span><span class="si">{</span><span class="n">N</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Carrying capacity: </span><span class="si">{</span><span class="n">K</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean growth rate: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">stochastic_growth_rates</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Growth rate volatility: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">stochastic_growth_rates</span><span class="p">)</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Find maximum growth rate period</span>
+<span class="n">max_growth_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">stochastic_growth_rates</span><span class="p">)</span>
+<span class="n">max_growth_time</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">max_growth_idx</span><span class="p">]</span>
+<span class="n">max_growth_pop</span> <span class="o">=</span> <span class="n">N</span><span class="p">[</span><span class="n">max_growth_idx</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Maximum growth rate:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time: </span><span class="si">{</span><span class="n">max_growth_time</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Population: </span><span class="si">{</span><span class="n">max_growth_pop</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Growth rate: </span><span class="si">{</span><span class="n">stochastic_growth_rates</span><span class="p">[</span><span class="n">max_growth_idx</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Environmental impact analysis</span>
+<span class="n">stochastic_correction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">stochastic_growth_rates</span> <span class="o">-</span> <span class="n">deterministic_growth_rates</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Environmental stochasticity effect:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean correction: </span><span class="si">{</span><span class="n">stochastic_correction</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="advanced-stochastic-features">
+<h2>⚙️ <strong>Advanced Stochastic Features</strong><a class="headerlink" href="#advanced-stochastic-features" title="Link to this heading"></a></h2>
+<p><strong>Custom Link Functions</strong></p>
+<p>Create custom probability distributions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.stochastic</span><span class="w"> </span><span class="kn">import</span> <span class="n">StochasticLinkFunction</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">WeibullLink</span><span class="p">(</span><span class="n">StochasticLinkFunction</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="n">scale</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">y</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">derivative_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">f_prime</span><span class="p">,</span> <span class="n">f_double_prime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;ito&#39;</span><span class="p">):</span>
+        <span class="c1"># Implement Weibull-specific corrections</span>
+        <span class="k">pass</span>
+
+<span class="c1"># Use custom link</span>
+<span class="n">weibull_link</span> <span class="o">=</span> <span class="n">WeibullLink</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">interpolator</span><span class="o">.</span><span class="n">set_stochastic_link</span><span class="p">(</span><span class="n">weibull_link</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;ito&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Method Comparison</strong></p>
+<p>Compare Itô vs Stratonovich corrections:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Fit same data with both methods</span>
+<span class="n">interp_ito</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">interp_ito</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data_x</span><span class="p">,</span> <span class="n">data_y</span><span class="p">)</span>
+<span class="n">interp_ito</span><span class="o">.</span><span class="n">set_stochastic_link</span><span class="p">(</span><span class="s1">&#39;lognormal&#39;</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;ito&#39;</span><span class="p">)</span>
+
+<span class="n">interp_strat</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">interp_strat</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data_x</span><span class="p">,</span> <span class="n">data_y</span><span class="p">)</span>
+<span class="n">interp_strat</span><span class="o">.</span><span class="n">set_stochastic_link</span><span class="p">(</span><span class="s1">&#39;lognormal&#39;</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;stratonovich&#39;</span><span class="p">)</span>
+
+<span class="c1"># Compare derivatives</span>
+<span class="n">ito_deriv</span> <span class="o">=</span> <span class="n">interp_ito</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">eval_points</span><span class="p">)</span>
+<span class="n">strat_deriv</span> <span class="o">=</span> <span class="n">interp_strat</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">eval_points</span><span class="p">)</span>
+
+<span class="n">difference</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ito_deriv</span> <span class="o">-</span> <span class="n">strat_deriv</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Itô vs Stratonovich difference: </span><span class="si">{</span><span class="n">difference</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Parameter Sensitivity Analysis</strong></p>
+<p>Analyze sensitivity to distribution parameters:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Test different volatility levels</span>
+<span class="n">sigmas</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]</span>
+<span class="n">derivative_means</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">sigma</span> <span class="ow">in</span> <span class="n">sigmas</span><span class="p">:</span>
+    <span class="n">interp</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">interp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data_x</span><span class="p">,</span> <span class="n">data_y</span><span class="p">)</span>
+    <span class="n">interp</span><span class="o">.</span><span class="n">set_stochastic_link</span><span class="p">(</span><span class="s1">&#39;lognormal&#39;</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;ito&#39;</span><span class="p">)</span>
+
+    <span class="n">deriv_func</span> <span class="o">=</span> <span class="n">interp</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">derivatives</span> <span class="o">=</span> <span class="n">deriv_func</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+    <span class="n">derivative_means</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">derivatives</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sensitivity to volatility parameter:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">mean_deriv</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sigmas</span><span class="p">,</span> <span class="n">derivative_means</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;σ = </span><span class="si">{</span><span class="n">sigma</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">: Mean derivative = </span><span class="si">{</span><span class="n">mean_deriv</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="best-practices">
+<h2>🎓 <strong>Best Practices</strong><a class="headerlink" href="#best-practices" title="Link to this heading"></a></h2>
+<p><strong>Distribution Selection</strong>:
+1. <strong>Stock Prices</strong>: Log-normal (positive, multiplicative noise)
+2. <strong>Interest Rates</strong>: Normal (can be negative, additive noise)
+3. <strong>Waiting Times</strong>: Exponential or Gamma (positive, memoryless or aging)
+4. <strong>Proportions</strong>: Beta (bounded between 0 and 1)
+5. <strong>Count Data</strong>: Poisson (discrete, non-negative)</p>
+<p><strong>Method Selection</strong>:
+- <strong>Itô Calculus</strong>: Mathematical finance, theoretical models
+- <strong>Stratonovich Calculus</strong>: Physical systems, engineering applications
+- <strong>When in doubt</strong>: Try both and compare results</p>
+<p><strong>Parameter Estimation</strong>:
+Use maximum likelihood or method of moments to estimate distribution parameters from data:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">stats</span>
+
+<span class="c1"># Estimate log-normal parameters</span>
+<span class="n">sigma_est</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">price_data</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estimated volatility: </span><span class="si">{</span><span class="n">sigma_est</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Use estimated parameter</span>
+<span class="n">interpolator</span><span class="o">.</span><span class="n">set_stochastic_link</span><span class="p">(</span><span class="s1">&#39;lognormal&#39;</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma_est</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;ito&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Validation</strong>:
+Always compare with known analytical solutions when available:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># For geometric Brownian motion: E[dS/dt] = μS</span>
+<span class="n">theoretical_drift</span> <span class="o">=</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">stock_prices</span>
+<span class="n">numerical_drift</span> <span class="o">=</span> <span class="n">stochastic_derivatives</span>
+
+<span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">numerical_drift</span> <span class="o">-</span> <span class="n">theoretical_drift</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Drift estimation error: </span><span class="si">{</span><span class="n">error</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="limitations-considerations">
+<h2>⚠️ <strong>Limitations &amp; Considerations</strong><a class="headerlink" href="#limitations-considerations" title="Link to this heading"></a></h2>
+<p><strong>Numerical Stability</strong>:
+- Second derivatives required for Itô corrections may amplify noise
+- Use appropriate smoothing parameters
+- Consider robust interpolation methods for noisy data</p>
+<p><strong>Model Assumptions</strong>:
+- Stochastic link functions assume specific probability distributions
+- Validate distribution assumptions with data
+- Consider model uncertainty in critical applications</p>
+<p><strong>Computational Cost</strong>:
+- Stochastic corrections require additional derivative computations
+- Itô method needs second derivatives (more expensive)
+- Consider computational budget for real-time applications</p>
+<p><strong>Interpretation</strong>:
+- Stochastic derivatives reflect expected behavior under distributional assumptions
+- Results depend on chosen probability distribution and parameters
+- Always validate against domain knowledge and empirical data</p>
+</section>
+<section id="research-applications">
+<h2>🔬 <strong>Research Applications</strong><a class="headerlink" href="#research-applications" title="Link to this heading"></a></h2>
+<p><strong>Financial Engineering</strong>:
+- Option pricing with stochastic volatility
+- Risk-neutral measure transformations
+- Credit risk modeling with jump processes</p>
+<p><strong>Scientific Computing</strong>:
+- Uncertainty quantification in differential equations
+- Stochastic partial differential equations
+- Climate modeling with random forcing</p>
+<p><strong>Machine Learning</strong>:
+- Bayesian neural networks with stochastic derivatives
+- Uncertainty-aware optimization
+- Robust control with distributional assumptions</p>
+</section>
+<section id="integration-with-other-features">
+<h2>🔗 <strong>Integration with Other Features</strong><a class="headerlink" href="#integration-with-other-features" title="Link to this heading"></a></h2>
+<p>Stochastic computing combines powerfully with other pydelt features:</p>
+<p><strong>Multivariate Stochastic Derivatives</strong>:
+.. code-block:: python</p>
+<blockquote>
+<div><p># Apply stochastic links to multivariate functions
+from pydelt.multivariate import MultivariateDerivatives</p>
+<p>mv = MultivariateDerivatives(SplineInterpolator, smoothing=0.1)
+mv.fit(input_data, output_data)</p>
+<p># Set stochastic link for underlying interpolator
+mv.interpolator_class.set_stochastic_link(‘lognormal’, sigma=0.2)</p>
+<p># Gradients now include stochastic corrections
+stochastic_gradient = mv.gradient()</p>
+</div></blockquote>
+<p><strong>Neural Networks with Stochastic Links</strong>:
+.. code-block:: python</p>
+<blockquote>
+<div><p># Combine automatic differentiation with stochastic corrections
+nn_stochastic = NeuralNetworkInterpolator(hidden_layers=[128, 64])
+nn_stochastic.fit(data_x, data_y)
+nn_stochastic.set_stochastic_link(‘gamma’, alpha=2.0, beta=1.0)</p>
+<p># Exact derivatives with probabilistic corrections
+exact_stochastic_deriv = nn_stochastic.differentiate(order=1)</p>
+</div></blockquote>
+<p>This completes the progressive learning path from basic interpolation to advanced stochastic computing, providing a comprehensive framework for numerical differentiation with uncertainty quantification.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="multivariate_calculus.html" class="btn btn-neutral float-left" title="Multivariate Calculus &amp; Vector Operations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

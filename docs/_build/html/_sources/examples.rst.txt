@@ -396,3 +396,53 @@ Demonstrating critical point smoothing in multivariate derivatives:
 * Critical points often show non-zero numerical gradients due to smoothing
 * Always validate numerical results against analytical solutions when possible
 * Consider neural network methods for exact derivatives at critical points
+
+Example 7: Tensor Calculus
+--------------------------
+
+Directional derivative, divergence, curl, and strain/stress
+
+.. code-block:: python
+
+   import numpy as np
+   from pydelt.multivariate import MultivariateDerivatives
+   from pydelt.tensor_derivatives import TensorDerivatives
+   from pydelt.interpolation import SplineInterpolator
+
+   # 2D vector field: rotation F(x, y) = [-y, x]
+   xs = ys = np.linspace(-2, 2, 25)
+   X, Y = np.meshgrid(xs, ys)
+   U = -Y
+   V = X
+   inputs = np.column_stack([X.flatten(), Y.flatten()])
+   outputs = np.column_stack([U.flatten(), V.flatten()])
+
+   mv = MultivariateDerivatives(SplineInterpolator, smoothing=0.0)
+   mv.fit(inputs, outputs)
+
+   q = np.array([[1.0, 0.5]])
+   e = np.array([0.0, 1.0])
+   dF_e = mv.directional_derivative(e)(q)  # shape (1, 2)
+   divF = mv.divergence()(q)               # ≈ 0
+   curlF = mv.curl()(q)                    # ≈ 2
+   print("Directional derivative along e:", dF_e)
+   print("div(F):", float(divF), " curl(F):", float(curlF))
+
+   # 2D displacement field for strain/stress tensors
+   U = 0.05 * X**2 - 0.02 * Y
+   V = 0.10 * X * Y
+   displacement = np.column_stack([U.flatten(), V.flatten()])
+
+   td = TensorDerivatives(SplineInterpolator, smoothing=0.0)
+   td.fit(inputs, displacement)
+
+   strain = td.strain_tensor()(inputs)  # (N, 2, 2)
+   stress = td.stress_tensor(lambda_param=1.0, mu_param=0.5)(inputs)  # (N, 2, 2)
+
+   # Correct component extraction using three indices
+   exx = strain[:, 0, 0].reshape(X.shape)
+   eyy = strain[:, 1, 1].reshape(X.shape)
+   exy = strain[:, 0, 1].reshape(X.shape)
+   sxy = stress[:, 0, 1].reshape(X.shape)
+   print("mean |ε_xy|:", float(np.mean(np.abs(exy))))
+   print("mean |σ_xy|:", float(np.mean(np.abs(sxy))))

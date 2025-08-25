@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.1] - 2025-08-11
+
+### Added
+- Documentation: Quick Start and Examples updated with Tensor Derivatives
+  - New sections for directional derivatives, divergence, curl, strain, and stress
+  - Correct component indexing demonstrated for rank-2 tensors (use three indices: [:, i, j])
+- API Docs: Added `pydelt.multivariate` and `pydelt.tensor_derivatives` to API reference
+
+### Changed
+- Bumped version to 0.5.1 for documentation and example improvements
+
+### Notes
+- Visual tests and documentation examples emphasize correct tensor component extraction to avoid shape/reshape errors
+
 ## [0.5.0] - 2025-08-03
 
 ### Added

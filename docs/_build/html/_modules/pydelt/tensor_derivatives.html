@@ -1,0 +1,500 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pydelt.tensor_derivatives &mdash; pydelt 0.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=6c02275b"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pydelt.tensor_derivatives</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pydelt.tensor_derivatives</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Tensor derivatives computation for pydelt.</span>
+
+<span class="sd">This module provides classes and functions for computing derivatives with respect to</span>
+<span class="sd">vectors and tensors, extending the multivariate derivatives functionality:</span>
+
+<span class="sd">- Directional derivatives: Derivative along a specific direction vector</span>
+<span class="sd">- Tensor gradients: Gradient of tensor-valued functions</span>
+<span class="sd">- Divergence: Divergence of vector fields</span>
+<span class="sd">- Curl: Curl of vector fields</span>
+<span class="sd">- Strain tensor: Symmetric part of the deformation gradient</span>
+<span class="sd">- Stress tensor: Based on strain tensor and material properties</span>
+
+<span class="sd">These operations are particularly useful in continuum mechanics, fluid dynamics,</span>
+<span class="sd">and other physics applications requiring tensor calculus.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.multivariate</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultivariateDerivatives</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">LlaInterpolator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+
+
+<div class="viewcode-block" id="TensorDerivatives">
+<a class="viewcode-back" href="../../api.html#pydelt.tensor_derivatives.TensorDerivatives">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TensorDerivatives</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute derivatives with respect to vectors and tensors.</span>
+<span class="sd">    </span>
+<span class="sd">    This class extends the MultivariateDerivatives class to handle more complex</span>
+<span class="sd">    tensor operations commonly used in continuum mechanics, fluid dynamics, and</span>
+<span class="sd">    other physics applications.</span>
+<span class="sd">    </span>
+<span class="sd">    Key Features:</span>
+<span class="sd">        - Directional derivatives: Derivative along a specific direction vector</span>
+<span class="sd">        - Tensor gradients: Gradient of tensor-valued functions</span>
+<span class="sd">        - Divergence: Divergence of vector fields</span>
+<span class="sd">        - Curl: Curl of vector fields (3D only)</span>
+<span class="sd">        - Strain tensor: Symmetric part of the deformation gradient</span>
+<span class="sd">        - Stress tensor: Based on strain tensor and material properties</span>
+<span class="sd">    </span>
+<span class="sd">    Limitations:</span>
+<span class="sd">        - Mixed partial derivatives are approximated as zero with traditional methods</span>
+<span class="sd">        - Best suited for functions where each output depends primarily on one input</span>
+<span class="sd">        - Critical point smoothing occurs due to interpolation methods</span>
+<span class="sd">    </span>
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from pydelt.tensor_derivatives import TensorDerivatives</span>
+<span class="sd">        &gt;&gt;&gt; from pydelt.interpolation import SplineInterpolator</span>
+<span class="sd">        &gt;&gt;&gt; td = TensorDerivatives(SplineInterpolator, smoothing=0.1)</span>
+<span class="sd">        &gt;&gt;&gt; td.fit(input_data, output_data)</span>
+<span class="sd">        &gt;&gt;&gt; div_func = td.divergence()</span>
+<span class="sd">        &gt;&gt;&gt; div = div_func(test_points)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interpolator_class</span><span class="o">=</span><span class="n">SplineInterpolator</span><span class="p">,</span> <span class="o">**</span><span class="n">interpolator_kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize TensorDerivatives with specified interpolator.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            interpolator_class: The interpolation class to use</span>
+<span class="sd">            **interpolator_kwargs: Keyword arguments to pass to the interpolator constructor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mv</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span><span class="n">interpolator_class</span><span class="p">,</span> <span class="o">**</span><span class="n">interpolator_kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitted</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span> <span class="o">=</span> <span class="kc">None</span>
+    
+<div class="viewcode-block" id="TensorDerivatives.fit">
+<a class="viewcode-back" href="../../api.html#pydelt.tensor_derivatives.TensorDerivatives.fit">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">output_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fit interpolators for tensor derivative computation.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            input_data: Input data of shape (n_samples, n_inputs)</span>
+<span class="sd">            output_data: Output data of shape (n_samples, n_outputs) or (n_samples,)</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            self: The fitted instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">output_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fitted</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mv</span><span class="o">.</span><span class="n">n_inputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mv</span><span class="o">.</span><span class="n">n_outputs</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    
+<div class="viewcode-block" id="TensorDerivatives.directional_derivative">
+<a class="viewcode-back" href="../../api.html#pydelt.tensor_derivatives.TensorDerivatives.directional_derivative">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">directional_derivative</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">normalize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute directional derivative along a specified direction.</span>
+<span class="sd">        </span>
+<span class="sd">        The directional derivative represents the instantaneous rate of change of the function</span>
+<span class="sd">        in the direction of the vector. It is computed as the dot product of the gradient</span>
+<span class="sd">        with the direction vector.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            direction: Direction vector of shape (n_inputs,)</span>
+<span class="sd">            normalize: Whether to normalize the direction vector to unit length</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Callable function that takes input points and returns directional derivatives</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitted</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;TensorDerivatives must be fit before computing directional derivative.&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Directional derivative is only defined for scalar functions. Got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span><span class="si">}</span><span class="s2"> outputs.&quot;</span><span class="p">)</span>
+        
+        <span class="n">direction</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">direction</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="p">,):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Direction vector must have shape (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="si">}</span><span class="s2">,). Got </span><span class="si">{</span><span class="n">direction</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Normalize direction vector if requested</span>
+        <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="n">direction</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span>
+        
+        <span class="n">gradient_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mv</span><span class="o">.</span><span class="n">gradient</span><span class="p">()</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">directional_derivative_func</span><span class="p">(</span><span class="n">query_points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Evaluate directional derivative at query points.</span>
+<span class="sd">            </span>
+<span class="sd">            Args:</span>
+<span class="sd">                query_points: Points of shape (n_points, n_input_dims)</span>
+<span class="sd">            </span>
+<span class="sd">            Returns:</span>
+<span class="sd">                Directional derivatives of shape (n_points,)</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">gradients</span> <span class="o">=</span> <span class="n">gradient_func</span><span class="p">(</span><span class="n">query_points</span><span class="p">)</span>
+            
+            <span class="c1"># Compute dot product of gradient with direction vector</span>
+            <span class="k">if</span> <span class="n">gradients</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Single point, single output</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">gradients</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># Multiple points</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">gradients</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">directional_derivative_func</span></div>
+
+    
+<div class="viewcode-block" id="TensorDerivatives.divergence">
+<a class="viewcode-back" href="../../api.html#pydelt.tensor_derivatives.TensorDerivatives.divergence">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">divergence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_points</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the divergence of a vector field.</span>
+<span class="sd">        </span>
+<span class="sd">        The divergence measures the &quot;outgoingness&quot; of a vector field at each point.</span>
+<span class="sd">        Positive divergence indicates sources (expansion), while negative divergence</span>
+<span class="sd">        indicates sinks (contraction).</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            eval_points: Optional points at which to evaluate the divergence</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Callable function that takes input points and returns divergence values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitted</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;TensorDerivatives must be fit before computing divergence.&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Divergence requires vector field with n_outputs = n_inputs. Got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span><span class="si">}</span><span class="s2"> outputs and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="si">}</span><span class="s2"> inputs.&quot;</span><span class="p">)</span>
+        
+        <span class="n">jacobian_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mv</span><span class="o">.</span><span class="n">jacobian</span><span class="p">()</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">divergence_func</span><span class="p">(</span><span class="n">query_points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Evaluate divergence at query points.</span>
+<span class="sd">            </span>
+<span class="sd">            Args:</span>
+<span class="sd">                query_points: Points of shape (n_points, n_input_dims)</span>
+<span class="sd">            </span>
+<span class="sd">            Returns:</span>
+<span class="sd">                Divergence values of shape (n_points,)</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">jacobians</span> <span class="o">=</span> <span class="n">jacobian_func</span><span class="p">(</span><span class="n">query_points</span><span class="p">)</span>
+            
+            <span class="c1"># Compute trace of Jacobian (sum of diagonal elements)</span>
+            <span class="k">if</span> <span class="n">jacobians</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># Single point</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">jacobians</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># Multiple points</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">jac</span><span class="p">)</span> <span class="k">for</span> <span class="n">jac</span> <span class="ow">in</span> <span class="n">jacobians</span><span class="p">])</span>
+        
+        <span class="k">if</span> <span class="n">eval_points</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">divergence_func</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">divergence_func</span></div>
+
+    
+<div class="viewcode-block" id="TensorDerivatives.curl">
+<a class="viewcode-back" href="../../api.html#pydelt.tensor_derivatives.TensorDerivatives.curl">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">curl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_points</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the curl of a 3D vector field.</span>
+<span class="sd">        </span>
+<span class="sd">        The curl measures the &quot;rotationality&quot; of a vector field at each point.</span>
+<span class="sd">        It is only defined for 3D vector fields (3 inputs, 3 outputs).</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            eval_points: Optional points at which to evaluate the curl</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Callable function that takes input points and returns curl vectors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitted</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;TensorDerivatives must be fit before computing curl.&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span> <span class="o">!=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Curl is only defined for 3D vector fields (3 inputs, 3 outputs). Got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="si">}</span><span class="s2"> inputs and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span><span class="si">}</span><span class="s2"> outputs.&quot;</span><span class="p">)</span>
+        
+        <span class="n">jacobian_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mv</span><span class="o">.</span><span class="n">jacobian</span><span class="p">()</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">curl_func</span><span class="p">(</span><span class="n">query_points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Evaluate curl at query points.</span>
+<span class="sd">            </span>
+<span class="sd">            Args:</span>
+<span class="sd">                query_points: Points of shape (n_points, 3)</span>
+<span class="sd">            </span>
+<span class="sd">            Returns:</span>
+<span class="sd">                Curl vectors of shape (n_points, 3)</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">jacobians</span> <span class="o">=</span> <span class="n">jacobian_func</span><span class="p">(</span><span class="n">query_points</span><span class="p">)</span>
+            
+            <span class="c1"># Compute curl from Jacobian</span>
+            <span class="k">if</span> <span class="n">jacobians</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># Single point</span>
+                <span class="n">curl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+                    <span class="n">jacobians</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">jacobians</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>  <span class="c1"># dF3/dy - dF2/dz</span>
+                    <span class="n">jacobians</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">jacobians</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>  <span class="c1"># dF1/dz - dF3/dx</span>
+                    <span class="n">jacobians</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">jacobians</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>   <span class="c1"># dF2/dx - dF1/dy</span>
+                <span class="p">])</span>
+                <span class="k">return</span> <span class="n">curl</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># Multiple points</span>
+                <span class="n">curls</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">jacobians</span><span class="p">),</span> <span class="mi">3</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">jac</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">jacobians</span><span class="p">):</span>
+                    <span class="n">curls</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+                        <span class="n">jac</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">jac</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>  <span class="c1"># dF3/dy - dF2/dz</span>
+                        <span class="n">jac</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">jac</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>  <span class="c1"># dF1/dz - dF3/dx</span>
+                        <span class="n">jac</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">jac</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>   <span class="c1"># dF2/dx - dF1/dy</span>
+                    <span class="p">])</span>
+                <span class="k">return</span> <span class="n">curls</span>
+        
+        <span class="k">if</span> <span class="n">eval_points</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">curl_func</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">curl_func</span></div>
+
+    
+<div class="viewcode-block" id="TensorDerivatives.strain_tensor">
+<a class="viewcode-back" href="../../api.html#pydelt.tensor_derivatives.TensorDerivatives.strain_tensor">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">strain_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_points</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the strain tensor (symmetric part of the deformation gradient).</span>
+<span class="sd">        </span>
+<span class="sd">        The strain tensor represents the symmetric part of the deformation gradient</span>
+<span class="sd">        and is commonly used in continuum mechanics to describe deformation.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            eval_points: Optional points at which to evaluate the strain tensor</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Callable function that takes input points and returns strain tensors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitted</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;TensorDerivatives must be fit before computing strain tensor.&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Strain tensor requires vector field with n_outputs = n_inputs. Got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span><span class="si">}</span><span class="s2"> outputs and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="si">}</span><span class="s2"> inputs.&quot;</span><span class="p">)</span>
+        
+        <span class="n">jacobian_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mv</span><span class="o">.</span><span class="n">jacobian</span><span class="p">()</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">strain_tensor_func</span><span class="p">(</span><span class="n">query_points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Evaluate strain tensor at query points.</span>
+<span class="sd">            </span>
+<span class="sd">            Args:</span>
+<span class="sd">                query_points: Points of shape (n_points, n_input_dims)</span>
+<span class="sd">            </span>
+<span class="sd">            Returns:</span>
+<span class="sd">                Strain tensors of shape (n_points, n_inputs, n_inputs)</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">jacobians</span> <span class="o">=</span> <span class="n">jacobian_func</span><span class="p">(</span><span class="n">query_points</span><span class="p">)</span>
+            
+            <span class="c1"># Compute strain tensor as symmetric part of Jacobian: (J + J^T) / 2</span>
+            <span class="k">if</span> <span class="n">jacobians</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># Single point</span>
+                <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">jacobians</span> <span class="o">+</span> <span class="n">jacobians</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># Multiple points</span>
+                <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">jac</span> <span class="o">+</span> <span class="n">jac</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="k">for</span> <span class="n">jac</span> <span class="ow">in</span> <span class="n">jacobians</span><span class="p">])</span>
+        
+        <span class="k">if</span> <span class="n">eval_points</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">strain_tensor_func</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">strain_tensor_func</span></div>
+
+    
+<div class="viewcode-block" id="TensorDerivatives.stress_tensor">
+<a class="viewcode-back" href="../../api.html#pydelt.tensor_derivatives.TensorDerivatives.stress_tensor">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stress_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lambda_param</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">mu_param</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> 
+                     <span class="n">eval_points</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the stress tensor based on strain tensor and Lamé parameters.</span>
+<span class="sd">        </span>
+<span class="sd">        The stress tensor is computed using linear elasticity theory:</span>
+<span class="sd">        σ = λ tr(ε) I + 2μ ε</span>
+<span class="sd">        where:</span>
+<span class="sd">        - λ and μ are Lamé parameters</span>
+<span class="sd">        - ε is the strain tensor</span>
+<span class="sd">        - I is the identity tensor</span>
+<span class="sd">        - tr(ε) is the trace of the strain tensor</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            lambda_param: First Lamé parameter (λ)</span>
+<span class="sd">            mu_param: Second Lamé parameter (μ, shear modulus)</span>
+<span class="sd">            eval_points: Optional points at which to evaluate the stress tensor</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Callable function that takes input points and returns stress tensors</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitted</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;TensorDerivatives must be fit before computing stress tensor.&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stress tensor requires vector field with n_outputs = n_inputs. Got </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span><span class="si">}</span><span class="s2"> outputs and </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="si">}</span><span class="s2"> inputs.&quot;</span><span class="p">)</span>
+        
+        <span class="n">strain_tensor_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strain_tensor</span><span class="p">()</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">stress_tensor_func</span><span class="p">(</span><span class="n">query_points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Evaluate stress tensor at query points.</span>
+<span class="sd">            </span>
+<span class="sd">            Args:</span>
+<span class="sd">                query_points: Points of shape (n_points, n_input_dims)</span>
+<span class="sd">            </span>
+<span class="sd">            Returns:</span>
+<span class="sd">                Stress tensors of shape (n_points, n_inputs, n_inputs)</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">strain_tensors</span> <span class="o">=</span> <span class="n">strain_tensor_func</span><span class="p">(</span><span class="n">query_points</span><span class="p">)</span>
+            
+            <span class="c1"># Compute stress tensor using linear elasticity formula</span>
+            <span class="k">if</span> <span class="n">strain_tensors</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># Single point</span>
+                <span class="n">trace_strain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">strain_tensors</span><span class="p">)</span>
+                <span class="n">identity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">lambda_param</span> <span class="o">*</span> <span class="n">trace_strain</span> <span class="o">*</span> <span class="n">identity</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mu_param</span> <span class="o">*</span> <span class="n">strain_tensors</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># Multiple points</span>
+                <span class="n">stress_tensors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">strain_tensors</span><span class="p">)</span>
+                <span class="n">identity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">strain</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">strain_tensors</span><span class="p">):</span>
+                    <span class="n">trace_strain</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">strain</span><span class="p">)</span>
+                    <span class="n">stress_tensors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">lambda_param</span> <span class="o">*</span> <span class="n">trace_strain</span> <span class="o">*</span> <span class="n">identity</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">mu_param</span> <span class="o">*</span> <span class="n">strain</span>
+                <span class="k">return</span> <span class="n">stress_tensors</span>
+        
+        <span class="k">if</span> <span class="n">eval_points</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">stress_tensor_func</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stress_tensor_func</span></div>
+
+    
+<div class="viewcode-block" id="TensorDerivatives.tensor_gradient">
+<a class="viewcode-back" href="../../api.html#pydelt.tensor_derivatives.TensorDerivatives.tensor_gradient">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tensor_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_points</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the gradient of a tensor-valued function.</span>
+<span class="sd">        </span>
+<span class="sd">        For a tensor-valued function, the gradient is a higher-order tensor.</span>
+<span class="sd">        This method computes the gradient tensor by extending the Jacobian computation.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            eval_points: Optional points at which to evaluate the tensor gradient</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            Callable function that takes input points and returns tensor gradients</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitted</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;TensorDerivatives must be fit before computing tensor gradient.&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># For now, we&#39;ll use the Jacobian as the tensor gradient</span>
+        <span class="c1"># In the future, this could be extended to handle higher-order tensors</span>
+        <span class="n">jacobian_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mv</span><span class="o">.</span><span class="n">jacobian</span><span class="p">()</span>
+        
+        <span class="k">def</span><span class="w"> </span><span class="nf">tensor_gradient_func</span><span class="p">(</span><span class="n">query_points</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Evaluate tensor gradient at query points.</span>
+<span class="sd">            </span>
+<span class="sd">            Args:</span>
+<span class="sd">                query_points: Points of shape (n_points, n_input_dims)</span>
+<span class="sd">            </span>
+<span class="sd">            Returns:</span>
+<span class="sd">                Tensor gradients of shape (n_points, n_outputs, n_inputs)</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="n">jacobian_func</span><span class="p">(</span><span class="n">query_points</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">eval_points</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">tensor_gradient_func</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tensor_gradient_func</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

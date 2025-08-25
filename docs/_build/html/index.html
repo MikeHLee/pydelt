@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pydelt: Dynamical Systems &amp; Differential Equations Approximation &mdash; pydelt 0.4.0 documentation</title>
+  <title>pydelt: Advanced Numerical Differentiation &amp; Stochastic Computing &mdash; pydelt 0.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -41,10 +41,20 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Progressive Learning Path:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
@@ -65,7 +75,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">pydelt: Dynamical Systems &amp; Differential Equations Approximation</li>
+      <li class="breadcrumb-item active">pydelt: Advanced Numerical Differentiation &amp; Stochastic Computing</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -75,20 +85,46 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="pydelt-dynamical-systems-differential-equations-approximation">
-<h1>pydelt: Dynamical Systems &amp; Differential Equations Approximation<a class="headerlink" href="#pydelt-dynamical-systems-differential-equations-approximation" title="Link to this heading"></a></h1>
-<p><strong>pydelt</strong> is a comprehensive Python package for approximating derivatives and solving differential equations from data, with applications in dynamical systems analysis, time series modeling, and scientific computing.</p>
-<section id="core-capabilities">
-<h2>🚀 <strong>Core Capabilities</strong><a class="headerlink" href="#core-capabilities" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><strong>Universal Differentiation Interface</strong>: Consistent API across all interpolation methods with <cite>.differentiate(order, mask)</cite> support</p></li>
-<li><p><strong>Multivariate Calculus</strong>: Gradient (∇f), Jacobian (∂f/∂x), Hessian (∂²f/∂x²), and Laplacian (∇²f) computation</p></li>
-<li><p><strong>Higher-Order Derivatives</strong>: Support for arbitrary-order derivatives with analytical and numerical methods</p></li>
-<li><p><strong>Advanced Interpolation</strong>: Splines, LOWESS, LOESS, Local Linear Approximation (LLA), and neural network-based methods</p></li>
-<li><p><strong>Automatic Differentiation</strong>: PyTorch and TensorFlow backends for exact gradient computation</p></li>
-<li><p><strong>Vector &amp; Tensor Operations</strong>: Full support for vector-valued functions and tensor calculus</p></li>
-<li><p><strong>Time Series Applications</strong>: Specialized methods for temporal data analysis and dynamical systems identification</p></li>
-</ul>
+  <section id="pydelt-advanced-numerical-differentiation-stochastic-computing">
+<h1>pydelt: Advanced Numerical Differentiation &amp; Stochastic Computing<a class="headerlink" href="#pydelt-advanced-numerical-differentiation-stochastic-computing" title="Link to this heading"></a></h1>
+<p><strong>pydelt</strong> is a comprehensive Python library for numerical differentiation, interpolation, and stochastic computing. From basic polynomial derivatives to advanced stochastic calculus, pydelt provides a unified framework that scales from simple data analysis to cutting-edge research in dynamical systems, financial modeling, and scientific computing.</p>
+<section id="key-strengths-applications">
+<h2>🎯 <strong>Key Strengths &amp; Applications</strong><a class="headerlink" href="#key-strengths-applications" title="Link to this heading"></a></h2>
+<p><strong>Scientific Computing</strong>
+* <strong>Dynamical Systems</strong>: Reconstruct differential equations from noisy time series data
+* <strong>Phase Space Analysis</strong>: Compute derivatives for embedding dimension analysis and chaos detection
+* <strong>Fluid Dynamics</strong>: Analyze velocity fields, compute vorticity and strain tensors
+* <strong>Signal Processing</strong>: Extract instantaneous frequency and phase derivatives from complex signals</p>
+<p><strong>Financial &amp; Risk Modeling</strong>
+* <strong>Stochastic Derivatives</strong>: Apply Itô’s lemma and Stratonovich corrections to derivative computations
+* <strong>Option Pricing</strong>: Compute Greeks (delta, gamma, theta) with stochastic link functions
+* <strong>Risk Management</strong>: Model volatility surfaces and correlation structures with multivariate derivatives
+* <strong>Algorithmic Trading</strong>: Real-time derivative computation for momentum and mean-reversion strategies</p>
+<p><strong>Engineering &amp; Control</strong>
+* <strong>System Identification</strong>: Extract governing equations from experimental data
+* <strong>Control Theory</strong>: Design controllers using derivative information from system responses
+* <strong>Optimization</strong>: Gradient-based methods with automatic differentiation support
+* <strong>Machine Learning</strong>: Custom loss functions with higher-order derivative constraints</p>
+</section>
+<section id="progressive-feature-set">
+<h2>🚀 <strong>Progressive Feature Set</strong><a class="headerlink" href="#progressive-feature-set" title="Link to this heading"></a></h2>
+<p><strong>Level 1: Basic Interpolation &amp; Derivatives</strong>
+* <strong>Classical Methods</strong>: Splines, polynomial fitting, local linear approximation
+* <strong>Universal API</strong>: Consistent <cite>.fit().differentiate()</cite> interface across all methods
+* <strong>Higher-Order Support</strong>: Analytical and numerical derivatives up to arbitrary order</p>
+<p><strong>Level 2: Advanced Interpolation</strong>
+* <strong>Robust Methods</strong>: LOWESS, LOESS for noisy data and outlier resistance
+* <strong>Neural Networks</strong>: Deep learning-based interpolation with automatic differentiation
+* <strong>Adaptive Methods</strong>: LLA, GLLA with local bandwidth selection</p>
+<p><strong>Level 3: Multivariate Calculus</strong>
+* <strong>Vector Calculus</strong>: Gradient (∇f), Jacobian (∂f/∂x), Hessian (∂²f/∂x²), Laplacian (∇²f)
+* <strong>Tensor Operations</strong>: Full support for vector-valued functions and tensor calculus
+* <strong>Mixed Derivatives</strong>: Cross-partial derivatives for multivariate analysis</p>
+<p><strong>Level 4: Stochastic Computing</strong> ⭐ <em>New Feature</em>
+* <strong>Stochastic Link Functions</strong>: 6 probability distributions (Normal, Log-Normal, Gamma, Beta, Exponential, Poisson)
+* <strong>Stochastic Calculus</strong>: Itô’s lemma and Stratonovich integral corrections
+* <strong>Financial Applications</strong>: Geometric Brownian motion, volatility modeling, option pricing
+* <strong>Risk Analysis</strong>: Uncertainty propagation through derivative computations</p>
 </section>
 <section id="installation">
 <h2>📦 <strong>Installation</strong><a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
@@ -140,14 +176,23 @@
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gradient at (1,1): </span><span class="si">{</span><span class="n">gradient</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> (expected: [2, 2])&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>3. Time Series Application</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.derivatives</span><span class="w"> </span><span class="kn">import</span> <span class="n">lla</span>
+<p><strong>3. Stochastic Derivatives for Financial Modeling</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
 
-<span class="c1"># Traditional time series derivative (legacy API)</span>
-<span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-<span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
-<span class="n">result</span> <span class="o">=</span> <span class="n">lla</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">signal</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">derivative</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Extract derivatives</span>
+<span class="c1"># Stock price data following geometric Brownian motion</span>
+<span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">252</span><span class="p">)</span>  <span class="c1"># 1 year of daily data</span>
+<span class="n">stock_prices</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.1</span><span class="o">*</span><span class="n">time</span> <span class="o">+</span> <span class="mf">0.2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">252</span><span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">252</span><span class="p">))</span>
+
+<span class="c1"># Fit interpolator with log-normal stochastic link</span>
+<span class="n">interpolator</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">interpolator</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">stock_prices</span><span class="p">)</span>
+<span class="n">interpolator</span><span class="o">.</span><span class="n">set_stochastic_link</span><span class="p">(</span><span class="s1">&#39;lognormal&#39;</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;ito&#39;</span><span class="p">)</span>
+
+<span class="c1"># Compute stochastic derivatives (automatically applies Itô correction)</span>
+<span class="n">stochastic_deriv</span> <span class="o">=</span> <span class="n">interpolator</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">derivatives</span> <span class="o">=</span> <span class="n">stochastic_deriv</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Regular vs Stochastic derivative difference: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">derivatives</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">regular_derivatives</span><span class="p">))</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -169,7 +214,7 @@
 <section id="documentation-contents">
 <h2>📚 <strong>Documentation Contents</strong><a class="headerlink" href="#documentation-contents" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#requirements">Requirements</a></li>
@@ -181,16 +226,75 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#basic-derivative-calculation">Basic Derivative Calculation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#advanced-methods">Advanced Methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#interpolation">Interpolation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#integration">Integration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#multivariate-data">Multivariate Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#important-limitations">Important Limitations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#error-handling">Error Handling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#next-steps">Next Steps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#universal-api-pattern">🚀 <strong>Universal API Pattern</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#level-1-basic-interpolation"><strong>Level 1: Basic Interpolation</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#level-2-neural-networks-automatic-differentiation"><strong>Level 2: Neural Networks &amp; Automatic Differentiation</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#level-3-multivariate-calculus"><strong>Level 3: Multivariate Calculus</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#level-4-stochastic-computing-new-feature"><strong>Level 4: Stochastic Computing</strong> ⭐ <em>New Feature</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#important-considerations">⚠️ <strong>Important Considerations</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#progressive-learning-path">🎓 <strong>Progressive Learning Path</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#next-steps">🔗 <strong>Next Steps</strong></a></li>
 </ul>
 </li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Progressive Learning Path:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic_interpolation.html">Basic Interpolation &amp; Derivatives</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="basic_interpolation.html#core-concepts">🎯 <strong>Core Concepts</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic_interpolation.html#method-comparison">📊 <strong>Method Comparison</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic_interpolation.html#spline-interpolation">🌟 <strong>1. Spline Interpolation</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic_interpolation.html#local-linear-approximation-lla">📈 <strong>2. Local Linear Approximation (LLA)</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic_interpolation.html#lowess-locally-weighted-scatterplot-smoothing">🔧 <strong>3. LOWESS (Locally Weighted Scatterplot Smoothing)</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic_interpolation.html#advanced-features">⚙️ <strong>Advanced Features</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic_interpolation.html#best-practices">🎓 <strong>Best Practices</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="basic_interpolation.html#next-steps">🔗 <strong>Next Steps</strong></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="neural_networks.html">Neural Networks &amp; Automatic Differentiation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="neural_networks.html#core-concepts">🧠 <strong>Core Concepts</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="neural_networks.html#neural-network-interpolator">🔧 <strong>Neural Network Interpolator</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="neural_networks.html#example-1-nonlinear-function-approximation">🎯 <strong>Example 1: Nonlinear Function Approximation</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="neural_networks.html#example-2-fluid-dynamics-velocity-field">🌊 <strong>Example 2: Fluid Dynamics - Velocity Field</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="neural_networks.html#example-3-time-series-with-complex-dynamics">📊 <strong>Example 3: Time Series with Complex Dynamics</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="neural_networks.html#advantages-of-neural-networks">⚡ <strong>Advantages of Neural Networks</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="neural_networks.html#advanced-configuration">🔧 <strong>Advanced Configuration</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="neural_networks.html#limitations-considerations">⚠️ <strong>Limitations &amp; Considerations</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="neural_networks.html#best-practices">🎓 <strong>Best Practices</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="neural_networks.html#next-steps">🔗 <strong>Next Steps</strong></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="multivariate_calculus.html#core-concepts">🎯 <strong>Core Concepts</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="multivariate_calculus.html#multivariatederivatives-class">🔧 <strong>MultivariateDerivatives Class</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="multivariate_calculus.html#example-1-optimization-landscape-analysis">🌋 <strong>Example 1: Optimization Landscape Analysis</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="multivariate_calculus.html#example-2-fluid-dynamics-vector-field-analysis">🌊 <strong>Example 2: Fluid Dynamics - Vector Field Analysis</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="multivariate_calculus.html#example-3-heat-diffusion-analysis">🔬 <strong>Example 3: Heat Diffusion Analysis</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="multivariate_calculus.html#advanced-features">⚙️ <strong>Advanced Features</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="multivariate_calculus.html#best-practices">🎓 <strong>Best Practices</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="multivariate_calculus.html#limitations">⚠️ <strong>Limitations</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="multivariate_calculus.html#next-steps">🔗 <strong>Next Steps</strong></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="stochastic_computing.html#core-concepts">🎲 <strong>Core Concepts</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochastic_computing.html#stochastic-link-functions">🔧 <strong>Stochastic Link Functions</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochastic_computing.html#example-1-stock-price-derivatives-geometric-brownian-motion">💰 <strong>Example 1: Stock Price Derivatives (Geometric Brownian Motion)</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochastic_computing.html#example-2-interest-rate-modeling">🏦 <strong>Example 2: Interest Rate Modeling</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochastic_computing.html#example-3-population-dynamics-with-uncertainty">🧬 <strong>Example 3: Population Dynamics with Uncertainty</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochastic_computing.html#advanced-stochastic-features">⚙️ <strong>Advanced Stochastic Features</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochastic_computing.html#best-practices">🎓 <strong>Best Practices</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochastic_computing.html#limitations-considerations">⚠️ <strong>Limitations &amp; Considerations</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochastic_computing.html#research-applications">🔬 <strong>Research Applications</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochastic_computing.html#integration-with-other-features">🔗 <strong>Integration with Other Features</strong></a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#example-1-comparing-derivative-methods">Example 1: Comparing Derivative Methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#example-2-neural-network-derivatives">Example 2: Neural Network Derivatives</a></li>
@@ -198,12 +302,15 @@
 <li class="toctree-l2"><a class="reference internal" href="examples.html#example-4-integration-and-roundtrip-accuracy">Example 4: Integration and Roundtrip Accuracy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#example-5-multivariate-time-series">Example 5: Multivariate Time Series</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#example-6-understanding-numerical-limitations">Example 6: Understanding Numerical Limitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples.html#example-7-tensor-calculus">Example 7: Tensor Calculus</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api.html#module-pydelt.autodiff">Automatic Differentiation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#module-pydelt.interpolation">Interpolation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#module-pydelt.derivatives">Derivatives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-pydelt.multivariate">Multivariate Derivatives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-pydelt.tensor_derivatives">Tensor Derivatives</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#module-pydelt.integrals">Integrals</a></li>
 </ul>
 </li>

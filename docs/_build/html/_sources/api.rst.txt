@@ -27,6 +27,22 @@ Derivatives
    :undoc-members:
    :show-inheritance:
 
+Multivariate Derivatives
+------------------------
+
+.. automodule:: pydelt.multivariate
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Tensor Derivatives
+------------------
+
+.. automodule:: pydelt.tensor_derivatives
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Integrals
 ---------
 

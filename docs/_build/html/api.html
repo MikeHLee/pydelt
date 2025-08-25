@@ -42,10 +42,20 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Progressive Learning Path:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-pydelt.autodiff">Automatic Differentiation</a><ul>
@@ -57,6 +67,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#pydelt.interpolation.BaseInterpolator.differentiate"><code class="docutils literal notranslate"><span class="pre">BaseInterpolator.differentiate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pydelt.interpolation.BaseInterpolator.fit"><code class="docutils literal notranslate"><span class="pre">BaseInterpolator.fit()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pydelt.interpolation.BaseInterpolator.predict"><code class="docutils literal notranslate"><span class="pre">BaseInterpolator.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt.interpolation.BaseInterpolator.set_stochastic_link"><code class="docutils literal notranslate"><span class="pre">BaseInterpolator.set_stochastic_link()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#pydelt.interpolation.FdaInterpolator"><code class="docutils literal notranslate"><span class="pre">FdaInterpolator</span></code></a><ul>
@@ -134,6 +145,38 @@
 <li class="toctree-l3"><a class="reference internal" href="#pydelt.derivatives.glla"><code class="docutils literal notranslate"><span class="pre">glla()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#pydelt.derivatives.gold"><code class="docutils literal notranslate"><span class="pre">gold()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#pydelt.derivatives.lla"><code class="docutils literal notranslate"><span class="pre">lla()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pydelt.multivariate">Multivariate Derivatives</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pydelt.multivariate.MultivariateDerivatives"><code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt.multivariate.MultivariateDerivatives.fit"><code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt.multivariate.MultivariateDerivatives.gradient"><code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives.gradient()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt.multivariate.MultivariateDerivatives.hessian"><code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives.hessian()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt.multivariate.MultivariateDerivatives.jacobian"><code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives.jacobian()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt.multivariate.MultivariateDerivatives.laplacian"><code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives.laplacian()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pydelt.multivariate.NeuralNetworkMultivariateDerivatives"><code class="docutils literal notranslate"><span class="pre">NeuralNetworkMultivariateDerivatives</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt.multivariate.NeuralNetworkMultivariateDerivatives.fit"><code class="docutils literal notranslate"><span class="pre">NeuralNetworkMultivariateDerivatives.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt.multivariate.NeuralNetworkMultivariateDerivatives.gradient"><code class="docutils literal notranslate"><span class="pre">NeuralNetworkMultivariateDerivatives.gradient()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt.multivariate.NeuralNetworkMultivariateDerivatives.hessian"><code class="docutils literal notranslate"><span class="pre">NeuralNetworkMultivariateDerivatives.hessian()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt.multivariate.NeuralNetworkMultivariateDerivatives.jacobian"><code class="docutils literal notranslate"><span class="pre">NeuralNetworkMultivariateDerivatives.jacobian()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt.multivariate.NeuralNetworkMultivariateDerivatives.laplacian"><code class="docutils literal notranslate"><span class="pre">NeuralNetworkMultivariateDerivatives.laplacian()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pydelt.tensor_derivatives">Tensor Derivatives</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pydelt.tensor_derivatives.TensorDerivatives"><code class="docutils literal notranslate"><span class="pre">TensorDerivatives</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt.tensor_derivatives.TensorDerivatives.curl"><code class="docutils literal notranslate"><span class="pre">TensorDerivatives.curl()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt.tensor_derivatives.TensorDerivatives.directional_derivative"><code class="docutils literal notranslate"><span class="pre">TensorDerivatives.directional_derivative()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt.tensor_derivatives.TensorDerivatives.divergence"><code class="docutils literal notranslate"><span class="pre">TensorDerivatives.divergence()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt.tensor_derivatives.TensorDerivatives.fit"><code class="docutils literal notranslate"><span class="pre">TensorDerivatives.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt.tensor_derivatives.TensorDerivatives.strain_tensor"><code class="docutils literal notranslate"><span class="pre">TensorDerivatives.strain_tensor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt.tensor_derivatives.TensorDerivatives.stress_tensor"><code class="docutils literal notranslate"><span class="pre">TensorDerivatives.stress_tensor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt.tensor_derivatives.TensorDerivatives.tensor_gradient"><code class="docutils literal notranslate"><span class="pre">TensorDerivatives.tensor_gradient()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-pydelt.integrals">Integrals</a><ul>
@@ -228,7 +271,7 @@ If return_model is True:</p>
 <dt class="sig sig-object py" id="pydelt.interpolation.BaseInterpolator">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pydelt.interpolation.</span></span><span class="sig-name descname"><span class="pre">BaseInterpolator</span></span><a class="reference internal" href="_modules/pydelt/interpolation.html#BaseInterpolator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.interpolation.BaseInterpolator" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Abstract base class for all interpolators.</p>
+<p>Abstract base class for all interpolators with stochastic derivative support.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pydelt.interpolation.BaseInterpolator.differentiate">
 <span class="sig-name descname"><span class="pre">differentiate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a></span></span><a class="reference internal" href="_modules/pydelt/interpolation.html#BaseInterpolator.differentiate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.interpolation.BaseInterpolator.differentiate" title="Link to this definition"></a></dt>
@@ -256,6 +299,21 @@ If provided, only compute derivatives for selected points</p></li>
 <dt class="sig sig-object py" id="pydelt.interpolation.BaseInterpolator.predict">
 <span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydelt/interpolation.html#BaseInterpolator.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.interpolation.BaseInterpolator.predict" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydelt.interpolation.BaseInterpolator.set_stochastic_link">
+<span class="sig-name descname"><span class="pre">set_stochastic_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">StochasticLinkFunction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'ito'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydelt/interpolation.html#BaseInterpolator.set_stochastic_link"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.interpolation.BaseInterpolator.set_stochastic_link" title="Link to this definition"></a></dt>
+<dd><p>Set a stochastic link function for derivative transformations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>link_function</strong> – Either a string name (‘normal’, ‘lognormal’, etc.) or StochasticLinkFunction instance</p></li>
+<li><p><strong>method</strong> – Either ‘ito’ or ‘stratonovich’ for stochastic integration method</p></li>
+<li><p><strong>**kwargs</strong> – Parameters for the link function if using string name</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -966,6 +1024,550 @@ Uses configurable normalization and linear regression within a sliding window.</
 <dd class="field-odd"><p>Tuple containing</p>
 </dd>
 </dl>
+</dd></dl>
+
+</section>
+<section id="module-pydelt.multivariate">
+<span id="multivariate-derivatives"></span><h2>Multivariate Derivatives<a class="headerlink" href="#module-pydelt.multivariate" title="Link to this heading"></a></h2>
+<p>Multivariate derivative computation for pydelt.</p>
+<p>This module provides classes for computing multivariate derivatives including:
+- Gradient (∇f): For scalar functions of multiple variables
+- Jacobian (∂f/∂x): For vector-valued functions
+- Hessian (∂²f/∂x²): Second derivatives for scalar functions
+- Laplacian (∇²f): Trace of Hessian for scalar functions</p>
+<p>The module supports both traditional interpolation methods and neural networks
+with automatic differentiation for superior performance in high dimensions.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pydelt.multivariate.MultivariateDerivatives">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pydelt.multivariate.</span></span><span class="sig-name descname"><span class="pre">MultivariateDerivatives</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interpolator_class:</span> <span class="pre">type</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'pydelt.interpolation.SplineInterpolator'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**interpolator_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydelt/multivariate.html#MultivariateDerivatives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.multivariate.MultivariateDerivatives" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Compute multivariate derivatives using traditional interpolation methods.</p>
+<p>This class provides methods to compute gradient, Jacobian, Hessian, and Laplacian
+for multivariate functions using fitted interpolators. It works by fitting separate
+1D interpolators for each output-input dimension pair and computing derivatives
+along each dimension independently.</p>
+<dl class="simple">
+<dt>Key Features:</dt><dd><ul class="simple">
+<li><p>Gradient computation for scalar functions</p></li>
+<li><p>Jacobian matrix computation for vector-valued functions</p></li>
+<li><p>Hessian matrix computation for scalar functions (diagonal elements only)</p></li>
+<li><p>Laplacian computation for scalar functions</p></li>
+<li><p>Support for any interpolator from the pydelt library</p></li>
+</ul>
+</dd>
+<dt>Limitations:</dt><dd><ul class="simple">
+<li><p>Mixed partial derivatives are approximated as zero</p></li>
+<li><p>Assumes separable dependencies between input dimensions</p></li>
+<li><p>Best suited for functions where each output depends primarily on one input</p></li>
+<li><p><strong>Critical Point Smoothing</strong>: Interpolation methods smooth out sharp mathematical
+features, leading to non-zero gradients at points where they should be zero</p></li>
+<li><p><strong>Boundary Effects</strong>: Edge artifacts can distort derivative calculations</p></li>
+<li><p><strong>Regularization Impact</strong>: Smoothing parameters blur sharp transitions and critical points</p></li>
+<li><p><strong>Finite Sampling</strong>: Cannot capture infinitely sharp transitions or discontinuities</p></li>
+</ul>
+</dd>
+<dt><strong>Example of Critical Point Issue:</strong></dt><dd><p>For f(x,y) = (x-y)², the mathematical gradient is zero along x=y line,
+especially at corners like (-3,-3) and (3,3). However, numerical interpolation
+will give non-zero gradients everywhere due to smoothing effects.</p>
+</dd>
+<dt><strong>Mitigation Strategies:</strong></dt><dd><ul class="simple">
+<li><p>Use higher resolution sampling near critical points</p></li>
+<li><p>Reduce smoothing parameters (but beware of overfitting)</p></li>
+<li><p>Validate against analytical solutions when available</p></li>
+<li><p>Consider neural network methods with automatic differentiation for exact derivatives</p></li>
+</ul>
+</dd>
+</dl>
+<p>For exact mixed partial derivatives and better handling of critical points,
+consider using NeuralNetworkMultivariateDerivatives with automatic differentiation.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mv</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span><span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">output_data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gradient_func</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">gradient</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">grad</span> <span class="o">=</span> <span class="n">gradient_func</span><span class="p">(</span><span class="n">test_points</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>interpolator_class</strong> – The interpolation class to use (e.g., SplineInterpolator, LlaInterpolator)</p></li>
+<li><p><strong>**interpolator_kwargs</strong> – Keyword arguments to pass to the interpolator constructor</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pydelt.multivariate.MultivariateDerivatives.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydelt/multivariate.html#MultivariateDerivatives.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.multivariate.MultivariateDerivatives.fit" title="Link to this definition"></a></dt>
+<dd><p>Fit interpolators for multivariate derivative computation.</p>
+<p>This method fits separate 1D interpolators for each output-input dimension pair.
+For each combination of output dimension i and input dimension j, an interpolator
+is fitted using input_data[:, j] as x-values and output_data[:, i] as y-values.</p>
+<p>The data is automatically sorted and duplicate x-values are handled by averaging
+the corresponding y-values to ensure proper interpolation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_data</strong> – Input data of shape (n_samples, n_input_dims)
+Must be 2D array where each row is a sample and each column
+is an input dimension.</p></li>
+<li><p><strong>output_data</strong> – Output data of shape (n_samples,) for scalar functions or
+(n_samples, n_output_dims) for vector-valued functions.
+For scalar functions, can be 1D array.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Self for method chaining</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If input_data is not 2D or if input/output sample counts don’t match</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>After fitting, the interpolators are stored in self.interpolators as a nested list
+where interpolators[i][j] contains the interpolator for output i, input j.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydelt.multivariate.MultivariateDerivatives.gradient">
+<span class="sig-name descname"><span class="pre">gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eval_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a></span></span><a class="reference internal" href="_modules/pydelt/multivariate.html#MultivariateDerivatives.gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.multivariate.MultivariateDerivatives.gradient" title="Link to this definition"></a></dt>
+<dd><p>Compute the gradient (∇f) for scalar functions.</p>
+<p>The gradient is computed by fitting separate 1D interpolators for each input dimension
+and evaluating their first derivatives. This approach works well for functions where
+each output depends primarily on one input dimension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eval_points</strong> – Points at which to evaluate the gradient. If None, uses training points.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>Callable function that takes input points and returns gradient vectors.</p>
+<dl class="simple">
+<dt>For single evaluation point:</dt><dd><ul class="simple">
+<li><p>Input: array of shape (n_input_dims,) or (1, n_input_dims)</p></li>
+<li><p>Output: array of shape (n_input_dims,)</p></li>
+</ul>
+</dd>
+<dt>For multiple evaluation points:</dt><dd><ul class="simple">
+<li><p>Input: array of shape (n_points, n_input_dims)</p></li>
+<li><p>Output: array of shape (n_points, n_input_dims)</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the function is not scalar (n_outputs != 1)</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.13)"><strong>RuntimeError</strong></a> – If the model has not been fitted</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method assumes that partial derivatives can be approximated by fitting
+1D interpolators along each input dimension independently. Mixed partial
+derivatives are not computed with this approach.</p>
+</div>
+<dl class="simple">
+<dt><strong>Critical Point Warning:</strong></dt><dd><p>Numerical interpolation smooths out sharp mathematical features. For functions
+with critical points (where gradient should be zero), the computed gradient
+may be non-zero due to smoothing effects. Always validate against analytical
+solutions when possible, especially near minima, maxima, and saddle points.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydelt.multivariate.MultivariateDerivatives.hessian">
+<span class="sig-name descname"><span class="pre">hessian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eval_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a></span></span><a class="reference internal" href="_modules/pydelt/multivariate.html#MultivariateDerivatives.hessian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.multivariate.MultivariateDerivatives.hessian" title="Link to this definition"></a></dt>
+<dd><p>Compute the Hessian matrix (∂²f/∂x²) for scalar functions.</p>
+<p>The Hessian matrix contains all second-order partial derivatives of a scalar function.
+Element (i,j) represents ∂²f/∂x_i∂x_j. For traditional interpolation methods, only
+diagonal elements (pure second derivatives) are computed; off-diagonal elements
+(mixed partials) are approximated as zero.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eval_points</strong> – Points at which to evaluate the Hessian. If None, uses training points.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>Callable function that takes input points and returns Hessian matrices.</p>
+<dl class="simple">
+<dt>For single evaluation point:</dt><dd><ul class="simple">
+<li><p>Input: array of shape (n_input_dims,) or (1, n_input_dims)</p></li>
+<li><p>Output: array of shape (n_inputs, n_inputs)</p></li>
+</ul>
+</dd>
+<dt>For multiple evaluation points:</dt><dd><ul class="simple">
+<li><p>Input: array of shape (n_points, n_input_dims)</p></li>
+<li><p>Output: array of shape (n_points, n_inputs, n_inputs)</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the function is not scalar (n_outputs != 1)</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.13)"><strong>RuntimeError</strong></a> – If the model has not been fitted</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Traditional interpolation methods cannot compute mixed partial derivatives
+(off-diagonal elements). These are set to zero, which may not be accurate
+for functions with significant cross-dependencies. Consider using neural
+network methods with automatic differentiation for exact mixed partials.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydelt.multivariate.MultivariateDerivatives.jacobian">
+<span class="sig-name descname"><span class="pre">jacobian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eval_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a></span></span><a class="reference internal" href="_modules/pydelt/multivariate.html#MultivariateDerivatives.jacobian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.multivariate.MultivariateDerivatives.jacobian" title="Link to this definition"></a></dt>
+<dd><p>Compute the Jacobian matrix (∂f/∂x) for vector-valued functions.</p>
+<p>The Jacobian matrix contains all first-order partial derivatives of a vector-valued
+function. Element (i,j) represents ∂f_i/∂x_j. This is computed by fitting separate
+1D interpolators for each output-input dimension pair.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eval_points</strong> – Points at which to evaluate the Jacobian. If None, uses training points.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>Callable function that takes input points and returns Jacobian matrices.</p>
+<dl class="simple">
+<dt>For single evaluation point:</dt><dd><ul class="simple">
+<li><p>Input: array of shape (n_input_dims,) or (1, n_input_dims)</p></li>
+<li><p>Output: array of shape (n_outputs, n_inputs)</p></li>
+</ul>
+</dd>
+<dt>For multiple evaluation points:</dt><dd><ul class="simple">
+<li><p>Input: array of shape (n_points, n_input_dims)</p></li>
+<li><p>Output: array of shape (n_points, n_outputs, n_inputs)</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.13)"><strong>RuntimeError</strong></a> – If the model has not been fitted</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For scalar functions (n_outputs=1), the Jacobian is equivalent to the gradient
+transposed. Mixed partial derivatives are not computed with traditional
+interpolation methods.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydelt.multivariate.MultivariateDerivatives.laplacian">
+<span class="sig-name descname"><span class="pre">laplacian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eval_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a></span></span><a class="reference internal" href="_modules/pydelt/multivariate.html#MultivariateDerivatives.laplacian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.multivariate.MultivariateDerivatives.laplacian" title="Link to this definition"></a></dt>
+<dd><p>Compute the Laplacian (∇²f = tr(H)) for scalar functions.</p>
+<p>The Laplacian is the trace (sum of diagonal elements) of the Hessian matrix,
+representing the sum of all pure second partial derivatives: ∇²f = ∂²f/∂x₁² + ∂²f/∂x₂² + …
+This is a scalar measure of the “curvature” of the function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eval_points</strong> – Points at which to evaluate the Laplacian. If None, uses training points.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>Callable function that takes input points and returns Laplacian values.</p>
+<dl class="simple">
+<dt>For single evaluation point:</dt><dd><ul class="simple">
+<li><p>Input: array of shape (n_input_dims,) or (1, n_input_dims)</p></li>
+<li><p>Output: scalar value</p></li>
+</ul>
+</dd>
+<dt>For multiple evaluation points:</dt><dd><ul class="simple">
+<li><p>Input: array of shape (n_points, n_input_dims)</p></li>
+<li><p>Output: array of shape (n_points,)</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If the function is not scalar (n_outputs != 1)</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.13)"><strong>RuntimeError</strong></a> – If the model has not been fitted</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Since mixed partial derivatives are not computed in traditional interpolation
+methods, this Laplacian only includes pure second derivatives. For functions
+with significant cross-dependencies, consider neural network methods.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pydelt.multivariate.NeuralNetworkMultivariateDerivatives">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pydelt.multivariate.</span></span><span class="sig-name descname"><span class="pre">NeuralNetworkMultivariateDerivatives</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">framework</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'pytorch'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_layers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[64,</span> <span class="pre">32]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydelt/multivariate.html#NeuralNetworkMultivariateDerivatives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.multivariate.NeuralNetworkMultivariateDerivatives" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Neural network-based multivariate derivatives with automatic differentiation.</p>
+<p>This class provides true multivariate derivative computation using automatic
+differentiation, which is superior to traditional methods for high-dimensional
+problems and can compute exact mixed partial derivatives.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>framework</strong> – Deep learning framework to use (‘pytorch’ or ‘tensorflow’)</p></li>
+<li><p><strong>hidden_layers</strong> – List of hidden layer sizes</p></li>
+<li><p><strong>epochs</strong> – Number of training epochs</p></li>
+<li><p><strong>learning_rate</strong> – Learning rate for optimization</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="pydelt.multivariate.NeuralNetworkMultivariateDerivatives.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pydelt.multivariate.NeuralNetworkMultivariateDerivatives" title="pydelt.multivariate.NeuralNetworkMultivariateDerivatives"><span class="pre">NeuralNetworkMultivariateDerivatives</span></a></span></span><a class="reference internal" href="_modules/pydelt/multivariate.html#NeuralNetworkMultivariateDerivatives.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.multivariate.NeuralNetworkMultivariateDerivatives.fit" title="Link to this definition"></a></dt>
+<dd><p>Fit the neural network model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_data</strong> – Input data of shape (n_samples, n_input_dims)</p></li>
+<li><p><strong>output_data</strong> – Output data of shape (n_samples,) for scalar functions or
+(n_samples, n_output_dims) for vector functions</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Self for method chaining</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydelt.multivariate.NeuralNetworkMultivariateDerivatives.gradient">
+<span class="sig-name descname"><span class="pre">gradient</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a></span></span><a class="reference internal" href="_modules/pydelt/multivariate.html#NeuralNetworkMultivariateDerivatives.gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.multivariate.NeuralNetworkMultivariateDerivatives.gradient" title="Link to this definition"></a></dt>
+<dd><p>Compute gradient using automatic differentiation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable function that takes input points and returns gradient vectors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydelt.multivariate.NeuralNetworkMultivariateDerivatives.hessian">
+<span class="sig-name descname"><span class="pre">hessian</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a></span></span><a class="reference internal" href="_modules/pydelt/multivariate.html#NeuralNetworkMultivariateDerivatives.hessian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.multivariate.NeuralNetworkMultivariateDerivatives.hessian" title="Link to this definition"></a></dt>
+<dd><p>Compute Hessian using automatic differentiation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable function that takes input points and returns Hessian matrices</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydelt.multivariate.NeuralNetworkMultivariateDerivatives.jacobian">
+<span class="sig-name descname"><span class="pre">jacobian</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a></span></span><a class="reference internal" href="_modules/pydelt/multivariate.html#NeuralNetworkMultivariateDerivatives.jacobian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.multivariate.NeuralNetworkMultivariateDerivatives.jacobian" title="Link to this definition"></a></dt>
+<dd><p>Compute Jacobian using automatic differentiation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable function that takes input points and returns Jacobian matrices</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydelt.multivariate.NeuralNetworkMultivariateDerivatives.laplacian">
+<span class="sig-name descname"><span class="pre">laplacian</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a></span></span><a class="reference internal" href="_modules/pydelt/multivariate.html#NeuralNetworkMultivariateDerivatives.laplacian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.multivariate.NeuralNetworkMultivariateDerivatives.laplacian" title="Link to this definition"></a></dt>
+<dd><p>Compute Laplacian using automatic differentiation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Callable function that takes input points and returns Laplacian values</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-pydelt.tensor_derivatives">
+<span id="tensor-derivatives"></span><h2>Tensor Derivatives<a class="headerlink" href="#module-pydelt.tensor_derivatives" title="Link to this heading"></a></h2>
+<p>Tensor derivatives computation for pydelt.</p>
+<p>This module provides classes and functions for computing derivatives with respect to
+vectors and tensors, extending the multivariate derivatives functionality:</p>
+<ul class="simple">
+<li><p>Directional derivatives: Derivative along a specific direction vector</p></li>
+<li><p>Tensor gradients: Gradient of tensor-valued functions</p></li>
+<li><p>Divergence: Divergence of vector fields</p></li>
+<li><p>Curl: Curl of vector fields</p></li>
+<li><p>Strain tensor: Symmetric part of the deformation gradient</p></li>
+<li><p>Stress tensor: Based on strain tensor and material properties</p></li>
+</ul>
+<p>These operations are particularly useful in continuum mechanics, fluid dynamics,
+and other physics applications requiring tensor calculus.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pydelt.tensor_derivatives.TensorDerivatives">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pydelt.tensor_derivatives.</span></span><span class="sig-name descname"><span class="pre">TensorDerivatives</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">interpolator_class=&lt;class</span> <span class="pre">'pydelt.interpolation.SplineInterpolator'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**interpolator_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydelt/tensor_derivatives.html#TensorDerivatives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.tensor_derivatives.TensorDerivatives" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Compute derivatives with respect to vectors and tensors.</p>
+<p>This class extends the MultivariateDerivatives class to handle more complex
+tensor operations commonly used in continuum mechanics, fluid dynamics, and
+other physics applications.</p>
+<dl class="simple">
+<dt>Key Features:</dt><dd><ul class="simple">
+<li><p>Directional derivatives: Derivative along a specific direction vector</p></li>
+<li><p>Tensor gradients: Gradient of tensor-valued functions</p></li>
+<li><p>Divergence: Divergence of vector fields</p></li>
+<li><p>Curl: Curl of vector fields (3D only)</p></li>
+<li><p>Strain tensor: Symmetric part of the deformation gradient</p></li>
+<li><p>Stress tensor: Based on strain tensor and material properties</p></li>
+</ul>
+</dd>
+<dt>Limitations:</dt><dd><ul class="simple">
+<li><p>Mixed partial derivatives are approximated as zero with traditional methods</p></li>
+<li><p>Best suited for functions where each output depends primarily on one input</p></li>
+<li><p>Critical point smoothing occurs due to interpolation methods</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.tensor_derivatives</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorDerivatives</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">td</span> <span class="o">=</span> <span class="n">TensorDerivatives</span><span class="p">(</span><span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">td</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">output_data</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">div_func</span> <span class="o">=</span> <span class="n">td</span><span class="o">.</span><span class="n">divergence</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">div</span> <span class="o">=</span> <span class="n">div_func</span><span class="p">(</span><span class="n">test_points</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="pydelt.tensor_derivatives.TensorDerivatives.curl">
+<span class="sig-name descname"><span class="pre">curl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eval_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a></span></span><a class="reference internal" href="_modules/pydelt/tensor_derivatives.html#TensorDerivatives.curl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.tensor_derivatives.TensorDerivatives.curl" title="Link to this definition"></a></dt>
+<dd><p>Compute the curl of a 3D vector field.</p>
+<p>The curl measures the “rotationality” of a vector field at each point.
+It is only defined for 3D vector fields (3 inputs, 3 outputs).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eval_points</strong> – Optional points at which to evaluate the curl</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Callable function that takes input points and returns curl vectors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydelt.tensor_derivatives.TensorDerivatives.directional_derivative">
+<span class="sig-name descname"><span class="pre">directional_derivative</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a></span></span><a class="reference internal" href="_modules/pydelt/tensor_derivatives.html#TensorDerivatives.directional_derivative"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.tensor_derivatives.TensorDerivatives.directional_derivative" title="Link to this definition"></a></dt>
+<dd><p>Compute directional derivative along a specified direction.</p>
+<p>The directional derivative represents the instantaneous rate of change of the function
+in the direction of the vector. It is computed as the dot product of the gradient
+with the direction vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>direction</strong> – Direction vector of shape (n_inputs,)</p></li>
+<li><p><strong>normalize</strong> – Whether to normalize the direction vector to unit length</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Callable function that takes input points and returns directional derivatives</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydelt.tensor_derivatives.TensorDerivatives.divergence">
+<span class="sig-name descname"><span class="pre">divergence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eval_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a></span></span><a class="reference internal" href="_modules/pydelt/tensor_derivatives.html#TensorDerivatives.divergence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.tensor_derivatives.TensorDerivatives.divergence" title="Link to this definition"></a></dt>
+<dd><p>Compute the divergence of a vector field.</p>
+<p>The divergence measures the “outgoingness” of a vector field at each point.
+Positive divergence indicates sources (expansion), while negative divergence
+indicates sinks (contraction).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eval_points</strong> – Optional points at which to evaluate the divergence</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Callable function that takes input points and returns divergence values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydelt.tensor_derivatives.TensorDerivatives.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pydelt/tensor_derivatives.html#TensorDerivatives.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.tensor_derivatives.TensorDerivatives.fit" title="Link to this definition"></a></dt>
+<dd><p>Fit interpolators for tensor derivative computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_data</strong> – Input data of shape (n_samples, n_inputs)</p></li>
+<li><p><strong>output_data</strong> – Output data of shape (n_samples, n_outputs) or (n_samples,)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The fitted instance</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>self</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydelt.tensor_derivatives.TensorDerivatives.strain_tensor">
+<span class="sig-name descname"><span class="pre">strain_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eval_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a></span></span><a class="reference internal" href="_modules/pydelt/tensor_derivatives.html#TensorDerivatives.strain_tensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.tensor_derivatives.TensorDerivatives.strain_tensor" title="Link to this definition"></a></dt>
+<dd><p>Compute the strain tensor (symmetric part of the deformation gradient).</p>
+<p>The strain tensor represents the symmetric part of the deformation gradient
+and is commonly used in continuum mechanics to describe deformation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eval_points</strong> – Optional points at which to evaluate the strain tensor</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Callable function that takes input points and returns strain tensors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydelt.tensor_derivatives.TensorDerivatives.stress_tensor">
+<span class="sig-name descname"><span class="pre">stress_tensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lambda_param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu_param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a></span></span><a class="reference internal" href="_modules/pydelt/tensor_derivatives.html#TensorDerivatives.stress_tensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.tensor_derivatives.TensorDerivatives.stress_tensor" title="Link to this definition"></a></dt>
+<dd><p>Compute the stress tensor based on strain tensor and Lamé parameters.</p>
+<p>The stress tensor is computed using linear elasticity theory:
+σ = λ tr(ε) I + 2μ ε
+where:
+- λ and μ are Lamé parameters
+- ε is the strain tensor
+- I is the identity tensor
+- tr(ε) is the trace of the strain tensor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lambda_param</strong> – First Lamé parameter (λ)</p></li>
+<li><p><strong>mu_param</strong> – Second Lamé parameter (μ, shear modulus)</p></li>
+<li><p><strong>eval_points</strong> – Optional points at which to evaluate the stress tensor</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Callable function that takes input points and returns stress tensors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pydelt.tensor_derivatives.TensorDerivatives.tensor_gradient">
+<span class="sig-name descname"><span class="pre">tensor_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eval_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.3)"><span class="pre">ndarray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><span class="pre">Callable</span></a></span></span><a class="reference internal" href="_modules/pydelt/tensor_derivatives.html#TensorDerivatives.tensor_gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pydelt.tensor_derivatives.TensorDerivatives.tensor_gradient" title="Link to this definition"></a></dt>
+<dd><p>Compute the gradient of a tensor-valued function.</p>
+<p>For a tensor-valued function, the gradient is a higher-order tensor.
+This method computes the gradient tensor by extending the Jacobian computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eval_points</strong> – Optional points at which to evaluate the tensor gradient</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Callable function that takes input points and returns tensor gradients</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>

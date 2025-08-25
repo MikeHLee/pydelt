@@ -39,10 +39,20 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Progressive Learning Path:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
@@ -81,7 +91,9 @@
  | <a href="#D"><strong>D</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
+ | <a href="#J"><strong>J</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
@@ -102,6 +114,10 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pydelt.interpolation.calculate_fit_quality">calculate_fit_quality() (in module pydelt.interpolation)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#pydelt.tensor_derivatives.TensorDerivatives.curl">curl() (pydelt.tensor_derivatives.TensorDerivatives method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -129,6 +145,12 @@
         <li><a href="api.html#pydelt.interpolation.SplineInterpolator.differentiate">(pydelt.interpolation.SplineInterpolator method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#pydelt.tensor_derivatives.TensorDerivatives.directional_derivative">directional_derivative() (pydelt.tensor_derivatives.TensorDerivatives method)</a>
+</li>
+      <li><a href="api.html#pydelt.tensor_derivatives.TensorDerivatives.divergence">divergence() (pydelt.tensor_derivatives.TensorDerivatives method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -162,6 +184,12 @@
 </li>
         <li><a href="api.html#pydelt.interpolation.TensorFlowModel.fit">(pydelt.interpolation.TensorFlowModel method)</a>
 </li>
+        <li><a href="api.html#pydelt.multivariate.MultivariateDerivatives.fit">(pydelt.multivariate.MultivariateDerivatives method)</a>
+</li>
+        <li><a href="api.html#pydelt.multivariate.NeuralNetworkMultivariateDerivatives.fit">(pydelt.multivariate.NeuralNetworkMultivariateDerivatives method)</a>
+</li>
+        <li><a href="api.html#pydelt.tensor_derivatives.TensorDerivatives.fit">(pydelt.tensor_derivatives.TensorDerivatives method)</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -179,16 +207,34 @@
 </li>
       <li><a href="api.html#pydelt.interpolation.glla_interpolation">glla_interpolation() (in module pydelt.interpolation)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pydelt.interpolation.GllaInterpolator">GllaInterpolator (class in pydelt.interpolation)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pydelt.derivatives.gold">gold() (in module pydelt.derivatives)</a>
 </li>
       <li><a href="api.html#pydelt.interpolation.gold_interpolation">gold_interpolation() (in module pydelt.interpolation)</a>
 </li>
       <li><a href="api.html#pydelt.interpolation.GoldInterpolator">GoldInterpolator (class in pydelt.interpolation)</a>
 </li>
+      <li><a href="api.html#pydelt.multivariate.MultivariateDerivatives.gradient">gradient() (pydelt.multivariate.MultivariateDerivatives method)</a>
+
+      <ul>
+        <li><a href="api.html#pydelt.multivariate.NeuralNetworkMultivariateDerivatives.gradient">(pydelt.multivariate.NeuralNetworkMultivariateDerivatives method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#pydelt.multivariate.MultivariateDerivatives.hessian">hessian() (pydelt.multivariate.MultivariateDerivatives method)</a>
+
+      <ul>
+        <li><a href="api.html#pydelt.multivariate.NeuralNetworkMultivariateDerivatives.hessian">(pydelt.multivariate.NeuralNetworkMultivariateDerivatives method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -204,19 +250,37 @@
   </ul></td>
 </tr></table>
 
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#pydelt.multivariate.MultivariateDerivatives.jacobian">jacobian() (pydelt.multivariate.MultivariateDerivatives method)</a>
+
+      <ul>
+        <li><a href="api.html#pydelt.multivariate.NeuralNetworkMultivariateDerivatives.jacobian">(pydelt.multivariate.NeuralNetworkMultivariateDerivatives method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#pydelt.multivariate.MultivariateDerivatives.laplacian">laplacian() (pydelt.multivariate.MultivariateDerivatives method)</a>
+
+      <ul>
+        <li><a href="api.html#pydelt.multivariate.NeuralNetworkMultivariateDerivatives.laplacian">(pydelt.multivariate.NeuralNetworkMultivariateDerivatives method)</a>
+</li>
+      </ul></li>
       <li><a href="api.html#pydelt.derivatives.lla">lla() (in module pydelt.derivatives)</a>
 </li>
       <li><a href="api.html#pydelt.interpolation.lla_interpolation">lla_interpolation() (in module pydelt.interpolation)</a>
 </li>
       <li><a href="api.html#pydelt.interpolation.LlaInterpolator">LlaInterpolator (class in pydelt.interpolation)</a>
 </li>
-      <li><a href="api.html#pydelt.interpolation.local_segmented_linear">local_segmented_linear() (in module pydelt.interpolation)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#pydelt.interpolation.local_segmented_linear">local_segmented_linear() (in module pydelt.interpolation)</a>
+</li>
       <li><a href="api.html#pydelt.interpolation.loess_interpolation">loess_interpolation() (in module pydelt.interpolation)</a>
 </li>
       <li><a href="api.html#pydelt.interpolation.LoessInterpolator">LoessInterpolator (class in pydelt.interpolation)</a>
@@ -243,7 +307,15 @@
 </li>
         <li><a href="api.html#module-pydelt.interpolation">pydelt.interpolation</a>
 </li>
+        <li><a href="api.html#module-pydelt.multivariate">pydelt.multivariate</a>
+</li>
+        <li><a href="api.html#module-pydelt.tensor_derivatives">pydelt.tensor_derivatives</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#pydelt.multivariate.MultivariateDerivatives">MultivariateDerivatives (class in pydelt.multivariate)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -252,11 +324,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pydelt.autodiff.neural_network_derivative">neural_network_derivative() (in module pydelt.autodiff)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pydelt.interpolation.neural_network_interpolation">neural_network_interpolation() (in module pydelt.interpolation)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pydelt.interpolation.NeuralNetworkInterpolator">NeuralNetworkInterpolator (class in pydelt.interpolation)</a>
+</li>
+      <li><a href="api.html#pydelt.multivariate.NeuralNetworkMultivariateDerivatives">NeuralNetworkMultivariateDerivatives (class in pydelt.multivariate)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -286,8 +360,6 @@
         <li><a href="api.html#pydelt.interpolation.TensorFlowModel.predict">(pydelt.interpolation.TensorFlowModel method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     pydelt.autodiff
 
@@ -295,6 +367,8 @@
         <li><a href="api.html#module-pydelt.autodiff">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     pydelt.derivatives
 
@@ -316,6 +390,20 @@
         <li><a href="api.html#module-pydelt.interpolation">module</a>
 </li>
       </ul></li>
+      <li>
+    pydelt.multivariate
+
+      <ul>
+        <li><a href="api.html#module-pydelt.multivariate">module</a>
+</li>
+      </ul></li>
+      <li>
+    pydelt.tensor_derivatives
+
+      <ul>
+        <li><a href="api.html#module-pydelt.tensor_derivatives">module</a>
+</li>
+      </ul></li>
       <li><a href="api.html#pydelt.interpolation.PyTorchMLP">PyTorchMLP (class in pydelt.interpolation)</a>
 </li>
   </ul></td>
@@ -324,11 +412,17 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#pydelt.interpolation.BaseInterpolator.set_stochastic_link">set_stochastic_link() (pydelt.interpolation.BaseInterpolator method)</a>
+</li>
       <li><a href="api.html#pydelt.interpolation.spline_interpolation">spline_interpolation() (in module pydelt.interpolation)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#pydelt.interpolation.SplineInterpolator">SplineInterpolator (class in pydelt.interpolation)</a>
+</li>
+      <li><a href="api.html#pydelt.tensor_derivatives.TensorDerivatives.strain_tensor">strain_tensor() (pydelt.tensor_derivatives.TensorDerivatives method)</a>
+</li>
+      <li><a href="api.html#pydelt.tensor_derivatives.TensorDerivatives.stress_tensor">stress_tensor() (pydelt.tensor_derivatives.TensorDerivatives method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -336,6 +430,12 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#pydelt.tensor_derivatives.TensorDerivatives.tensor_gradient">tensor_gradient() (pydelt.tensor_derivatives.TensorDerivatives method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#pydelt.tensor_derivatives.TensorDerivatives">TensorDerivatives (class in pydelt.tensor_derivatives)</a>
+</li>
       <li><a href="api.html#pydelt.interpolation.TensorFlowModel">TensorFlowModel (class in pydelt.interpolation)</a>
 </li>
   </ul></td>

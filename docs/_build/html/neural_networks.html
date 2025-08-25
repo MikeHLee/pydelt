@@ -1,0 +1,474 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neural Networks &amp; Automatic Differentiation &mdash; pydelt 0.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=6c02275b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Multivariate Calculus &amp; Vector Operations" href="multivariate_calculus.html" />
+    <link rel="prev" title="Basic Interpolation &amp; Derivatives" href="basic_interpolation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Progressive Learning Path:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Neural Networks &amp; Automatic Differentiation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#core-concepts">🧠 <strong>Core Concepts</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#neural-network-interpolator">🔧 <strong>Neural Network Interpolator</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-1-nonlinear-function-approximation">🎯 <strong>Example 1: Nonlinear Function Approximation</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-2-fluid-dynamics-velocity-field">🌊 <strong>Example 2: Fluid Dynamics - Velocity Field</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-3-time-series-with-complex-dynamics">📊 <strong>Example 3: Time Series with Complex Dynamics</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advantages-of-neural-networks">⚡ <strong>Advantages of Neural Networks</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-configuration">🔧 <strong>Advanced Configuration</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#limitations-considerations">⚠️ <strong>Limitations &amp; Considerations</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#best-practices">🎓 <strong>Best Practices</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#next-steps">🔗 <strong>Next Steps</strong></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Neural Networks &amp; Automatic Differentiation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/neural_networks.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="neural-networks-automatic-differentiation">
+<h1>Neural Networks &amp; Automatic Differentiation<a class="headerlink" href="#neural-networks-automatic-differentiation" title="Link to this heading"></a></h1>
+<p>Neural networks provide powerful interpolation capabilities with exact automatic differentiation. Unlike traditional methods that approximate derivatives numerically, neural networks can compute exact gradients through backpropagation, making them ideal for optimization and machine learning applications.</p>
+<section id="core-concepts">
+<h2>🧠 <strong>Core Concepts</strong><a class="headerlink" href="#core-concepts" title="Link to this heading"></a></h2>
+<p><strong>Automatic Differentiation (AutoDiff)</strong> computes derivatives by applying the chain rule systematically to elementary operations. This provides machine-precision accuracy for derivatives, unlike numerical approximation methods.</p>
+<p><strong>Universal Function Approximation</strong>: Neural networks can approximate any continuous function to arbitrary precision given sufficient capacity, making them extremely versatile interpolators.</p>
+<p><strong>Backpropagation</strong>: The algorithm that efficiently computes gradients by propagating error signals backward through the network.</p>
+</section>
+<section id="neural-network-interpolator">
+<h2>🔧 <strong>Neural Network Interpolator</strong><a class="headerlink" href="#neural-network-interpolator" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">NeuralNetworkInterpolator</span></code> combines the universal pydelt API with deep learning backends:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">NeuralNetworkInterpolator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Create neural network interpolator</span>
+<span class="n">nn_interp</span> <span class="o">=</span> <span class="n">NeuralNetworkInterpolator</span><span class="p">(</span>
+    <span class="n">hidden_layers</span><span class="o">=</span><span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">16</span><span class="p">],</span>  <span class="c1"># Network architecture</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span>           <span class="c1"># Activation function</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>         <span class="c1"># Optimizer learning rate</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>                 <span class="c1"># Training iterations</span>
+    <span class="n">backend</span><span class="o">=</span><span class="s1">&#39;pytorch&#39;</span>            <span class="c1"># &#39;pytorch&#39; or &#39;tensorflow&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Key Parameters</strong>:
+- <code class="docutils literal notranslate"><span class="pre">hidden_layers</span></code>: List of hidden layer sizes [64, 32] creates 2 hidden layers
+- <code class="docutils literal notranslate"><span class="pre">activation</span></code>: ‘relu’, ‘tanh’, ‘sigmoid’, ‘swish’, ‘gelu’
+- <code class="docutils literal notranslate"><span class="pre">learning_rate</span></code>: Adam optimizer learning rate (0.001-0.01 typical)
+- <code class="docutils literal notranslate"><span class="pre">epochs</span></code>: Training iterations (500-5000 depending on complexity)
+- <code class="docutils literal notranslate"><span class="pre">backend</span></code>: ‘pytorch’ (default) or ‘tensorflow’</p>
+</section>
+<section id="example-1-nonlinear-function-approximation">
+<h2>🎯 <strong>Example 1: Nonlinear Function Approximation</strong><a class="headerlink" href="#example-1-nonlinear-function-approximation" title="Link to this heading"></a></h2>
+<p><strong>Classic Example: Runge Function</strong></p>
+<p>The Runge function is notoriously difficult for polynomial interpolation but neural networks handle it well:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">NeuralNetworkInterpolator</span><span class="p">,</span> <span class="n">SplineInterpolator</span>
+
+<span class="c1"># Runge function: f(x) = 1 / (1 + 25x²)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">runge_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">25</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">runge_derivative</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">50</span> <span class="o">*</span> <span class="n">x</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">25</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="c1"># Training data (sparse sampling)</span>
+<span class="n">x_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="n">runge_function</span><span class="p">(</span><span class="n">x_train</span><span class="p">)</span>
+
+<span class="c1"># Neural network interpolator</span>
+<span class="n">nn_interp</span> <span class="o">=</span> <span class="n">NeuralNetworkInterpolator</span><span class="p">(</span>
+    <span class="n">hidden_layers</span><span class="o">=</span><span class="p">[</span><span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;tanh&#39;</span><span class="p">,</span>  <span class="c1"># Good for smooth functions</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.005</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">2000</span>
+<span class="p">)</span>
+<span class="n">nn_interp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="c1"># Compare with spline</span>
+<span class="n">spline</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">spline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="c1"># Evaluation points</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">runge_function</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+<span class="n">dy_true</span> <span class="o">=</span> <span class="n">runge_derivative</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+
+<span class="c1"># Predictions</span>
+<span class="n">y_nn</span> <span class="o">=</span> <span class="n">nn_interp</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+<span class="n">y_spline</span> <span class="o">=</span> <span class="n">spline</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+
+<span class="c1"># Derivatives (automatic vs numerical)</span>
+<span class="n">nn_deriv_func</span> <span class="o">=</span> <span class="n">nn_interp</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">spline_deriv_func</span> <span class="o">=</span> <span class="n">spline</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">dy_nn</span> <span class="o">=</span> <span class="n">nn_deriv_func</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+<span class="n">dy_spline</span> <span class="o">=</span> <span class="n">spline_deriv_func</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+
+<span class="c1"># Error analysis</span>
+<span class="n">nn_func_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">y_nn</span> <span class="o">-</span> <span class="n">y_true</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">nn_deriv_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">dy_nn</span> <span class="o">-</span> <span class="n">dy_true</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">spline_func_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">y_spline</span> <span class="o">-</span> <span class="n">y_true</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">spline_deriv_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">dy_spline</span> <span class="o">-</span> <span class="n">dy_true</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Function Approximation Errors:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Neural Network: </span><span class="si">{</span><span class="n">nn_func_error</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Spline:         </span><span class="si">{</span><span class="n">spline_func_error</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Derivative Errors:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Neural Network: </span><span class="si">{</span><span class="n">nn_deriv_error</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Spline:         </span><span class="si">{</span><span class="n">spline_deriv_error</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Expected Results</strong>: Neural networks typically achieve 10-100x better accuracy than splines for the Runge function, especially near the boundaries where polynomial methods struggle.</p>
+</section>
+<section id="example-2-fluid-dynamics-velocity-field">
+<h2>🌊 <strong>Example 2: Fluid Dynamics - Velocity Field</strong><a class="headerlink" href="#example-2-fluid-dynamics-velocity-field" title="Link to this heading"></a></h2>
+<p><strong>Application</strong>: Reconstructing velocity fields from particle tracking data in fluid mechanics.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulate 2D fluid flow around a cylinder (potential flow)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">potential_flow_velocity</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">U_inf</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">R</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Velocity field around a cylinder in cross-flow&quot;&quot;&quot;</span>
+    <span class="n">r_sq</span> <span class="o">=</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span>
+    <span class="c1"># Avoid singularity at origin</span>
+    <span class="n">r_sq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">r_sq</span><span class="p">,</span> <span class="mf">1e-10</span><span class="p">)</span>
+
+    <span class="c1"># Velocity components for flow around cylinder</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">U_inf</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">R</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">r_sq</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">U_inf</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">/</span> <span class="n">r_sq</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span>
+
+<span class="c1"># Generate training data (sparse particle tracking)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">n_particles</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">x_particles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n_particles</span><span class="p">)</span>
+<span class="n">y_particles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">n_particles</span><span class="p">)</span>
+
+<span class="c1"># Remove particles inside cylinder</span>
+<span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">x_particles</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y_particles</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.6</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">x_particles</span> <span class="o">=</span> <span class="n">x_particles</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+<span class="n">y_particles</span> <span class="o">=</span> <span class="n">y_particles</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+<span class="c1"># Get velocity components</span>
+<span class="n">u_true</span><span class="p">,</span> <span class="n">v_true</span> <span class="o">=</span> <span class="n">potential_flow_velocity</span><span class="p">(</span><span class="n">x_particles</span><span class="p">,</span> <span class="n">y_particles</span><span class="p">)</span>
+
+<span class="c1"># Add measurement noise</span>
+<span class="n">u_measured</span> <span class="o">=</span> <span class="n">u_true</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">u_true</span><span class="p">))</span>
+<span class="n">v_measured</span> <span class="o">=</span> <span class="n">v_true</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">v_true</span><span class="p">))</span>
+
+<span class="c1"># Prepare input data (x,y positions) and output data (u,v velocities)</span>
+<span class="n">input_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">x_particles</span><span class="p">,</span> <span class="n">y_particles</span><span class="p">])</span>
+<span class="n">output_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">u_measured</span><span class="p">,</span> <span class="n">v_measured</span><span class="p">])</span>
+
+<span class="c1"># Neural network for vector-valued function</span>
+<span class="n">nn_flow</span> <span class="o">=</span> <span class="n">NeuralNetworkInterpolator</span><span class="p">(</span>
+    <span class="n">hidden_layers</span><span class="o">=</span><span class="p">[</span><span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">],</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;swish&#39;</span><span class="p">,</span>  <span class="c1"># Good for fluid dynamics</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.002</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">3000</span>
+<span class="p">)</span>
+<span class="n">nn_flow</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">output_data</span><span class="p">)</span>
+
+<span class="c1"># Create evaluation grid</span>
+<span class="n">x_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">y_grid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x_grid</span><span class="p">,</span> <span class="n">y_grid</span><span class="p">)</span>
+
+<span class="c1"># Remove points inside cylinder</span>
+<span class="n">mask_grid</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">Y</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.6</span><span class="o">**</span><span class="mi">2</span>
+<span class="n">x_eval</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">mask_grid</span><span class="p">]</span>
+<span class="n">y_eval</span> <span class="o">=</span> <span class="n">Y</span><span class="p">[</span><span class="n">mask_grid</span><span class="p">]</span>
+<span class="n">eval_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">x_eval</span><span class="p">,</span> <span class="n">y_eval</span><span class="p">])</span>
+
+<span class="c1"># Predict velocity field</span>
+<span class="n">velocity_pred</span> <span class="o">=</span> <span class="n">nn_flow</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+<span class="n">u_pred</span> <span class="o">=</span> <span class="n">velocity_pred</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">v_pred</span> <span class="o">=</span> <span class="n">velocity_pred</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># Compute derivatives for vorticity analysis</span>
+<span class="c1"># ∂u/∂y and ∂v/∂x for vorticity ω = ∂v/∂x - ∂u/∂y</span>
+<span class="n">deriv_func</span> <span class="o">=</span> <span class="n">nn_flow</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">derivatives</span> <span class="o">=</span> <span class="n">deriv_func</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reconstructed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span><span class="si">}</span><span class="s2"> velocity vectors from </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">x_particles</span><span class="p">)</span><span class="si">}</span><span class="s2"> measurements&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Velocity field ready for vorticity and strain rate analysis&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-3-time-series-with-complex-dynamics">
+<h2>📊 <strong>Example 3: Time Series with Complex Dynamics</strong><a class="headerlink" href="#example-3-time-series-with-complex-dynamics" title="Link to this heading"></a></h2>
+<p><strong>Application</strong>: Chaotic time series analysis (Lorenz attractor).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">odeint</span>
+
+<span class="c1"># Lorenz system parameters</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lorenz_system</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="mi">28</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mi">8</span><span class="o">/</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">state</span>
+    <span class="n">dxdt</span> <span class="o">=</span> <span class="n">sigma</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span>
+    <span class="n">dydt</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="n">rho</span> <span class="o">-</span> <span class="n">z</span><span class="p">)</span> <span class="o">-</span> <span class="n">y</span>
+    <span class="n">dzdt</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">z</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">dxdt</span><span class="p">,</span> <span class="n">dydt</span><span class="p">,</span> <span class="n">dzdt</span><span class="p">]</span>
+
+<span class="c1"># Generate Lorenz attractor data</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+<span class="n">initial_state</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+<span class="n">trajectory</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">lorenz_system</span><span class="p">,</span> <span class="n">initial_state</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Extract x-component time series</span>
+<span class="n">x_series</span> <span class="o">=</span> <span class="n">trajectory</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Subsample for training (simulate sparse measurements)</span>
+<span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="mi">10</span><span class="p">)</span>  <span class="c1"># Every 10th point</span>
+<span class="n">t_train</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
+<span class="n">x_train</span> <span class="o">=</span> <span class="n">x_series</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
+
+<span class="c1"># Add measurement noise</span>
+<span class="n">x_noisy</span> <span class="o">=</span> <span class="n">x_train</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_train</span><span class="p">))</span>
+
+<span class="c1"># Neural network interpolator</span>
+<span class="n">nn_chaos</span> <span class="o">=</span> <span class="n">NeuralNetworkInterpolator</span><span class="p">(</span>
+    <span class="n">hidden_layers</span><span class="o">=</span><span class="p">[</span><span class="mi">256</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>  <span class="c1"># Deep network for complex dynamics</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;gelu&#39;</span><span class="p">,</span>  <span class="c1"># Good for chaotic systems</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">4000</span>
+<span class="p">)</span>
+<span class="n">nn_chaos</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t_train</span><span class="p">,</span> <span class="n">x_noisy</span><span class="p">)</span>
+
+<span class="c1"># Predict full time series</span>
+<span class="n">x_pred</span> <span class="o">=</span> <span class="n">nn_chaos</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Compute instantaneous rate of change</span>
+<span class="n">rate_func</span> <span class="o">=</span> <span class="n">nn_chaos</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">dx_dt_pred</span> <span class="o">=</span> <span class="n">rate_func</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># True derivative from Lorenz equations</span>
+<span class="n">dx_dt_true</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">*</span> <span class="p">(</span><span class="n">trajectory</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">trajectory</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+
+<span class="c1"># Analysis</span>
+<span class="n">reconstruction_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">x_pred</span> <span class="o">-</span> <span class="n">x_series</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">derivative_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">dx_dt_pred</span> <span class="o">-</span> <span class="n">dx_dt_true</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time series reconstruction error: </span><span class="si">{</span><span class="n">reconstruction_error</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Derivative reconstruction error: </span><span class="si">{</span><span class="n">derivative_error</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Phase space reconstruction quality</span>
+<span class="n">correlation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">corrcoef</span><span class="p">(</span><span class="n">x_pred</span><span class="p">,</span> <span class="n">x_series</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Correlation with true attractor: </span><span class="si">{</span><span class="n">correlation</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="advantages-of-neural-networks">
+<h2>⚡ <strong>Advantages of Neural Networks</strong><a class="headerlink" href="#advantages-of-neural-networks" title="Link to this heading"></a></h2>
+<p><strong>1. Exact Derivatives</strong>
+- Automatic differentiation provides machine-precision gradients
+- No numerical approximation errors
+- Consistent accuracy across all derivative orders</p>
+<p><strong>2. Universal Approximation</strong>
+- Can represent any continuous function
+- Handles highly nonlinear relationships
+- Scales to high-dimensional problems</p>
+<p><strong>3. Noise Robustness</strong>
+- Implicit regularization through architecture
+- Dropout and batch normalization for stability
+- Learns underlying patterns despite measurement noise</p>
+<p><strong>4. Scalability</strong>
+- GPU acceleration for large datasets
+- Batch processing for efficiency
+- Parallel computation of derivatives</p>
+</section>
+<section id="advanced-configuration">
+<h2>🔧 <strong>Advanced Configuration</strong><a class="headerlink" href="#advanced-configuration" title="Link to this heading"></a></h2>
+<p><strong>Custom Architecture Design</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Deep network for complex functions</span>
+<span class="n">complex_nn</span> <span class="o">=</span> <span class="n">NeuralNetworkInterpolator</span><span class="p">(</span>
+    <span class="n">hidden_layers</span><span class="o">=</span><span class="p">[</span><span class="mi">512</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;swish&#39;</span><span class="p">,</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.0005</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+    <span class="n">dropout_rate</span><span class="o">=</span><span class="mf">0.1</span>
+<span class="p">)</span>
+
+<span class="c1"># Wide network for high-frequency components</span>
+<span class="n">wide_nn</span> <span class="o">=</span> <span class="n">NeuralNetworkInterpolator</span><span class="p">(</span>
+    <span class="n">hidden_layers</span><span class="o">=</span><span class="p">[</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1024</span><span class="p">],</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span>
+    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.002</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">2000</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Training Monitoring</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Enable training progress tracking</span>
+<span class="n">nn_interp</span> <span class="o">=</span> <span class="n">NeuralNetworkInterpolator</span><span class="p">(</span>
+    <span class="n">hidden_layers</span><span class="o">=</span><span class="p">[</span><span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">],</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>        <span class="c1"># Print training progress</span>
+    <span class="n">early_stopping</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="c1"># Stop when validation loss plateaus</span>
+    <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.2</span> <span class="c1"># Use 20% of data for validation</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Backend Selection</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># PyTorch backend (default, recommended)</span>
+<span class="n">nn_pytorch</span> <span class="o">=</span> <span class="n">NeuralNetworkInterpolator</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s1">&#39;pytorch&#39;</span><span class="p">)</span>
+
+<span class="c1"># TensorFlow backend</span>
+<span class="n">nn_tensorflow</span> <span class="o">=</span> <span class="n">NeuralNetworkInterpolator</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s1">&#39;tensorflow&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="limitations-considerations">
+<h2>⚠️ <strong>Limitations &amp; Considerations</strong><a class="headerlink" href="#limitations-considerations" title="Link to this heading"></a></h2>
+<p><strong>Computational Cost</strong>:
+- Training time scales with network size and data complexity
+- GPU recommended for large networks (&gt;1000 parameters)
+- Memory usage grows with batch size and network depth</p>
+<p><strong>Hyperparameter Sensitivity</strong>:
+- Learning rate requires tuning (too high: instability, too low: slow convergence)
+- Architecture choice affects approximation quality
+- Overfitting possible with insufficient data</p>
+<p><strong>Reproducibility</strong>:
+- Random initialization affects results
+- Set random seeds for reproducible results:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Set seeds for reproducibility</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="n">nn_interp</span> <span class="o">=</span> <span class="n">NeuralNetworkInterpolator</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="best-practices">
+<h2>🎓 <strong>Best Practices</strong><a class="headerlink" href="#best-practices" title="Link to this heading"></a></h2>
+<p><strong>Architecture Guidelines</strong>:
+1. <strong>Start simple</strong>: Begin with [64, 32] hidden layers
+2. <strong>Go deeper for complexity</strong>: Add layers for highly nonlinear functions
+3. <strong>Go wider for detail</strong>: Increase layer sizes for high-frequency components
+4. <strong>Use appropriate activations</strong>: ‘relu’ (general), ‘tanh’ (smooth), ‘swish’ (modern)</p>
+<p><strong>Training Tips</strong>:
+1. <strong>Monitor convergence</strong>: Use validation split to track overfitting
+2. <strong>Adjust learning rate</strong>: Decrease if training is unstable
+3. <strong>Early stopping</strong>: Prevent overfitting with patience parameter
+4. <strong>Data normalization</strong>: Scale inputs to [-1, 1] or [0, 1] range</p>
+<p><strong>Derivative Accuracy</strong>:
+- Neural network derivatives are exact (no approximation error)
+- Accuracy depends on function approximation quality
+- Higher-order derivatives may amplify approximation errors</p>
+</section>
+<section id="next-steps">
+<h2>🔗 <strong>Next Steps</strong><a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>
+<p>Neural networks excel at univariate and simple multivariate problems. For advanced multivariate calculus operations, continue to:</p>
+<ul class="simple">
+<li><p><strong>Multivariate Calculus</strong>: Gradients, Jacobians, and Hessians for vector-valued functions</p></li>
+<li><p><strong>Stochastic Computing</strong>: Probabilistic neural networks with uncertainty quantification</p></li>
+</ul>
+<p>The automatic differentiation capabilities of neural networks become especially powerful when combined with multivariate operations and stochastic link functions.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="basic_interpolation.html" class="btn btn-neutral float-left" title="Basic Interpolation &amp; Derivatives" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="multivariate_calculus.html" class="btn btn-neutral float-right" title="Multivariate Calculus &amp; Vector Operations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

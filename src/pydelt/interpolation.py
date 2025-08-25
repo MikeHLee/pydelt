@@ -10,16 +10,42 @@ from statsmodels.nonparametric.smoothers_lowess import lowess
 from typing import List, Tuple, Dict, Union, Optional, Callable, Any
 from scipy.interpolate import UnivariateSpline
 import numpy as np
+from .stochastic import StochasticLinkFunction, StochasticDerivativeTransform, create_link_function
 
 class BaseInterpolator:
     """
-    Abstract base class for all interpolators.
+    Abstract base class for all interpolators with stochastic derivative support.
     """
+    
+    def __init__(self):
+        self.stochastic_link = None
+        self.stochastic_method = "ito"
+    
     def fit(self, time, signal):
         raise NotImplementedError("fit() must be implemented in subclasses.")
     
     def predict(self, new_time):
         raise NotImplementedError("predict() must be implemented in subclasses.")
+    
+    def set_stochastic_link(self, link_function: Union[str, StochasticLinkFunction], method: str = "ito", **kwargs):
+        """
+        Set a stochastic link function for derivative transformations.
+        
+        Args:
+            link_function: Either a string name ('normal', 'lognormal', etc.) or StochasticLinkFunction instance
+            method: Either 'ito' or 'stratonovich' for stochastic integration method
+            **kwargs: Parameters for the link function if using string name
+        """
+        if isinstance(link_function, str):
+            self.stochastic_link = create_link_function(link_function, **kwargs)
+        elif isinstance(link_function, StochasticLinkFunction):
+            self.stochastic_link = link_function
+        else:
+            raise ValueError("link_function must be a string name or StochasticLinkFunction instance")
+        
+        if method not in ["ito", "stratonovich"]:
+            raise ValueError("Method must be 'ito' or 'stratonovich'")
+        self.stochastic_method = method
     
     def differentiate(self, order: int = 1, mask: Optional[Union[np.ndarray, List[bool], List[int]]] = None) -> Callable:
         """
@@ -34,9 +60,27 @@ class BaseInterpolator:
             Callable function that takes input points and returns derivative values
         """
         raise NotImplementedError("differentiate() must be implemented in subclasses.")
+    
+    def _apply_stochastic_transform(self, x: np.ndarray, derivatives: Dict[int, np.ndarray]) -> Dict[int, np.ndarray]:
+        """
+        Apply stochastic transformation to derivatives if a link function is set.
+        
+        Args:
+            x: Input values where derivatives are evaluated
+            derivatives: Dictionary mapping derivative order to derivative values
+        
+        Returns:
+            Transformed derivatives dictionary
+        """
+        if self.stochastic_link is None:
+            return derivatives
+        
+        transform = StochasticDerivativeTransform(self.stochastic_link, self.stochastic_method)
+        return transform.transform_derivatives(x, derivatives)
 
 class SplineInterpolator(BaseInterpolator):
     def __init__(self, smoothing: Optional[float] = None, k: int = 5):
+        super().__init__()
         self.smoothing = smoothing
         self.k = k
         self.splines = None  # List of splines if vector output
@@ -123,6 +167,40 @@ class SplineInterpolator(BaseInterpolator):
             derivs = [spline.derivative(n=order)(eval_points) for spline in self.splines]
             result = np.stack(derivs, axis=-1)
             
+            # Apply stochastic transformation if link function is set
+            if self.stochastic_link is not None:
+                # Get function values at eval points for stochastic transform
+                func_values = self.predict(eval_points)
+                if func_values.ndim == 0:
+                    func_values = np.array([func_values])
+                elif len(self.splines) == 1 and func_values.ndim == 1:
+                    # Ensure func_values matches eval_points shape
+                    pass
+                
+                # Ensure result has proper shape for transformation
+                if len(self.splines) == 1:
+                    result_for_transform = result.flatten() if result.ndim > 1 else result
+                else:
+                    result_for_transform = result
+                
+                # Prepare derivatives dictionary for transformation
+                derivatives_dict = {order: result_for_transform}
+                
+                # Get higher order derivatives if needed for Itô correction
+                if self.stochastic_method == "ito" and order == 1:
+                    try:
+                        second_derivs = [spline.derivative(n=2)(eval_points) for spline in self.splines]
+                        second_result = np.stack(second_derivs, axis=-1)
+                        if len(self.splines) == 1:
+                            second_result = second_result.flatten()
+                        derivatives_dict[2] = second_result
+                    except:
+                        pass  # Second derivative not available
+                
+                # Apply stochastic transformation
+                transformed = self._apply_stochastic_transform(func_values, derivatives_dict)
+                result = transformed[order]
+            
             # Handle different result dimensions
             if len(self.splines) == 1:
                 result = result.flatten()
@@ -136,9 +214,9 @@ class SplineInterpolator(BaseInterpolator):
 
 class LowessInterpolator(BaseInterpolator):
     def __init__(self, frac: float = 0.1, it: int = 3):
+        super().__init__()
         self.frac = frac
         self.it = it
-        self.smoothed = None
         self.interp_funcs = None  # List of interp1d for each output dim
 
     def fit(self, time: Union[List[float], np.ndarray], signal: Union[List[float], np.ndarray]):
@@ -261,6 +339,7 @@ class LowessInterpolator(BaseInterpolator):
 
 class LoessInterpolator(BaseInterpolator):
     def __init__(self, degree: int = 2, frac: float = 0.1, it: int = 3):
+        super().__init__()
         self.degree = degree
         self.frac = frac
         self.it = it
@@ -381,6 +460,175 @@ class LoessInterpolator(BaseInterpolator):
             
             result = np.stack(derivs, axis=-1)
             
+            # Apply stochastic transformation if link function is set
+            if self.stochastic_link is not None:
+                # Get function values at eval points for stochastic transform
+                func_values = self.predict(eval_points)
+                if func_values.ndim == 0:
+                    func_values = np.array([func_values])
+                
+                # Ensure result has proper shape for transformation
+                if len(self.interp_funcs) == 1:
+                    result_for_transform = result.flatten() if result.ndim > 1 else result
+                else:
+                    result_for_transform = result
+                
+                # Prepare derivatives dictionary for transformation
+                derivatives_dict = {order: result_for_transform}
+                
+                # Apply stochastic transformation
+                transformed = self._apply_stochastic_transform(func_values, derivatives_dict)
+                result = transformed[order]
+            
+            # Handle different result dimensions
+            if len(self.interp_funcs) == 1:
+                result = result.flatten()
+                return result[0] if scalar_input else result
+            else:
+                return result[0] if scalar_input else result
+        
+        return derivative_func
+
+class LoessInterpolator(BaseInterpolator):
+    def __init__(self, degree: int = 2, frac: float = 0.1, it: int = 3):
+        super().__init__()
+        self.degree = degree
+        self.frac = frac
+        self.it = it
+        self.smoothed = None
+        self.interp_funcs = None
+
+    def fit(self, time: Union[List[float], np.ndarray], signal: Union[List[float], np.ndarray]):
+        t = np.asarray(time)
+        s = np.asarray(signal)
+        sort_idx = np.argsort(t)
+        t = t[sort_idx]
+        s = s[sort_idx]
+        if s.ndim == 1:
+            s = s[:, None]
+        self.interp_funcs = []
+        from statsmodels.nonparametric.smoothers_lowess import lowess
+        from scipy.interpolate import interp1d
+        for j in range(s.shape[1]):
+            smoothed = lowess(s[:, j], t, frac=self.frac, it=self.it, return_sorted=True)
+            interp_func = interp1d(
+                smoothed[:, 0], smoothed[:, 1],
+                bounds_error=False,
+                fill_value=(smoothed[0, 1], smoothed[-1, 1])
+            )
+            self.interp_funcs.append(interp_func)
+        return self
+
+    def predict(self, new_time: Union[float, np.ndarray]):
+        if self.interp_funcs is None:
+            raise RuntimeError("LoessInterpolator must be fit before calling predict().")
+        new_time = np.asarray(new_time)
+        scalar_input = new_time.ndim == 0
+        if scalar_input:
+            new_time = np.array([new_time])
+            
+        preds = [interp_func(new_time) for interp_func in self.interp_funcs]
+        result = np.stack(preds, axis=-1)
+        
+        # Handle different result dimensions
+        if len(self.interp_funcs) == 1:
+            result = result.flatten()
+            return result[0] if scalar_input else result
+        else:
+            return result[0] if scalar_input else result
+    
+    def differentiate(self, order: int = 1, mask: Optional[Union[np.ndarray, List[bool], List[int]]] = None) -> Callable:
+        """
+        Return a callable function that computes derivatives of the LOESS interpolation using numerical differentiation.
+        
+        Args:
+            order: Order of derivative (1 for first derivative, 2 for second, etc.)
+            mask: Optional mask for partial derivatives (boolean array or indices)
+                 If provided, only compute derivatives for selected points
+        
+        Returns:
+            Callable function that takes input points and returns derivative values
+        """
+        if self.interp_funcs is None:
+            raise RuntimeError("LoessInterpolator must be fit before calling differentiate().")
+        
+        if order < 1:
+            raise ValueError("Derivative order must be >= 1")
+        
+        def derivative_func(eval_points: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
+            eval_points = np.asarray(eval_points)
+            scalar_input = eval_points.ndim == 0
+            if scalar_input:
+                eval_points = np.array([eval_points])
+            
+            # Apply mask if provided
+            if mask is not None:
+                mask_array = np.asarray(mask)
+                if mask_array.dtype == bool:
+                    # Boolean mask
+                    if len(mask_array) != len(eval_points):
+                        raise ValueError(f"Boolean mask length {len(mask_array)} doesn't match eval_points length {len(eval_points)}")
+                    eval_points = eval_points[mask_array]
+                else:
+                    # Index mask
+                    eval_points = eval_points[mask_array]
+            
+            # Use numerical differentiation with small step size
+            h = 1e-6  # Small step for numerical differentiation
+            
+            # Compute derivatives for each interpolation function
+            derivs = []
+            for interp_func in self.interp_funcs:
+                if order == 1:
+                    # First derivative: f'(x) ≈ (f(x+h) - f(x-h)) / (2h)
+                    f_plus = interp_func(eval_points + h)
+                    f_minus = interp_func(eval_points - h)
+                    deriv = (f_plus - f_minus) / (2 * h)
+                elif order == 2:
+                    # Second derivative: f''(x) ≈ (f(x+h) - 2f(x) + f(x-h)) / h²
+                    f_plus = interp_func(eval_points + h)
+                    f_center = interp_func(eval_points)
+                    f_minus = interp_func(eval_points - h)
+                    deriv = (f_plus - 2 * f_center + f_minus) / (h * h)
+                else:
+                    # Higher order derivatives using recursive approach
+                    def compute_numerical_derivative(x, n):
+                        if n == 0:
+                            return interp_func(x)
+                        else:
+                            return (compute_numerical_derivative(x + h, n - 1) - 
+                                   compute_numerical_derivative(x - h, n - 1)) / (2 * h)
+                    
+                    # Apply to each evaluation point
+                    if np.isscalar(eval_points):
+                        deriv = compute_numerical_derivative(eval_points, order)
+                    else:
+                        deriv = np.array([compute_numerical_derivative(x, order) for x in eval_points])
+                
+                derivs.append(deriv)
+            
+            result = np.stack(derivs, axis=-1)
+            
+            # Apply stochastic transformation if link function is set
+            if self.stochastic_link is not None:
+                # Get function values at eval points for stochastic transform
+                func_values = self.predict(eval_points)
+                if func_values.ndim == 0:
+                    func_values = np.array([func_values])
+                
+                # Ensure result has proper shape for transformation
+                if len(self.interp_funcs) == 1:
+                    result_for_transform = result.flatten() if result.ndim > 1 else result
+                else:
+                    result_for_transform = result
+                
+                # Prepare derivatives dictionary for transformation
+                derivatives_dict = {order: result_for_transform}
+                
+                # Apply stochastic transformation
+                transformed = self._apply_stochastic_transform(func_values, derivatives_dict)
+                result = transformed[order]
+            
             # Handle different result dimensions
             if len(self.interp_funcs) == 1:
                 result = result.flatten()
@@ -392,9 +640,10 @@ class LoessInterpolator(BaseInterpolator):
 
 class FdaInterpolator(BaseInterpolator):
     def __init__(self, smoothing: Optional[float] = None, k: int = 3):
+        super().__init__()
         self.smoothing = smoothing
         self.k = k
-        self.spline = None
+        self.splines = None
 
     def fit(self, time: Union[List[float], np.ndarray], signal: Union[List[float], np.ndarray]):
         t = np.asarray(time)
@@ -408,13 +657,13 @@ class FdaInterpolator(BaseInterpolator):
             noise_estimate = np.std(np.diff(s)) / np.sqrt(2)
             smoothing = n * (0.005 * range_y + 0.1 * noise_estimate) ** 2
         from scipy.interpolate import UnivariateSpline
-        self.spline = UnivariateSpline(t, s, s=smoothing, k=self.k)
+        self.splines = UnivariateSpline(t, s, s=smoothing, k=self.k)
         return self
 
     def predict(self, new_time: Union[float, np.ndarray]):
-        if self.spline is None:
+        if self.splines is None:
             raise RuntimeError("FdaInterpolator must be fit before calling predict().")
-        return self.spline(new_time)
+        return self.splines(new_time)
     
     def differentiate(self, order: int = 1, mask: Optional[Union[np.ndarray, List[bool], List[int]]] = None) -> Callable:
         """
@@ -428,7 +677,7 @@ class FdaInterpolator(BaseInterpolator):
         Returns:
             Callable function that takes input points and returns derivative values
         """
-        if self.spline is None:
+        if self.splines is None:
             raise RuntimeError("FdaInterpolator must be fit before calling differentiate().")
         
         if order < 1:
@@ -456,7 +705,29 @@ class FdaInterpolator(BaseInterpolator):
                     eval_points = eval_points[mask_array]
             
             # Compute derivative using spline's built-in derivative method
-            result = self.spline.derivative(n=order)(eval_points)
+            result = self.splines.derivative(n=order)(eval_points)
+            
+            # Apply stochastic transformation if link function is set
+            if self.stochastic_link is not None:
+                # Get function values at eval points for stochastic transform
+                func_values = self.predict(eval_points)
+                if func_values.ndim == 0:
+                    func_values = np.array([func_values])
+                
+                # Prepare derivatives dictionary for transformation
+                derivatives_dict = {order: result}
+                
+                # Get higher order derivatives if needed for Itô correction
+                if self.stochastic_method == "ito" and order == 1:
+                    try:
+                        second_result = self.splines.derivative(n=2)(eval_points)
+                        derivatives_dict[2] = second_result
+                    except:
+                        pass  # Second derivative not available
+                
+                # Apply stochastic transformation
+                transformed = self._apply_stochastic_transform(func_values, derivatives_dict)
+                result = transformed[order]
             
             return result.item() if scalar_input and result.size == 1 else result
         
@@ -464,10 +735,11 @@ class FdaInterpolator(BaseInterpolator):
 
 class LlaInterpolator(BaseInterpolator):
     def __init__(self, window_size: int = 5, normalization: str = 'min', zero_mean: bool = False):
+        super().__init__()
         self.window_size = window_size
         self.normalization = normalization
         self.zero_mean = zero_mean
-        self.t = None
+        self.fitted_data = None
         self.s = None
         self.d = None
 
@@ -479,11 +751,13 @@ class LlaInterpolator(BaseInterpolator):
         s = s[sort_idx]
         # Derivative estimation (central difference)
         d = np.gradient(s, t)
-        self.t, self.s, self.d = t, s, d
+        self.fitted_data = (t, s, d)
+        self.s = s
+        self.d = d
         return self
 
     def predict(self, query_time):
-        t, s, d = self.t, self.s, self.d
+        t, s, d = self.fitted_data
         query_time = np.atleast_1d(query_time)
         result = np.empty_like(query_time, dtype=float)
         for i, t_i in enumerate(query_time):
@@ -518,7 +792,7 @@ class LlaInterpolator(BaseInterpolator):
         Returns:
             Callable function that takes input points and returns derivative values
         """
-        if self.t is None or self.s is None or self.d is None:
+        if self.fitted_data is None:
             raise RuntimeError("LlaInterpolator must be fit before calling differentiate().")
         
         if order < 1:
@@ -542,7 +816,7 @@ class LlaInterpolator(BaseInterpolator):
                     # Index mask
                     eval_points = eval_points[mask_array]
             
-            t, s, d = self.t, self.s, self.d
+            t, s, d = self.fitted_data
             result = np.empty_like(eval_points, dtype=float)
             
             for i, t_i in enumerate(eval_points):
@@ -615,15 +889,30 @@ class LlaInterpolator(BaseInterpolator):
                     
                     result[i] = compute_derivative_iteratively(t_i, order)
             
+            # Apply stochastic transformation if link function is set
+            if self.stochastic_link is not None:
+                # Get function values at eval points for stochastic transform
+                func_values = self.predict(eval_points)
+                if func_values.ndim == 0:
+                    func_values = np.array([func_values])
+                
+                # Prepare derivatives dictionary for transformation
+                derivatives_dict = {order: result}
+                
+                # Apply stochastic transformation
+                transformed = self._apply_stochastic_transform(func_values, derivatives_dict)
+                result = transformed[order]
+            
             return result.item() if scalar_input and result.size == 1 else result
         
         return derivative_func
 
 class GllaInterpolator(BaseInterpolator):
     def __init__(self, embedding: int = 3, n: int = 2):
+        super().__init__()
         self.embedding = embedding
         self.n = n
-        self.t = None
+        self.fitted_data = None
         self.s = None
         self.d = None
 
@@ -635,11 +924,13 @@ class GllaInterpolator(BaseInterpolator):
         s = s[sort_idx]
         # Derivative estimation (central difference)
         d = np.gradient(s, t)
-        self.t, self.s, self.d = t, s, d
+        self.fitted_data = (t, s, d)
+        self.s = s
+        self.d = d
         return self
 
     def predict(self, query_time):
-        t, s, d = self.t, self.s, self.d
+        t, s, d = self.fitted_data
         query_time = np.atleast_1d(query_time)
         result = np.empty_like(query_time, dtype=float)
         for i, t_i in enumerate(query_time):
@@ -674,7 +965,7 @@ class GllaInterpolator(BaseInterpolator):
         Returns:
             Callable function that takes input points and returns derivative values
         """
-        if self.t is None or self.s is None or self.d is None:
+        if self.fitted_data is None:
             raise RuntimeError("GllaInterpolator must be fit before calling differentiate().")
         
         if order < 1:
@@ -698,7 +989,7 @@ class GllaInterpolator(BaseInterpolator):
                     # Index mask
                     eval_points = eval_points[mask_array]
             
-            t, s, d = self.t, self.s, self.d
+            t, s, d = self.fitted_data
             result = np.empty_like(eval_points, dtype=float)
             
             for i, t_i in enumerate(eval_points):
@@ -767,16 +1058,31 @@ class GllaInterpolator(BaseInterpolator):
                     
                     result[i] = compute_derivative_iteratively(t_i, order)
             
+            # Apply stochastic transformation if link function is set
+            if self.stochastic_link is not None:
+                # Get function values at eval points for stochastic transform
+                func_values = self.predict(eval_points)
+                if func_values.ndim == 0:
+                    func_values = np.array([func_values])
+                
+                # Prepare derivatives dictionary for transformation
+                derivatives_dict = {order: result}
+                
+                # Apply stochastic transformation
+                transformed = self._apply_stochastic_transform(func_values, derivatives_dict)
+                result = transformed[order]
+            
             return result.item() if scalar_input and result.size == 1 else result
         
         return derivative_func
 
 class GoldInterpolator(BaseInterpolator):
     def __init__(self, window_size: int = 5, normalization: str = 'min', zero_mean: bool = False):
+        super().__init__()
         self.window_size = window_size
         self.normalization = normalization
         self.zero_mean = zero_mean
-        self.t = None
+        self.fitted_data = None
         self.s = None
         self.d = None
 
@@ -788,11 +1094,13 @@ class GoldInterpolator(BaseInterpolator):
         s = s[sort_idx]
         # Derivative estimation (central difference)
         d = np.gradient(s, t)
-        self.t, self.s, self.d = t, s, d
+        self.fitted_data = (t, s, d)
+        self.s = s
+        self.d = d
         return self
 
     def predict(self, query_time):
-        t, s, d = self.t, self.s, self.d
+        t, s, d = self.fitted_data
         query_time = np.atleast_1d(query_time)
         result = np.empty_like(query_time, dtype=float)
         for i, t_i in enumerate(query_time):
@@ -818,14 +1126,15 @@ class GoldInterpolator(BaseInterpolator):
 # Neural network interpolators
 class NeuralNetworkInterpolator(BaseInterpolator):
     def __init__(self, framework: str = 'pytorch', hidden_layers: list = [64, 32], epochs: int = 1000, dropout: float = 0.1):
+        super().__init__()
         self.framework = framework
         self.hidden_layers = hidden_layers
         self.epochs = epochs
         self.dropout = dropout
         self.model = None
-        self.t_min = None
-        self.t_max = None
-        self.s_min = None
+        self.scaler_x = None
+        self.scaler_y = None
+        self.fitted = False
         self.s_max = None
 
     def fit(self, time, signal):

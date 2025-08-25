@@ -3,21 +3,55 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-pydelt: Dynamical Systems & Differential Equations Approximation
-================================================================
+pydelt: Advanced Numerical Differentiation & Stochastic Computing
+===============================================================
 
-**pydelt** is a comprehensive Python package for approximating derivatives and solving differential equations from data, with applications in dynamical systems analysis, time series modeling, and scientific computing.
+**pydelt** is a comprehensive Python library for numerical differentiation, interpolation, and stochastic computing. From basic polynomial derivatives to advanced stochastic calculus, pydelt provides a unified framework that scales from simple data analysis to cutting-edge research in dynamical systems, financial modeling, and scientific computing.
 
-🚀 **Core Capabilities**
------------------------
+🎯 **Key Strengths & Applications**
+----------------------------------
 
-* **Universal Differentiation Interface**: Consistent API across all interpolation methods with `.differentiate(order, mask)` support
-* **Multivariate Calculus**: Gradient (∇f), Jacobian (∂f/∂x), Hessian (∂²f/∂x²), and Laplacian (∇²f) computation
-* **Higher-Order Derivatives**: Support for arbitrary-order derivatives with analytical and numerical methods
-* **Advanced Interpolation**: Splines, LOWESS, LOESS, Local Linear Approximation (LLA), and neural network-based methods
-* **Automatic Differentiation**: PyTorch and TensorFlow backends for exact gradient computation
-* **Vector & Tensor Operations**: Full support for vector-valued functions and tensor calculus
-* **Time Series Applications**: Specialized methods for temporal data analysis and dynamical systems identification
+**Scientific Computing**
+* **Dynamical Systems**: Reconstruct differential equations from noisy time series data
+* **Phase Space Analysis**: Compute derivatives for embedding dimension analysis and chaos detection
+* **Fluid Dynamics**: Analyze velocity fields, compute vorticity and strain tensors
+* **Signal Processing**: Extract instantaneous frequency and phase derivatives from complex signals
+
+**Financial & Risk Modeling**
+* **Stochastic Derivatives**: Apply Itô's lemma and Stratonovich corrections to derivative computations
+* **Option Pricing**: Compute Greeks (delta, gamma, theta) with stochastic link functions
+* **Risk Management**: Model volatility surfaces and correlation structures with multivariate derivatives
+* **Algorithmic Trading**: Real-time derivative computation for momentum and mean-reversion strategies
+
+**Engineering & Control**
+* **System Identification**: Extract governing equations from experimental data
+* **Control Theory**: Design controllers using derivative information from system responses
+* **Optimization**: Gradient-based methods with automatic differentiation support
+* **Machine Learning**: Custom loss functions with higher-order derivative constraints
+
+🚀 **Progressive Feature Set**
+-----------------------------
+
+**Level 1: Basic Interpolation & Derivatives**
+* **Classical Methods**: Splines, polynomial fitting, local linear approximation
+* **Universal API**: Consistent `.fit().differentiate()` interface across all methods
+* **Higher-Order Support**: Analytical and numerical derivatives up to arbitrary order
+
+**Level 2: Advanced Interpolation**
+* **Robust Methods**: LOWESS, LOESS for noisy data and outlier resistance
+* **Neural Networks**: Deep learning-based interpolation with automatic differentiation
+* **Adaptive Methods**: LLA, GLLA with local bandwidth selection
+
+**Level 3: Multivariate Calculus**
+* **Vector Calculus**: Gradient (∇f), Jacobian (∂f/∂x), Hessian (∂²f/∂x²), Laplacian (∇²f)
+* **Tensor Operations**: Full support for vector-valued functions and tensor calculus
+* **Mixed Derivatives**: Cross-partial derivatives for multivariate analysis
+
+**Level 4: Stochastic Computing** ⭐ *New Feature*
+* **Stochastic Link Functions**: 6 probability distributions (Normal, Log-Normal, Gamma, Beta, Exponential, Poisson)
+* **Stochastic Calculus**: Itô's lemma and Stratonovich integral corrections
+* **Financial Applications**: Geometric Brownian motion, volatility modeling, option pricing
+* **Risk Analysis**: Uncertainty propagation through derivative computations
 
 📦 **Installation**
 ------------------
@@ -76,17 +110,26 @@ Install pydelt from PyPI:
    gradient = gradient_func(test_point)
    print(f"Gradient at (1,1): {gradient[0]} (expected: [2, 2])")
 
-**3. Time Series Application**
+**3. Stochastic Derivatives for Financial Modeling**
 
 .. code-block:: python
 
-   from pydelt.derivatives import lla
+   from pydelt.interpolation import SplineInterpolator
    
-   # Traditional time series derivative (legacy API)
-   time = np.linspace(0, 2*np.pi, 100)
-   signal = np.sin(time)
-   result = lla(time.tolist(), signal.tolist(), window_size=5)
-   derivative = result[0]  # Extract derivatives
+   # Stock price data following geometric Brownian motion
+   time = np.linspace(0, 1, 252)  # 1 year of daily data
+   stock_prices = 100 * np.exp(0.1*time + 0.2*np.random.randn(252).cumsum()/np.sqrt(252))
+   
+   # Fit interpolator with log-normal stochastic link
+   interpolator = SplineInterpolator(smoothing=0.1)
+   interpolator.fit(time, stock_prices)
+   interpolator.set_stochastic_link('lognormal', sigma=0.2, method='ito')
+   
+   # Compute stochastic derivatives (automatically applies Itô correction)
+   stochastic_deriv = interpolator.differentiate(order=1)
+   derivatives = stochastic_deriv(time)
+   
+   print(f"Regular vs Stochastic derivative difference: {np.mean(np.abs(derivatives - regular_derivatives)):.2f}")
 
 🌌 **Applications in Dynamical Systems**
 -----------------------------------------
@@ -109,10 +152,24 @@ Install pydelt from PyPI:
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Getting Started:
 
    installation
    quickstart
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Progressive Learning Path:
+
+   basic_interpolation
+   neural_networks
+   multivariate_calculus
+   stochastic_computing
+   
+.. toctree::
+   :maxdepth: 2
+   :caption: Reference:
+
    examples
    api
    faq

@@ -1,0 +1,501 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multivariate Calculus &amp; Vector Operations &mdash; pydelt 0.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=6c02275b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Stochastic Computing &amp; Probabilistic Derivatives" href="stochastic_computing.html" />
+    <link rel="prev" title="Neural Networks &amp; Automatic Differentiation" href="neural_networks.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Progressive Learning Path:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Multivariate Calculus &amp; Vector Operations</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#core-concepts">🎯 <strong>Core Concepts</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multivariatederivatives-class">🔧 <strong>MultivariateDerivatives Class</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-1-optimization-landscape-analysis">🌋 <strong>Example 1: Optimization Landscape Analysis</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-2-fluid-dynamics-vector-field-analysis">🌊 <strong>Example 2: Fluid Dynamics - Vector Field Analysis</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-3-heat-diffusion-analysis">🔬 <strong>Example 3: Heat Diffusion Analysis</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-features">⚙️ <strong>Advanced Features</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#best-practices">🎓 <strong>Best Practices</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#limitations">⚠️ <strong>Limitations</strong></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#next-steps">🔗 <strong>Next Steps</strong></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Multivariate Calculus &amp; Vector Operations</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/multivariate_calculus.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="multivariate-calculus-vector-operations">
+<h1>Multivariate Calculus &amp; Vector Operations<a class="headerlink" href="#multivariate-calculus-vector-operations" title="Link to this heading"></a></h1>
+<p>Multivariate calculus extends differentiation to functions of multiple variables, enabling analysis of vector fields, optimization landscapes, and tensor operations. This section covers gradients, Jacobians, Hessians, and their applications in scientific computing and machine learning.</p>
+<section id="core-concepts">
+<h2>🎯 <strong>Core Concepts</strong><a class="headerlink" href="#core-concepts" title="Link to this heading"></a></h2>
+<p><strong>Scalar Functions</strong>: f: ℝⁿ → ℝ (multiple inputs, single output)
+- <strong>Gradient</strong>: ∇f = [∂f/∂x₁, ∂f/∂x₂, …, ∂f/∂xₙ] - direction of steepest ascent
+- <strong>Hessian</strong>: H_f = ∂²f/∂xᵢ∂xⱼ - matrix of second derivatives
+- <strong>Laplacian</strong>: ∇²f = tr(H_f) - sum of diagonal Hessian elements</p>
+<p><strong>Vector Functions</strong>: f: ℝⁿ → ℝᵐ (multiple inputs, multiple outputs)
+- <strong>Jacobian</strong>: J_f = ∂fᵢ/∂xⱼ - matrix of all first-order partial derivatives</p>
+<p><strong>Physical Interpretations</strong>:
+- <strong>Gradient</strong>: Electric field from potential, temperature gradient
+- <strong>Jacobian</strong>: Velocity field transformation, system linearization
+- <strong>Hessian</strong>: Curvature, optimization landscape
+- <strong>Laplacian</strong>: Heat diffusion, wave propagation</p>
+</section>
+<section id="multivariatederivatives-class">
+<h2>🔧 <strong>MultivariateDerivatives Class</strong><a class="headerlink" href="#multivariatederivatives-class" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives</span></code> class provides a unified interface for multivariate calculus operations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.multivariate</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultivariateDerivatives</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+
+<span class="c1"># Create multivariate derivatives object</span>
+<span class="n">mv</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span>
+    <span class="n">interpolator_class</span><span class="o">=</span><span class="n">SplineInterpolator</span><span class="p">,</span>
+    <span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span>  <span class="c1"># Parameters passed to interpolator</span>
+<span class="p">)</span>
+
+<span class="c1"># Fit to data</span>
+<span class="n">mv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">output_data</span><span class="p">)</span>
+
+<span class="c1"># Compute various derivatives</span>
+<span class="n">gradient_func</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">gradient</span><span class="p">()</span>      <span class="c1"># For scalar functions</span>
+<span class="n">jacobian_func</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">jacobian</span><span class="p">()</span>      <span class="c1"># For vector functions</span>
+<span class="n">hessian_func</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">hessian</span><span class="p">()</span>        <span class="c1"># Second derivatives</span>
+<span class="n">laplacian_func</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">laplacian</span><span class="p">()</span>    <span class="c1"># Scalar from Hessian trace</span>
+</pre></div>
+</div>
+</section>
+<section id="example-1-optimization-landscape-analysis">
+<h2>🌋 <strong>Example 1: Optimization Landscape Analysis</strong><a class="headerlink" href="#example-1-optimization-landscape-analysis" title="Link to this heading"></a></h2>
+<p><strong>Classic Example: Rosenbrock Function</strong></p>
+<p>The Rosenbrock function is a classic optimization test case with a curved valley:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.multivariate</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultivariateDerivatives</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+
+<span class="c1"># Rosenbrock function: f(x,y) = (a-x)² + b(y-x²)²</span>
+<span class="c1"># Global minimum at (a,a²) with a=1, b=100</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rosenbrock</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">rosenbrock_gradient</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">df_dx</span> <span class="o">=</span> <span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">b</span><span class="o">*</span><span class="n">x</span><span class="o">*</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">df_dy</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">b</span><span class="o">*</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">df_dx</span><span class="p">,</span> <span class="n">df_dy</span><span class="p">])</span>
+
+<span class="c1"># Generate training data on a grid</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="c1"># Flatten for input</span>
+<span class="n">input_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span>
+<span class="n">output_data</span> <span class="o">=</span> <span class="n">rosenbrock</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+
+<span class="c1"># Fit multivariate derivatives</span>
+<span class="n">mv</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span><span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">mv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">output_data</span><span class="p">)</span>
+
+<span class="c1"># Compute gradient function</span>
+<span class="n">gradient_func</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">gradient</span><span class="p">()</span>
+
+<span class="c1"># Evaluate gradient at test points</span>
+<span class="n">test_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>    <span class="c1"># Away from minimum</span>
+    <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>    <span class="c1"># At minimum</span>
+    <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">],</span>   <span class="c1"># On the valley floor</span>
+    <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>    <span class="c1"># Another test point</span>
+<span class="p">])</span>
+
+<span class="n">gradients_numerical</span> <span class="o">=</span> <span class="n">gradient_func</span><span class="p">(</span><span class="n">test_points</span><span class="p">)</span>
+<span class="n">gradients_analytical</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">rosenbrock_gradient</span><span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">test_points</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Gradient Analysis:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">test_points</span><span class="p">):</span>
+    <span class="n">num_grad</span> <span class="o">=</span> <span class="n">gradients_numerical</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">ana_grad</span> <span class="o">=</span> <span class="n">gradients_analytical</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">num_grad</span> <span class="o">-</span> <span class="n">ana_grad</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Point </span><span class="si">{</span><span class="n">point</span><span class="si">}</span><span class="s2">: Numerical </span><span class="si">{</span><span class="n">num_grad</span><span class="si">}</span><span class="s2">, Analytical </span><span class="si">{</span><span class="n">ana_grad</span><span class="si">}</span><span class="s2">, Error: </span><span class="si">{</span><span class="n">error</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Find critical points (where gradient ≈ 0)</span>
+<span class="c1"># Create dense evaluation grid</span>
+<span class="n">x_dense</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">y_dense</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">X_dense</span><span class="p">,</span> <span class="n">Y_dense</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x_dense</span><span class="p">,</span> <span class="n">y_dense</span><span class="p">)</span>
+<span class="n">eval_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">X_dense</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Y_dense</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span>
+
+<span class="n">gradients_dense</span> <span class="o">=</span> <span class="n">gradient_func</span><span class="p">(</span><span class="n">eval_points</span><span class="p">)</span>
+<span class="n">gradient_magnitudes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">gradients_dense</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Find minimum gradient magnitude (critical point)</span>
+<span class="n">min_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">gradient_magnitudes</span><span class="p">)</span>
+<span class="n">critical_point</span> <span class="o">=</span> <span class="n">eval_points</span><span class="p">[</span><span class="n">min_idx</span><span class="p">]</span>
+<span class="n">min_gradient_mag</span> <span class="o">=</span> <span class="n">gradient_magnitudes</span><span class="p">[</span><span class="n">min_idx</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Critical point found at: (</span><span class="si">{</span><span class="n">critical_point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">critical_point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gradient magnitude: </span><span class="si">{</span><span class="n">min_gradient_mag</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;True minimum at: (1.000, 1.000)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-2-fluid-dynamics-vector-field-analysis">
+<h2>🌊 <strong>Example 2: Fluid Dynamics - Vector Field Analysis</strong><a class="headerlink" href="#example-2-fluid-dynamics-vector-field-analysis" title="Link to this heading"></a></h2>
+<p><strong>Application</strong>: Analysis of 2D fluid flow with vorticity and divergence computation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Double gyre flow - classic fluid dynamics example</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">double_gyre_velocity</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">A</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.25</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Double gyre velocity field - chaotic mixing flow&quot;&quot;&quot;</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">epsilon</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">omega</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">epsilon</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">omega</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">x</span>
+
+    <span class="n">u</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">A</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">A</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span>
+
+<span class="c1"># Generate velocity field data</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="n">U</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">double_gyre_velocity</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+
+<span class="c1"># Prepare data for multivariate analysis</span>
+<span class="n">input_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span>
+<span class="n">output_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">U</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">V</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span>  <span class="c1"># Vector field</span>
+
+<span class="c1"># Fit multivariate derivatives for vector function</span>
+<span class="n">mv_vector</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span><span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="n">mv_vector</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">output_data</span><span class="p">)</span>
+
+<span class="c1"># Compute Jacobian matrix for flow analysis</span>
+<span class="n">jacobian_func</span> <span class="o">=</span> <span class="n">mv_vector</span><span class="o">.</span><span class="n">jacobian</span><span class="p">()</span>
+
+<span class="c1"># Evaluate at analysis points</span>
+<span class="n">analysis_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>   <span class="c1"># Center of left gyre</span>
+    <span class="p">[</span><span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>   <span class="c1"># Center of right gyre</span>
+    <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>   <span class="c1"># Saddle point</span>
+    <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span>   <span class="c1"># Edge region</span>
+<span class="p">])</span>
+
+<span class="n">jacobians</span> <span class="o">=</span> <span class="n">jacobian_func</span><span class="p">(</span><span class="n">analysis_points</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Flow Field Analysis:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">analysis_points</span><span class="p">):</span>
+    <span class="n">J</span> <span class="o">=</span> <span class="n">jacobians</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>  <span class="c1"># 2x2 Jacobian matrix</span>
+
+    <span class="c1"># Extract components: J = [[∂u/∂x, ∂u/∂y], [∂v/∂x, ∂v/∂y]]</span>
+    <span class="n">du_dx</span><span class="p">,</span> <span class="n">du_dy</span> <span class="o">=</span> <span class="n">J</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">dv_dx</span><span class="p">,</span> <span class="n">dv_dy</span> <span class="o">=</span> <span class="n">J</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="c1"># Compute flow properties</span>
+    <span class="n">divergence</span> <span class="o">=</span> <span class="n">du_dx</span> <span class="o">+</span> <span class="n">dv_dy</span>  <span class="c1"># ∇·v (expansion/contraction)</span>
+    <span class="n">vorticity</span> <span class="o">=</span> <span class="n">dv_dx</span> <span class="o">-</span> <span class="n">du_dy</span>   <span class="c1"># ∇×v (rotation)</span>
+
+    <span class="c1"># Strain rate tensor components</span>
+    <span class="n">strain_rate</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">J</span> <span class="o">+</span> <span class="n">J</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>  <span class="c1"># Symmetric part</span>
+    <span class="n">rotation_rate</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">J</span> <span class="o">-</span> <span class="n">J</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>  <span class="c1"># Antisymmetric part</span>
+
+    <span class="c1"># Eigenvalues for stability analysis</span>
+    <span class="n">eigenvals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">J</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Point (</span><span class="si">{</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">):&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Divergence: </span><span class="si">{</span><span class="n">divergence</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Vorticity:  </span><span class="si">{</span><span class="n">vorticity</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Eigenvalues: </span><span class="si">{</span><span class="n">eigenvals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> + </span><span class="si">{</span><span class="n">eigenvals</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">i&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Classify flow behavior</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">divergence</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.01</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vorticity</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.1</span><span class="p">:</span>
+        <span class="n">flow_type</span> <span class="o">=</span> <span class="s2">&quot;Rotational (vortex)&quot;</span>
+    <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vorticity</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.01</span> <span class="ow">and</span> <span class="n">divergence</span> <span class="o">&gt;</span> <span class="mf">0.1</span><span class="p">:</span>
+        <span class="n">flow_type</span> <span class="o">=</span> <span class="s2">&quot;Divergent (source)&quot;</span>
+    <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vorticity</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.01</span> <span class="ow">and</span> <span class="n">divergence</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">:</span>
+        <span class="n">flow_type</span> <span class="o">=</span> <span class="s2">&quot;Convergent (sink)&quot;</span>
+    <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">eigenvals</span><span class="p">)</span><span class="o">.</span><span class="n">prod</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">flow_type</span> <span class="o">=</span> <span class="s2">&quot;Saddle point&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">flow_type</span> <span class="o">=</span> <span class="s2">&quot;Complex flow&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Flow type: </span><span class="si">{</span><span class="n">flow_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="example-3-heat-diffusion-analysis">
+<h2>🔬 <strong>Example 3: Heat Diffusion Analysis</strong><a class="headerlink" href="#example-3-heat-diffusion-analysis" title="Link to this heading"></a></h2>
+<p><strong>Application</strong>: Temperature field analysis with Laplacian computation for heat equation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 2D heat distribution with multiple sources</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">temperature_field</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Temperature field with multiple heat sources&quot;&quot;&quot;</span>
+    <span class="c1"># Heat source at (0.3, 0.3)</span>
+    <span class="n">T1</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="mf">0.3</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="mf">0.3</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mf">0.1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Heat source at (0.7, 0.7)</span>
+    <span class="n">T2</span> <span class="o">=</span> <span class="mi">80</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="mf">0.7</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="mf">0.7</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mf">0.15</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Heat sink at (0.5, 0.8)</span>
+    <span class="n">T3</span> <span class="o">=</span> <span class="o">-</span><span class="mi">60</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="mf">0.8</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mf">0.08</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># Background temperature</span>
+    <span class="n">T_bg</span> <span class="o">=</span> <span class="mi">20</span>
+
+    <span class="k">return</span> <span class="n">T1</span> <span class="o">+</span> <span class="n">T2</span> <span class="o">+</span> <span class="n">T3</span> <span class="o">+</span> <span class="n">T_bg</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">temperature_laplacian_analytical</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Analytical Laplacian for validation&quot;&quot;&quot;</span>
+    <span class="c1"># This would be complex to compute analytically</span>
+    <span class="c1"># Using finite differences for validation</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="mf">0.001</span>
+    <span class="n">d2T_dx2</span> <span class="o">=</span> <span class="p">(</span><span class="n">temperature_field</span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="n">h</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">temperature_field</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="n">temperature_field</span><span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">h</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span> <span class="o">/</span> <span class="n">h</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">d2T_dy2</span> <span class="o">=</span> <span class="p">(</span><span class="n">temperature_field</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">+</span><span class="n">h</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">temperature_field</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="n">temperature_field</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">-</span><span class="n">h</span><span class="p">))</span> <span class="o">/</span> <span class="n">h</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">return</span> <span class="n">d2T_dx2</span> <span class="o">+</span> <span class="n">d2T_dy2</span>
+
+<span class="c1"># Generate temperature measurement data</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="c1"># Add measurement noise</span>
+<span class="n">T_true</span> <span class="o">=</span> <span class="n">temperature_field</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+<span class="n">T_measured</span> <span class="o">=</span> <span class="n">T_true</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="o">*</span><span class="n">T_true</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="c1"># Prepare data</span>
+<span class="n">input_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span>
+<span class="n">output_data</span> <span class="o">=</span> <span class="n">T_measured</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+<span class="c1"># Fit multivariate derivatives</span>
+<span class="n">mv_temp</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span><span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">mv_temp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">output_data</span><span class="p">)</span>
+
+<span class="c1"># Compute gradient and Laplacian</span>
+<span class="n">gradient_func</span> <span class="o">=</span> <span class="n">mv_temp</span><span class="o">.</span><span class="n">gradient</span><span class="p">()</span>
+<span class="n">laplacian_func</span> <span class="o">=</span> <span class="n">mv_temp</span><span class="o">.</span><span class="n">laplacian</span><span class="p">()</span>
+
+<span class="c1"># Analysis points</span>
+<span class="n">analysis_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+    <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">],</span>   <span class="c1"># Near heat source 1</span>
+    <span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">],</span>   <span class="c1"># Near heat source 2</span>
+    <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span>   <span class="c1"># Near heat sink</span>
+    <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span>   <span class="c1"># Center region</span>
+    <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>   <span class="c1"># Edge region</span>
+<span class="p">])</span>
+
+<span class="n">gradients</span> <span class="o">=</span> <span class="n">gradient_func</span><span class="p">(</span><span class="n">analysis_points</span><span class="p">)</span>
+<span class="n">laplacians</span> <span class="o">=</span> <span class="n">laplacian_func</span><span class="p">(</span><span class="n">analysis_points</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Heat Diffusion Analysis:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">analysis_points</span><span class="p">):</span>
+    <span class="n">grad</span> <span class="o">=</span> <span class="n">gradients</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">lapl</span> <span class="o">=</span> <span class="n">laplacians</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="c1"># Heat flux (proportional to negative gradient)</span>
+    <span class="n">heat_flux_magnitude</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">grad</span><span class="p">)</span>
+    <span class="n">heat_flux_direction</span> <span class="o">=</span> <span class="o">-</span><span class="n">grad</span> <span class="o">/</span> <span class="p">(</span><span class="n">heat_flux_magnitude</span> <span class="o">+</span> <span class="mf">1e-10</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Point (</span><span class="si">{</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">):&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Temperature gradient: [</span><span class="si">{</span><span class="n">grad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">grad</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">] K/m&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Heat flux magnitude: </span><span class="si">{</span><span class="n">heat_flux_magnitude</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Heat flux direction: [</span><span class="si">{</span><span class="n">heat_flux_direction</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">heat_flux_direction</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Laplacian (∇²T): </span><span class="si">{</span><span class="n">lapl</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> K/m²&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Interpret Laplacian for heat equation ∂T/∂t = α∇²T</span>
+    <span class="k">if</span> <span class="n">lapl</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">diffusion_behavior</span> <span class="o">=</span> <span class="s2">&quot;Net heat accumulation (heating up)&quot;</span>
+    <span class="k">elif</span> <span class="n">lapl</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">diffusion_behavior</span> <span class="o">=</span> <span class="s2">&quot;Net heat loss (cooling down)&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">diffusion_behavior</span> <span class="o">=</span> <span class="s2">&quot;Near thermal equilibrium&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Diffusion behavior: </span><span class="si">{</span><span class="n">diffusion_behavior</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="advanced-features">
+<h2>⚙️ <strong>Advanced Features</strong><a class="headerlink" href="#advanced-features" title="Link to this heading"></a></h2>
+<p><strong>Mixed Partial Derivatives</strong></p>
+<p>For functions requiring cross-derivatives:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute mixed partials ∂²f/∂x∂y</span>
+<span class="n">hessian_func</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">hessian</span><span class="p">()</span>
+<span class="n">hessians</span> <span class="o">=</span> <span class="n">hessian_func</span><span class="p">(</span><span class="n">test_points</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">H</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hessians</span><span class="p">):</span>
+    <span class="n">mixed_partial</span> <span class="o">=</span> <span class="n">H</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># ∂²f/∂x∂y = ∂²f/∂y∂x</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mixed partial at point </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">mixed_partial</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Tensor Operations</strong></p>
+<p>For higher-dimensional tensor calculus:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Vector field curl in 3D (requires 3D vector field)</span>
+<span class="c1"># ∇×F = [∂Fz/∂y - ∂Fy/∂z, ∂Fx/∂z - ∂Fz/∂x, ∂Fy/∂x - ∂Fx/∂y]</span>
+
+<span class="c1"># For 2D vector fields, scalar curl:</span>
+<span class="n">jacobian</span> <span class="o">=</span> <span class="n">jacobian_func</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+<span class="n">curl_2d</span> <span class="o">=</span> <span class="n">jacobian</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">jacobian</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>  <span class="c1"># ∂v/∂x - ∂u/∂y</span>
+</pre></div>
+</div>
+<p><strong>Interpolator Method Comparison</strong></p>
+<p>Different interpolators for different applications:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">LowessInterpolator</span><span class="p">,</span> <span class="n">NeuralNetworkInterpolator</span>
+
+<span class="c1"># Robust to noise</span>
+<span class="n">mv_robust</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span><span class="n">LowessInterpolator</span><span class="p">,</span> <span class="n">frac</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+<span class="c1"># High accuracy with automatic differentiation</span>
+<span class="n">mv_neural</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span><span class="n">NeuralNetworkInterpolator</span><span class="p">,</span>
+                                   <span class="n">hidden_layers</span><span class="o">=</span><span class="p">[</span><span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">],</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="best-practices">
+<h2>🎓 <strong>Best Practices</strong><a class="headerlink" href="#best-practices" title="Link to this heading"></a></h2>
+<p><strong>Data Preparation</strong>:
+1. <strong>Grid vs Scattered Data</strong>: Regular grids work best, but scattered data is supported
+2. <strong>Data Density</strong>: Ensure sufficient sampling in regions of interest
+3. <strong>Noise Handling</strong>: Use robust interpolators (LOWESS) for noisy data
+4. <strong>Scaling</strong>: Normalize input coordinates to similar ranges</p>
+<p><strong>Method Selection</strong>:
+- <strong>Smooth Functions</strong>: SplineInterpolator for best accuracy
+- <strong>Noisy Data</strong>: LowessInterpolator for robustness
+- <strong>High Precision</strong>: NeuralNetworkInterpolator with automatic differentiation
+- <strong>Large Datasets</strong>: Consider computational cost vs accuracy trade-offs</p>
+<p><strong>Validation</strong>:
+Always validate against analytical solutions when available:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compare numerical vs analytical gradients</span>
+<span class="n">grad_numerical</span> <span class="o">=</span> <span class="n">gradient_func</span><span class="p">(</span><span class="n">test_points</span><span class="p">)</span>
+<span class="n">grad_analytical</span> <span class="o">=</span> <span class="n">analytical_gradient</span><span class="p">(</span><span class="n">test_points</span><span class="p">)</span>
+
+<span class="n">errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">grad_numerical</span> <span class="o">-</span> <span class="n">grad_analytical</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RMS gradient error: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">errors</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Physical Interpretation</strong>:
+- <strong>Gradient</strong>: Points in direction of steepest increase
+- <strong>Divergence &gt; 0</strong>: Source behavior (expansion)
+- <strong>Divergence &lt; 0</strong>: Sink behavior (contraction)
+- <strong>Vorticity ≠ 0</strong>: Rotational flow
+- <strong>Laplacian &gt; 0</strong>: Concave up (local minimum tendency)
+- <strong>Laplacian &lt; 0</strong>: Concave down (local maximum tendency)</p>
+</section>
+<section id="limitations">
+<h2>⚠️ <strong>Limitations</strong><a class="headerlink" href="#limitations" title="Link to this heading"></a></h2>
+<p><strong>Mixed Partials</strong>: Traditional interpolation methods approximate mixed partials as zero. For exact mixed derivatives, use neural networks with automatic differentiation.</p>
+<p><strong>Boundary Effects</strong>: Derivatives near data boundaries may be less accurate due to extrapolation.</p>
+<p><strong>Curse of Dimensionality</strong>: Accuracy decreases with increasing input dimensions. Consider dimensionality reduction for high-dimensional problems.</p>
+</section>
+<section id="next-steps">
+<h2>🔗 <strong>Next Steps</strong><a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>
+<p>Multivariate calculus provides the foundation for advanced stochastic computing. The next level introduces:</p>
+<ul class="simple">
+<li><p><strong>Stochastic Computing</strong>: Probabilistic derivatives with uncertainty quantification</p></li>
+<li><p><strong>Stochastic Link Functions</strong>: Model derivatives under different probability distributions</p></li>
+<li><p><strong>Financial Applications</strong>: Option pricing, risk analysis, and volatility modeling</p></li>
+</ul>
+<p>The gradient and Jacobian computations become especially powerful when combined with stochastic transformations for uncertainty propagation and risk analysis.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="neural_networks.html" class="btn btn-neutral float-left" title="Neural Networks &amp; Automatic Differentiation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="stochastic_computing.html" class="btn btn-neutral float-right" title="Stochastic Computing &amp; Probabilistic Derivatives" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

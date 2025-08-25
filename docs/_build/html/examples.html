@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API Reference" href="api.html" />
-    <link rel="prev" title="Quick Start Guide" href="quickstart.html" /> 
+    <link rel="prev" title="Stochastic Computing &amp; Probabilistic Derivatives" href="stochastic_computing.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,10 +42,20 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Progressive Learning Path:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#example-1-comparing-derivative-methods">Example 1: Comparing Derivative Methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#example-2-neural-network-derivatives">Example 2: Neural Network Derivatives</a></li>
@@ -53,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#example-4-integration-and-roundtrip-accuracy">Example 4: Integration and Roundtrip Accuracy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#example-5-multivariate-time-series">Example 5: Multivariate Time Series</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#example-6-understanding-numerical-limitations">Example 6: Understanding Numerical Limitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-7-tensor-calculus">Example 7: Tensor Calculus</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
@@ -469,13 +480,61 @@
 <li><p>Consider neural network methods for exact derivatives at critical points</p></li>
 </ul>
 </section>
+<section id="example-7-tensor-calculus">
+<h2>Example 7: Tensor Calculus<a class="headerlink" href="#example-7-tensor-calculus" title="Link to this heading"></a></h2>
+<p>Directional derivative, divergence, curl, and strain/stress</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.multivariate</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultivariateDerivatives</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.tensor_derivatives</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorDerivatives</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+
+<span class="c1"># 2D vector field: rotation F(x, y) = [-y, x]</span>
+<span class="n">xs</span> <span class="o">=</span> <span class="n">ys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">)</span>
+<span class="n">U</span> <span class="o">=</span> <span class="o">-</span><span class="n">Y</span>
+<span class="n">V</span> <span class="o">=</span> <span class="n">X</span>
+<span class="n">inputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span>
+<span class="n">outputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">U</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">V</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span>
+
+<span class="n">mv</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span><span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">mv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span>
+
+<span class="n">q</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]])</span>
+<span class="n">e</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
+<span class="n">dF_e</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">directional_derivative</span><span class="p">(</span><span class="n">e</span><span class="p">)(</span><span class="n">q</span><span class="p">)</span>  <span class="c1"># shape (1, 2)</span>
+<span class="n">divF</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">divergence</span><span class="p">()(</span><span class="n">q</span><span class="p">)</span>               <span class="c1"># ≈ 0</span>
+<span class="n">curlF</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">curl</span><span class="p">()(</span><span class="n">q</span><span class="p">)</span>                    <span class="c1"># ≈ 2</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Directional derivative along e:&quot;</span><span class="p">,</span> <span class="n">dF_e</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;div(F):&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">divF</span><span class="p">),</span> <span class="s2">&quot; curl(F):&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">curlF</span><span class="p">))</span>
+
+<span class="c1"># 2D displacement field for strain/stress tensors</span>
+<span class="n">U</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">X</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mf">0.02</span> <span class="o">*</span> <span class="n">Y</span>
+<span class="n">V</span> <span class="o">=</span> <span class="mf">0.10</span> <span class="o">*</span> <span class="n">X</span> <span class="o">*</span> <span class="n">Y</span>
+<span class="n">displacement</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">U</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">V</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span>
+
+<span class="n">td</span> <span class="o">=</span> <span class="n">TensorDerivatives</span><span class="p">(</span><span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">td</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">displacement</span><span class="p">)</span>
+
+<span class="n">strain</span> <span class="o">=</span> <span class="n">td</span><span class="o">.</span><span class="n">strain_tensor</span><span class="p">()(</span><span class="n">inputs</span><span class="p">)</span>  <span class="c1"># (N, 2, 2)</span>
+<span class="n">stress</span> <span class="o">=</span> <span class="n">td</span><span class="o">.</span><span class="n">stress_tensor</span><span class="p">(</span><span class="n">lambda_param</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">mu_param</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)(</span><span class="n">inputs</span><span class="p">)</span>  <span class="c1"># (N, 2, 2)</span>
+
+<span class="c1"># Correct component extraction using three indices</span>
+<span class="n">exx</span> <span class="o">=</span> <span class="n">strain</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">eyy</span> <span class="o">=</span> <span class="n">strain</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">exy</span> <span class="o">=</span> <span class="n">strain</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="n">sxy</span> <span class="o">=</span> <span class="n">stress</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mean |ε_xy|:&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">exy</span><span class="p">))))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mean |σ_xy|:&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">sxy</span><span class="p">))))</span>
+</pre></div>
+</div>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quick Start Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="stochastic_computing.html" class="btn btn-neutral float-left" title="Stochastic Computing &amp; Probabilistic Derivatives" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="api.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
