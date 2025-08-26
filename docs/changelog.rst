@@ -3,6 +3,96 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.6.1 (2025-08-26)
+--------------------------
+
+🎨 **Documentation & UX Overhaul**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* **New Title**: Rebranded to "PyDelt: Advanced Numerical Function Interpolation & Differentiation"
+* **Enhanced Documentation**: Complete revision with narrative flow and concept explanations instead of just code blocks
+* **Interactive Visualizations**: Beautiful Plotly plots embedded in documentation showing:
+  
+  * Universal API demonstration with method comparison
+  * 3D multivariate surface plots with gradient vector fields
+  * Method performance analysis with error visualization
+  
+* **Improved Bullet Points**: Fixed formatting issues - clean bullet points without newlines
+* **Better Narrative**: Sections now explain what's happening rather than just showing massive code blocks
+* **PyPI Metadata**: Updated package description to reflect advanced interpolation focus
+
+🚀 **Visual Enhancements**
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* **Generated Visualizations**: Created `generate_visualizations.py` script producing:
+  
+  * `universal_api_demo.html`: Interactive comparison of Spline, LLA, and GLLA methods
+  * `multivariate_surface.html`: 3D surface with gradient fields and component analysis  
+  * `method_comparison.html`: Performance comparison on complex functions with noise
+  
+* **Embedded Plots**: Documentation now includes interactive HTML plots for better understanding
+* **Professional Presentation**: Clean, modern documentation layout with proper spacing and organization
+
+🔧 **Technical Improvements**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* **Fixed Documentation Build**: Resolved all Sphinx warnings with proper title underlines
+* **Universal Interface Emphasis**: Highlighted the consistent `.fit().differentiate()` API pattern
+* **Method Selection Guidance**: Clear explanations of when to use each interpolation method
+* **Real-World Focus**: Emphasized practical applications and noise handling capabilities
+
+Version 0.6.0 (2025-08-25)
+--------------------------
+
+🎉 **Major New Features**
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* **Stochastic Derivatives**: Revolutionary new feature enabling probabilistic derivatives with uncertainty quantification
+  
+  * **6 Probability Distributions**: Normal, Log-Normal, Gamma, Beta, Exponential, Poisson link functions
+  * **Stochastic Calculus Methods**: Both Itô's lemma and Stratonovich integral corrections
+  * **Financial Applications**: Geometric Brownian motion, option pricing, risk analysis
+  * **Universal Integration**: Works with all interpolation methods (Spline, LOWESS, LOESS, LLA, GLLA, Neural Networks)
+
+* **Progressive Documentation Structure**: Complete documentation overhaul with learning path approach
+  
+  * **Level 1**: Basic Interpolation & Derivatives
+  * **Level 2**: Neural Networks & Automatic Differentiation  
+  * **Level 3**: Multivariate Calculus
+  * **Level 4**: Stochastic Computing
+
+🚀 **Enhanced Features**
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+* **Universal Stochastic API**: All interpolators now support `.set_stochastic_link()` method
+* **Automatic Derivative Transformation**: Derivatives automatically include stochastic corrections when link functions are set
+* **Real-World Examples**: Financial modeling, population dynamics, interest rate modeling with stochastic effects
+* **Comprehensive Testing**: Full test suite for stochastic derivatives across all interpolation methods
+
+🔧 **Technical Improvements**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* **New Module**: `src/pydelt/stochastic.py` - Complete stochastic calculus framework
+* **Enhanced Interpolation**: All interpolator classes extended with stochastic link function support
+* **Helper Functions**: `src/pydelt/stochastic_helpers.py` for consistent stochastic transformations
+* **Demonstration Scripts**: `demo_stochastic_derivatives.py` showcasing real-world applications
+
+📚 **Documentation**
+~~~~~~~~~~~~~~~~~~~~
+
+* **4 New Documentation Pages**: Progressive learning path from basic to advanced concepts
+* **Well-Known Examples**: Projectile motion, Runge function, fluid dynamics, optimization landscapes
+* **Application Focus**: Financial engineering, scientific computing, engineering applications
+* **Best Practices**: Method selection guidelines, parameter tuning, validation strategies
+
+🎯 **Applications Enabled**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* **Financial Engineering**: Option Greeks, volatility modeling, risk-neutral measures
+* **Scientific Computing**: Uncertainty quantification, stochastic differential equations
+* **Engineering**: Robust control, system identification with noise
+* **Machine Learning**: Bayesian neural networks, uncertainty-aware optimization
+
 Version 0.4.0 (2025-07-26)
 --------------------------
 

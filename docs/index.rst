@@ -3,58 +3,60 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-pydelt: Advanced Numerical Differentiation & Stochastic Computing
-===============================================================
+PyDelt: Advanced Numerical Function Interpolation & Differentiation
+====================================================================
 
-**pydelt** is a comprehensive Python library for numerical differentiation, interpolation, and stochastic computing. From basic polynomial derivatives to advanced stochastic calculus, pydelt provides a unified framework that scales from simple data analysis to cutting-edge research in dynamical systems, financial modeling, and scientific computing.
+**PyDelt** transforms raw data into mathematical insights through advanced numerical interpolation and differentiation. Whether you're analyzing experimental measurements, financial time series, or complex dynamical systems, PyDelt provides the tools to extract derivatives, gradients, and higher-order mathematical properties with precision and reliability.
 
-🎯 **Key Strengths & Applications**
-----------------------------------
+🎯 **What Makes PyDelt Special**
+---------------------------------
 
-**Scientific Computing**
-* **Dynamical Systems**: Reconstruct differential equations from noisy time series data
-* **Phase Space Analysis**: Compute derivatives for embedding dimension analysis and chaos detection
-* **Fluid Dynamics**: Analyze velocity fields, compute vorticity and strain tensors
-* **Signal Processing**: Extract instantaneous frequency and phase derivatives from complex signals
+**Universal Interface**
+All interpolation methods share the same `.fit().differentiate()` API, making it easy to switch between techniques and compare results without rewriting code.
 
-**Financial & Risk Modeling**
-* **Stochastic Derivatives**: Apply Itô's lemma and Stratonovich corrections to derivative computations
-* **Option Pricing**: Compute Greeks (delta, gamma, theta) with stochastic link functions
-* **Risk Management**: Model volatility surfaces and correlation structures with multivariate derivatives
-* **Algorithmic Trading**: Real-time derivative computation for momentum and mean-reversion strategies
+**From Simple to Sophisticated**
+Start with basic spline interpolation and scale up to neural networks with automatic differentiation - all within the same framework.
 
-**Engineering & Control**
-* **System Identification**: Extract governing equations from experimental data
-* **Control Theory**: Design controllers using derivative information from system responses
-* **Optimization**: Gradient-based methods with automatic differentiation support
-* **Machine Learning**: Custom loss functions with higher-order derivative constraints
+**Real-World Ready**
+Built-in noise handling, robust error estimation, and comprehensive validation ensure your results are reliable even with imperfect data.
+
+**Applications Across Domains**
+
+• **Scientific Computing**: Reconstruct differential equations from experimental data, analyze phase spaces, compute fluid dynamics properties
+• **Financial Modeling**: Calculate option Greeks, model volatility surfaces, apply stochastic calculus corrections
+• **Engineering**: System identification, control design, optimization with gradient information
+• **Data Science**: Feature engineering, signal processing, time series analysis with mathematical rigor
 
 🚀 **Progressive Feature Set**
------------------------------
+-------------------------------
 
-**Level 1: Basic Interpolation & Derivatives**
-* **Classical Methods**: Splines, polynomial fitting, local linear approximation
-* **Universal API**: Consistent `.fit().differentiate()` interface across all methods
-* **Higher-Order Support**: Analytical and numerical derivatives up to arbitrary order
+**Level 1: Foundation Methods**
 
-**Level 2: Advanced Interpolation**
-* **Robust Methods**: LOWESS, LOESS for noisy data and outlier resistance
-* **Neural Networks**: Deep learning-based interpolation with automatic differentiation
-* **Adaptive Methods**: LLA, GLLA with local bandwidth selection
+• **Spline Interpolation**: Smooth curves through your data with analytical derivatives
+• **Local Linear Approximation (LLA)**: Robust sliding-window approach for noisy data
+• **Functional Data Analysis (FDA)**: Sophisticated smoothing with optimal parameter selection
+
+**Level 2: Advanced Techniques**
+
+• **LOWESS/LOESS**: Non-parametric methods resistant to outliers and varying noise levels
+• **Neural Networks**: Deep learning with automatic differentiation for complex patterns
+• **Generalized LLA (GLLA)**: Higher-order local approximations for enhanced accuracy
 
 **Level 3: Multivariate Calculus**
-* **Vector Calculus**: Gradient (∇f), Jacobian (∂f/∂x), Hessian (∂²f/∂x²), Laplacian (∇²f)
-* **Tensor Operations**: Full support for vector-valued functions and tensor calculus
-* **Mixed Derivatives**: Cross-partial derivatives for multivariate analysis
 
-**Level 4: Stochastic Computing** ⭐ *New Feature*
-* **Stochastic Link Functions**: 6 probability distributions (Normal, Log-Normal, Gamma, Beta, Exponential, Poisson)
-* **Stochastic Calculus**: Itô's lemma and Stratonovich integral corrections
-* **Financial Applications**: Geometric Brownian motion, volatility modeling, option pricing
-* **Risk Analysis**: Uncertainty propagation through derivative computations
+• **Gradient Computation**: ∇f for scalar functions of multiple variables
+• **Jacobian Matrices**: ∂f/∂x for vector-valued functions
+• **Hessian Analysis**: Second-order derivatives for optimization and stability
+• **Laplacian Operations**: ∇²f for diffusion and field analysis
+
+**Level 4: Stochastic Extensions** ⭐
+
+• **Stochastic Link Functions**: Transform derivatives through probability distributions
+• **Itô and Stratonovich Corrections**: Proper stochastic calculus for financial modeling
+• **Risk Propagation**: Uncertainty quantification through derivative computations
 
 📦 **Installation**
-------------------
+--------------------
 
 Install pydelt from PyPI:
 
@@ -62,104 +64,144 @@ Install pydelt from PyPI:
 
    pip install pydelt
 
-🔧 **Quick Start Examples**
----------------------------
+🚀 **Quick Start: See PyDelt in Action**
+-----------------------------------------
 
-**1. Universal Differentiation Interface**
+**The Universal Interface**
+
+Every interpolation method in PyDelt follows the same simple pattern:
 
 .. code-block:: python
 
    import numpy as np
    from pydelt.interpolation import SplineInterpolator
    
-   # Generate sample data: f(t) = sin(t)
+   # Your data: noisy measurements of f(t) = sin(t)
    time = np.linspace(0, 2*np.pi, 100)
-   signal = np.sin(time)
+   signal = np.sin(time) + 0.1 * np.random.randn(100)
    
-   # Universal API: fit interpolator and compute derivatives
+   # Three-step process: create, fit, differentiate
    interpolator = SplineInterpolator(smoothing=0.1)
    interpolator.fit(time, signal)
    derivative_func = interpolator.differentiate(order=1)
    
-   # Evaluate derivative at any points
-   derivatives = derivative_func(time)
-   print(f"Max error vs cos(t): {np.max(np.abs(derivatives - np.cos(time))):.4f}")
+   # Evaluate derivatives anywhere you need them
+   new_points = np.linspace(0, 2*np.pi, 50)
+   derivatives = derivative_func(new_points)
+   
+   # Compare with analytical result: d/dt[sin(t)] = cos(t)
+   analytical = np.cos(new_points)
+   error = np.mean(np.abs(derivatives - analytical))
+   print(f"Average error: {error:.4f}")
 
-**2. Multivariate Calculus**
+.. raw:: html
+
+   <iframe src="_static/images/universal_api_demo.html" width="100%" height="600px" frameborder="0"></iframe>
+
+**Beyond 1D: Multivariate Functions**
+
+PyDelt extends naturally to functions of multiple variables:
 
 .. code-block:: python
 
    from pydelt.multivariate import MultivariateDerivatives
    
-   # Generate 2D data: f(x,y) = x² + y²
-   x = np.linspace(-2, 2, 50)
-   y = np.linspace(-2, 2, 50)
+   # 2D surface: f(x,y) = sin(x)cos(y) + 0.1xy
+   x = np.linspace(-3, 3, 30)
+   y = np.linspace(-3, 3, 30)
    X, Y = np.meshgrid(x, y)
-   Z = X**2 + Y**2
+   Z = np.sin(X) * np.cos(Y) + 0.1 * X * Y
    
-   # Fit multivariate derivatives
+   # Prepare data for multivariate analysis
    input_data = np.column_stack([X.flatten(), Y.flatten()])
    output_data = Z.flatten()
    
+   # Same universal interface, now for gradients
    mv = MultivariateDerivatives(SplineInterpolator, smoothing=0.1)
    mv.fit(input_data, output_data)
    
-   # Compute gradient: ∇f = [2x, 2y]
+   # Compute gradient field: ∇f = [∂f/∂x, ∂f/∂y]
    gradient_func = mv.gradient()
-   test_point = np.array([[1.0, 1.0]])
-   gradient = gradient_func(test_point)
-   print(f"Gradient at (1,1): {gradient[0]} (expected: [2, 2])")
+   test_points = np.array([[0.0, 0.0], [1.0, 1.0]])
+   gradients = gradient_func(test_points)
+   
+   print(f"Gradient at origin: {gradients[0]}")
+   print(f"Gradient at (1,1): {gradients[1]}")
 
-**3. Stochastic Derivatives for Financial Modeling**
+.. raw:: html
+
+   <iframe src="_static/images/multivariate_surface.html" width="100%" height="700px" frameborder="0"></iframe>
+
+**Method Comparison: Choose the Right Tool**
+
+Different methods excel in different scenarios:
 
 .. code-block:: python
 
-   from pydelt.interpolation import SplineInterpolator
+   # Complex function with multiple scales and noise
+   x = np.linspace(0, 4*np.pi, 80)
+   y_true = np.sin(x) * np.exp(-x/8) + 0.3*np.sin(5*x)
+   y_noisy = y_true + 0.1 * np.random.randn(len(x))
    
-   # Stock price data following geometric Brownian motion
-   time = np.linspace(0, 1, 252)  # 1 year of daily data
-   stock_prices = 100 * np.exp(0.1*time + 0.2*np.random.randn(252).cumsum()/np.sqrt(252))
+   # Compare different approaches
+   methods = {
+       'Spline (smooth)': SplineInterpolator(smoothing=1.0),
+       'Spline (detailed)': SplineInterpolator(smoothing=0.1),
+       'LLA (adaptive)': LlaInterpolator(window_size=5),
+       'LLA (stable)': LlaInterpolator(window_size=15)
+   }
    
-   # Fit interpolator with log-normal stochastic link
-   interpolator = SplineInterpolator(smoothing=0.1)
-   interpolator.fit(time, stock_prices)
-   interpolator.set_stochastic_link('lognormal', sigma=0.2, method='ito')
+   results = {}
+   for name, interpolator in methods.items():
+       interpolator.fit(x, y_noisy)
+       # Each method automatically handles the complexity differently
+       derivative_func = interpolator.differentiate(order=1)
+       results[name] = derivative_func(x)
    
-   # Compute stochastic derivatives (automatically applies Itô correction)
-   stochastic_deriv = interpolator.differentiate(order=1)
-   derivatives = stochastic_deriv(time)
-   
-   print(f"Regular vs Stochastic derivative difference: {np.mean(np.abs(derivatives - regular_derivatives)):.2f}")
+   # PyDelt makes it easy to compare and choose
+   print("Method comparison complete - see visualization below")
 
-🌌 **Applications in Dynamical Systems**
------------------------------------------
+.. raw:: html
 
-**pydelt** excels in analyzing dynamical systems and differential equations from data:
+   <iframe src="_static/images/method_comparison.html" width="100%" height="600px" frameborder="0"></iframe>
 
-* **System Identification**: Reconstruct differential equations from time series observations
-* **Phase Space Reconstruction**: Compute derivatives for embedding dimension analysis
-* **Stability Analysis**: Calculate Jacobians and eigenvalues for equilibrium point classification
-* **Bifurcation Analysis**: Track parameter-dependent changes in system behavior
-* **Control Theory**: Design controllers using derivative information from system responses
-* **Fluid Dynamics**: Analyze velocity fields and compute vorticity, divergence, and strain tensors
-* **Continuum Mechanics**: Calculate stress and strain derivatives for material property estimation
-* **Signal Processing**: Extract instantaneous frequency and phase derivatives from complex signals
+🌍 **Real-World Impact**
+-------------------------
 
-**Time Series as a Special Case**: Traditional time series derivative analysis is just one application of our broader dynamical systems framework. The universal differentiation interface seamlessly handles both temporal data and general multivariate functions.
+**Scientific Discovery**
+Extract governing equations from experimental data, analyze phase spaces in nonlinear dynamics, compute fluid properties from velocity measurements.
 
-📚 **Documentation Contents**
-----------------------------
+**Financial Engineering**
+Calculate option Greeks with proper stochastic corrections, model volatility surfaces, implement risk management strategies with mathematical precision.
+
+**Engineering Design**
+Identify system dynamics from sensor data, design controllers using derivative feedback, optimize processes with gradient-based methods.
+
+**Data Science Excellence**
+Transform time series analysis with mathematical rigor, engineer features with derivative information, validate models through mathematical consistency.
+
+**Why PyDelt Matters**
+
+Traditional numerical differentiation is notoriously unstable - small changes in data can cause large changes in derivatives. PyDelt solves this through:
+
+• **Smart smoothing** that preserves important features while reducing noise
+• **Multiple methods** so you can choose the best approach for your data
+• **Robust validation** to ensure your results are mathematically sound
+• **Unified interface** that makes comparison and validation straightforward
+
+📚 **Learn PyDelt**
+--------------------
 
 .. toctree::
    :maxdepth: 2
-   :caption: Getting Started:
+   :caption: Start Here:
 
    installation
    quickstart
 
 .. toctree::
    :maxdepth: 2
-   :caption: Progressive Learning Path:
+   :caption: Master the Methods:
 
    basic_interpolation
    neural_networks
@@ -168,7 +210,7 @@ Install pydelt from PyPI:
    
 .. toctree::
    :maxdepth: 2
-   :caption: Reference:
+   :caption: Reference & Help:
 
    examples
    api
@@ -176,14 +218,14 @@ Install pydelt from PyPI:
    changelog
 
 🔗 **Links**
------------
+-------------
 
 * **PyPI**: https://pypi.org/project/pydelt/
 * **Source Code**: https://github.com/MikeHLee/pydelt
 * **Issues**: https://github.com/MikeHLee/pydelt/issues
 
 📋 **Indices and Tables**
-------------------------
+--------------------------
 
 * :ref:`genindex`
 * :ref:`modindex`

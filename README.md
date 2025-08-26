@@ -1,21 +1,24 @@
-# pydelt: Dynamical Systems & Differential Equations Approximation
+# PyDelt: Advanced Numerical Function Interpolation & Differentiation
 
 [![PyPI version](https://badge.fury.io/py/pydelt.svg)](https://badge.fury.io/py/pydelt)
 [![Documentation Status](https://readthedocs.org/projects/pydelt/badge/?version=latest)](https://pydelt.readthedocs.io/en/latest/?badge=latest)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**pydelt** bridges the gap between theoretical mathematics and real-world data, enabling scientists to extract the underlying dynamics from noisy, incomplete observations. By providing a unified framework for numerical differentiation and integration, pydelt transforms raw measurements into meaningful differential equations that reveal the fundamental laws governing complex systems. Whether you're reconstructing phase spaces in nonlinear dynamics, identifying governing equations in fluid mechanics, or extracting rate constants in chemical kinetics, pydelt empowers you to move beyond mere data description to discover the mathematical essence of your phenomena.
+**PyDelt** transforms raw data into mathematical insights through advanced numerical interpolation and differentiation. Whether you're analyzing experimental measurements, financial time series, or complex dynamical systems, PyDelt provides the tools to extract derivatives, gradients, and higher-order mathematical properties with precision and reliability.
 
-## 🚀 Key Features
+## Why PyDelt?
 
-- **Universal Differentiation Interface**: Consistent `.differentiate(order, mask)` API across all interpolation methods
-- **Multivariate Calculus**: Gradient (∇f), Jacobian (J_f), Hessian (H_f), and Laplacian (∇²f) computation
-- **Multiple Derivative Methods**: LLA/GLLA (analytical Hermite derivatives), FDA/Splines (analytical spline derivatives), LOWESS/LOESS (numerical differentiation)
-- **Automatic Differentiation**: PyTorch and TensorFlow backends for exact gradient computation in complex functions
-- **Vector & Tensor Operations**: Full support for vector-valued functions and tensor calculus
-- **Integration Capabilities**: Numerical integration with error estimation
-- **Comprehensive Error Handling**: Robust validation and informative error messages
+Traditional numerical differentiation is notoriously unstable - small changes in data can cause large changes in derivatives. PyDelt solves this through smart smoothing that preserves important features while reducing noise, multiple methods so you can choose the best approach for your data, and a unified interface that makes comparison and validation straightforward.
+
+## 🎯 Key Features
+
+• **Universal Interface**: Every method uses the same `.fit().differentiate()` pattern - easy to learn, easy to switch
+• **From Simple to Sophisticated**: Start with splines, scale to neural networks with automatic differentiation
+• **Multivariate Ready**: Gradients, Jacobians, Hessians, and Laplacians for functions of multiple variables
+• **Noise Robust**: Built-in smoothing and validation ensure reliable results from imperfect data
+• **Stochastic Extensions**: Proper handling of financial derivatives with Itô and Stratonovich corrections
+• **Production Ready**: Comprehensive error handling, extensive testing, and clear documentation
 
 ## Installation
 
