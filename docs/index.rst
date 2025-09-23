@@ -213,6 +213,7 @@ Traditional numerical differentiation is notoriously unstable - small changes in
    :caption: Reference & Help:
 
    examples
+   feature_comparison
    api
    faq
    changelog

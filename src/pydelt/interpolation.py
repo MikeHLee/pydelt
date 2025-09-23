@@ -1122,6 +1122,103 @@ class GoldInterpolator(BaseInterpolator):
             h11 = u**3 - u**2
             result[i] = h00*s_prev + h10*h*d_prev + h01*s_next + h11*h*d_next
         return result if query_time.shape else result.item()
+        
+    def differentiate(self, order: int = 1, mask: Optional[Union[np.ndarray, List[bool], List[int]]] = None) -> Callable:
+        """
+        Compute the derivative of the interpolated function.
+        
+        Parameters
+        ----------
+        order : int, optional
+            Order of the derivative to compute. Default is 1.
+        mask : array-like or None, optional
+            Mask for partial derivatives. Not used for univariate functions.
+            
+        Returns
+        -------
+        callable
+            Function that evaluates the derivative at specified points.
+        """
+        if self.fitted_data is None:
+            raise ValueError("Interpolator must be fitted before computing derivatives.")
+            
+        t, s, d = self.fitted_data
+        
+        if order == 1:
+            # For first derivative, we already have the values from np.gradient
+            def derivative_func(query_time):
+                query_time = np.atleast_1d(query_time)
+                result = np.empty_like(query_time, dtype=float)
+                for i, t_i in enumerate(query_time):
+                    idx_next = np.searchsorted(t, t_i, side='right')
+                    if idx_next == 0:
+                        idx_prev = idx_next
+                    elif idx_next == len(t):
+                        idx_prev = idx_next - 1
+                    else:
+                        idx_prev = idx_next - 1
+                    
+                    s_prev, s_next = s[idx_prev], s[min(idx_next, len(s)-1)]
+                    d_prev, d_next = d[idx_prev], d[min(idx_next, len(d)-1)]
+                    t_prev, t_next = t[idx_prev], t[min(idx_next, len(t)-1)]
+                    
+                    h = t_next - t_prev
+                    u = (t_i - t_prev) / h if h != 0 else 0
+                    
+                    # Derivative of cubic Hermite basis functions
+                    dh00 = (6*u**2 - 6*u) / h
+                    dh10 = (3*u**2 - 4*u + 1) / h
+                    dh01 = (-6*u**2 + 6*u) / h
+                    dh11 = (3*u**2 - 2*u) / h
+                    
+                    # Compute derivative
+                    result[i] = dh00*s_prev + dh10*h*d_prev + dh01*s_next + dh11*h*d_next
+                
+                return result if query_time.shape else result.item()
+                
+        elif order == 2:
+            # For second derivative, compute analytically from Hermite basis functions
+            def derivative_func(query_time):
+                query_time = np.atleast_1d(query_time)
+                result = np.empty_like(query_time, dtype=float)
+                for i, t_i in enumerate(query_time):
+                    idx_next = np.searchsorted(t, t_i, side='right')
+                    if idx_next == 0:
+                        idx_prev = idx_next
+                    elif idx_next == len(t):
+                        idx_prev = idx_next - 1
+                    else:
+                        idx_prev = idx_next - 1
+                    
+                    s_prev, s_next = s[idx_prev], s[min(idx_next, len(s)-1)]
+                    d_prev, d_next = d[idx_prev], d[min(idx_next, len(d)-1)]
+                    t_prev, t_next = t[idx_prev], t[min(idx_next, len(t)-1)]
+                    
+                    h = t_next - t_prev
+                    u = (t_i - t_prev) / h if h != 0 else 0
+                    
+                    # Second derivative of cubic Hermite basis functions
+                    d2h00 = 12 * (u - 0.5) / (h * h)
+                    d2h10 = 6 * (u - 2/3) / h
+                    d2h01 = -12 * (u - 0.5) / (h * h)
+                    d2h11 = 6 * (u - 1/3) / h
+                    
+                    # Compute second derivative
+                    result[i] = d2h00*s_prev + d2h10*d_prev + d2h01*s_next + d2h11*d_next
+                
+                return result if query_time.shape else result.item()
+        else:
+            # For higher order derivatives, use finite differences on lower order derivatives
+            prev_deriv = self.differentiate(order=order-1)(t)
+            
+            def derivative_func(query_time):
+                # Create a new interpolator for the previous derivative
+                interp = GoldInterpolator(window_size=self.window_size)
+                interp.fit(t, prev_deriv)
+                # Compute the derivative of the previous derivative
+                return interp.differentiate(order=1)(query_time)
+        
+        return derivative_func
 
 # Neural network interpolators
 class NeuralNetworkInterpolator(BaseInterpolator):

@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.2] - 2025-09-23
+
+### Added
+- **GOLD Interpolator**: Added `differentiate()` method to the `GoldInterpolator` class
+  - Implemented analytical derivatives for 1st and 2nd order using Hermite cubic interpolation
+  - Added recursive approach for higher-order derivatives
+  - Ensured compatibility with the universal differentiation interface
+- **Comprehensive Comparison**: Updated comparison framework to include GOLD method
+  - Added GOLD to all benchmark tests (univariate, multivariate, noise robustness)
+  - Updated research paper with GOLD method results
+
+### Improved
+- **Documentation**: Enhanced explanations for multivariate, tensor, and stochastic calculus implementations
+  - Added detailed sections on gradient, Jacobian, Hessian, and Laplacian operations
+  - Expanded tensor calculus explanations with vector field operations and coordinate transformations
+  - Improved stochastic calculus documentation with Itô and Stratonovich calculus details
+
+### Technical Details
+- GOLD method shows excellent performance, ranking just after GLLA in first-order derivative accuracy
+- Good noise robustness comparable to GLLA method
+- Reasonable computational efficiency suitable for most applications
+
 ## [0.5.1] - 2025-08-11
 
 ### Added
