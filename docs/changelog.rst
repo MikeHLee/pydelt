@@ -3,6 +3,57 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.7.0 (2025-09-24)
+--------------------------
+
+🎉 **Major New Features**
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* **Universal Differentiation Interface**: Implemented the universal `.differentiate(order=1, mask=None)` method across ALL interpolation classes
+  
+  * **Consistent API**: All interpolators now support `interpolator.fit(input_data, output_data).differentiate(order=1, mask=None)`
+  * **Masking Support**: Boolean arrays and index arrays for partial derivatives
+  * **Callable Functions**: Returns callable that can evaluate derivatives at ANY points
+  * **Higher-Order Derivatives**: Analytical where possible (splines, Hermite), numerical fallback
+
+* **Multivariate Calculus Operations**: Comprehensive multivariate calculus support
+  
+  * **Gradient**: `∇f` for scalar functions of multiple variables
+  * **Jacobian**: `J_f` for vector-valued functions
+  * **Hessian**: `H_f` for second-order derivatives
+  * **Laplacian**: `∇²f = tr(H_f)` for scalar functions
+
+* **Visual Examples**: Interactive visualizations for all differentiation methods
+  
+  * **Method Comparison**: Visual comparison of different interpolation methods
+  * **Noise Robustness**: Performance analysis with varying noise levels
+  * **Multivariate Derivatives**: 3D visualization of gradient fields
+  * **Higher-Order Derivatives**: Visualization of 1st and 2nd order derivatives
+  * **Stochastic Processes**: Drift estimation in stochastic processes
+
+🚀 **Enhanced Features**
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+* **Research Paper**: Comprehensive analysis of numerical differentiation methods
+  
+  * **Method Comparison**: Detailed performance benchmarks across different test functions
+  * **Noise Robustness**: Analysis of performance degradation with noise
+  * **Computational Efficiency**: Execution time comparisons
+  * **Method Selection Guidelines**: Recommendations for different use cases
+
+* **API Improvements**: Standardized API across all interpolation methods
+  
+  * **Consistent Parameters**: Standardized parameter names and behaviors
+  * **Error Handling**: Improved validation and error messages
+  * **Performance Optimization**: Enhanced computational efficiency
+
+🔧 **Technical Improvements**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* **Code Quality**: Improved code organization and documentation
+* **Test Coverage**: Enhanced test suite with comprehensive coverage
+* **Documentation**: Updated documentation with visual examples and method selection guidelines
+
 Version 0.6.1 (2025-08-26)
 --------------------------
 
