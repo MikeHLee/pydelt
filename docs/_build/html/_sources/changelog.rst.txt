@@ -3,6 +3,44 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+Version 0.6.1 (2025-08-26)
+--------------------------
+
+🎨 **Documentation & UX Overhaul**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* **New Title**: Rebranded to "PyDelt: Advanced Numerical Function Interpolation & Differentiation"
+* **Enhanced Documentation**: Complete revision with narrative flow and concept explanations instead of just code blocks
+* **Interactive Visualizations**: Beautiful Plotly plots embedded in documentation showing:
+  
+  * Universal API demonstration with method comparison
+  * 3D multivariate surface plots with gradient vector fields
+  * Method performance analysis with error visualization
+  
+* **Improved Bullet Points**: Fixed formatting issues - clean bullet points without newlines
+* **Better Narrative**: Sections now explain what's happening rather than just showing massive code blocks
+* **PyPI Metadata**: Updated package description to reflect advanced interpolation focus
+
+🚀 **Visual Enhancements**
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* **Generated Visualizations**: Created `generate_visualizations.py` script producing:
+  
+  * `universal_api_demo.html`: Interactive comparison of Spline, LLA, and GLLA methods
+  * `multivariate_surface.html`: 3D surface with gradient fields and component analysis  
+  * `method_comparison.html`: Performance comparison on complex functions with noise
+  
+* **Embedded Plots**: Documentation now includes interactive HTML plots for better understanding
+* **Professional Presentation**: Clean, modern documentation layout with proper spacing and organization
+
+🔧 **Technical Improvements**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* **Fixed Documentation Build**: Resolved all Sphinx warnings with proper title underlines
+* **Universal Interface Emphasis**: Highlighted the consistent `.fit().differentiate()` API pattern
+* **Method Selection Guidance**: Clear explanations of when to use each interpolation method
+* **Real-World Focus**: Emphasized practical applications and noise handling capabilities
+
 Version 0.6.0 (2025-08-25)
 --------------------------
 

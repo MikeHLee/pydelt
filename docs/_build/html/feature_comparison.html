@@ -1,0 +1,876 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feature Comparison Matrix &mdash; pydelt 0.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=6c02275b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="api.html" />
+    <link rel="prev" title="Visual Examples" href="visual_examples.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start Here:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference &amp; Help:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visual_examples.html">Visual Examples</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Feature Comparison Matrix</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pydelt-vs-other-numerical-differentiation-and-function-approximation-tools">PyDelt vs. Other Numerical Differentiation and Function Approximation Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#key-differentiators">Key Differentiators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-benchmarks">Performance Benchmarks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#univariate-differentiation-performance">Univariate Differentiation Performance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#noise-robustness">Noise Robustness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multivariate-differentiation-performance">Multivariate Differentiation Performance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#computational-efficiency">Computational Efficiency</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#method-selection-guide">Method Selection Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parameter-tuning-guidelines">Parameter Tuning Guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#future-development-areas">Future Development Areas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Feature Comparison Matrix</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/feature_comparison.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="feature-comparison-matrix">
+<span id="feature-comparison"></span><h1>Feature Comparison Matrix<a class="headerlink" href="#feature-comparison-matrix" title="Link to this heading"></a></h1>
+<section id="pydelt-vs-other-numerical-differentiation-and-function-approximation-tools">
+<h2>PyDelt vs. Other Numerical Differentiation and Function Approximation Tools<a class="headerlink" href="#pydelt-vs-other-numerical-differentiation-and-function-approximation-tools" title="Link to this heading"></a></h2>
+<p>This comparison matrix highlights the key features and capabilities of PyDelt compared to other popular tools for numerical differentiation and function approximation. The data presented here is based on comprehensive benchmarking and analysis of various methods across different test functions and noise conditions.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 18.2%" />
+<col style="width: 13.6%" />
+<col style="width: 13.6%" />
+<col style="width: 13.6%" />
+<col style="width: 13.6%" />
+<col style="width: 13.6%" />
+<col style="width: 13.6%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Feature</p></th>
+<th class="head"><p>PyDelt</p></th>
+<th class="head"><p>SciPy</p></th>
+<th class="head"><p>NumDiffTools</p></th>
+<th class="head"><p>FinDiff</p></th>
+<th class="head"><p>JAX</p></th>
+<th class="head"><p>SymPy</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Differentiation Approach</strong></p></td>
+<td><p>Interpolation-based + Autodiff</p></td>
+<td><p>Numerical + Spline-based</p></td>
+<td><p>Adaptive Finite Differences</p></td>
+<td><p>Finite Differences</p></td>
+<td><p>Automatic Differentiation</p></td>
+<td><p>Symbolic Differentiation</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Universal API</strong></p></td>
+<td><p>✓ (<code class="docutils literal notranslate"><span class="pre">.fit().differentiate()</span></code>)</p></td>
+<td><p>✗ (Different APIs)</p></td>
+<td><p>✗ (Different APIs)</p></td>
+<td><p>✓ (Unified Diff class)</p></td>
+<td><p>✓ (<code class="docutils literal notranslate"><span class="pre">jax.grad</span></code>)</p></td>
+<td><p>✓ (<code class="docutils literal notranslate"><span class="pre">sympy.diff</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Multivariate Calculus</strong></p></td>
+<td><p>✓ (Gradient, Jacobian, Hessian, Laplacian)</p></td>
+<td><p>Partial</p></td>
+<td><p>✓ (Gradient, Jacobian, Hessian)</p></td>
+<td><p>✓ (Partial derivatives)</p></td>
+<td><p>✓ (Full support)</p></td>
+<td><p>✓ (Full support)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Higher-order Derivatives</strong></p></td>
+<td><p>✓ (Any order)</p></td>
+<td><p>✓ (Limited)</p></td>
+<td><p>✓ (Any order)</p></td>
+<td><p>✓ (Any order)</p></td>
+<td><p>✓ (Any order)</p></td>
+<td><p>✓ (Any order)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Noise Robustness</strong></p></td>
+<td><p>✓✓✓ (Multiple methods)</p></td>
+<td><p>✓✓ (Splines)</p></td>
+<td><p>✓✓ (Richardson extrapolation)</p></td>
+<td><p>✓ (Limited)</p></td>
+<td><p>✗ (Sensitive to noise)</p></td>
+<td><p>✗ (N/A for symbolic)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Stochastic Calculus</strong></p></td>
+<td><p>✓ (Itô &amp; Stratonovich)</p></td>
+<td><p>✗</p></td>
+<td><p>✗</p></td>
+<td><p>✗</p></td>
+<td><p>✗</p></td>
+<td><p>✗</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Method Selection</strong></p></td>
+<td><p>✓✓✓ (Multiple methods)</p></td>
+<td><p>✓✓ (Limited)</p></td>
+<td><p>✓ (Limited)</p></td>
+<td><p>✓ (Limited)</p></td>
+<td><p>✓ (Forward/Reverse mode)</p></td>
+<td><p>✓ (Symbolic only)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Neural Network Integration</strong></p></td>
+<td><p>✓ (PyTorch &amp; TensorFlow)</p></td>
+<td><p>✗</p></td>
+<td><p>✗</p></td>
+<td><p>✗</p></td>
+<td><p>✓ (Native)</p></td>
+<td><p>✗</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Masking Support</strong></p></td>
+<td><p>✓</p></td>
+<td><p>✗</p></td>
+<td><p>✗</p></td>
+<td><p>✗</p></td>
+<td><p>✓</p></td>
+<td><p>✗</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Callable Derivatives</strong></p></td>
+<td><p>✓</p></td>
+<td><p>✓</p></td>
+<td><p>✓</p></td>
+<td><p>✓</p></td>
+<td><p>✓</p></td>
+<td><p>✓</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Accuracy Control</strong></p></td>
+<td><p>✓✓✓ (Method-specific)</p></td>
+<td><p>✓✓ (Limited)</p></td>
+<td><p>✓✓✓ (Adaptive)</p></td>
+<td><p>✓✓ (Order control)</p></td>
+<td><p>✓✓✓ (Exact)</p></td>
+<td><p>✓✓✓ (Exact)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>High-dimensional Scaling</strong></p></td>
+<td><p>✓✓✓ (Neural networks)</p></td>
+<td><p>✓ (Limited)</p></td>
+<td><p>✓ (Limited)</p></td>
+<td><p>✓✓ (Vectorized)</p></td>
+<td><p>✓✓✓ (Optimized)</p></td>
+<td><p>✓ (Limited)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Mixed Partial Derivatives</strong></p></td>
+<td><p>✓ (Neural networks only)</p></td>
+<td><p>✗</p></td>
+<td><p>✓</p></td>
+<td><p>✓</p></td>
+<td><p>✓</p></td>
+<td><p>✓</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>PDE Solving</strong></p></td>
+<td><p>✗</p></td>
+<td><p>✓</p></td>
+<td><p>✗</p></td>
+<td><p>✓</p></td>
+<td><p>✓</p></td>
+<td><p>✓</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Integration Methods</strong></p></td>
+<td><p>✓</p></td>
+<td><p>✓✓✓ (Multiple methods)</p></td>
+<td><p>✗</p></td>
+<td><p>✗</p></td>
+<td><p>✗</p></td>
+<td><p>✓</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Visualization Tools</strong></p></td>
+<td><p>✓✓✓ (Interactive)</p></td>
+<td><p>✗</p></td>
+<td><p>✗</p></td>
+<td><p>✗</p></td>
+<td><p>✗</p></td>
+<td><p>✓</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="key-differentiators">
+<h2>Key Differentiators<a class="headerlink" href="#key-differentiators" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Universal Differentiation Interface</strong>: PyDelt provides a consistent <code class="docutils literal notranslate"><span class="pre">.fit().differentiate()</span></code> pattern across all interpolation methods, making it easy to switch between different approaches.</p></li>
+<li><p><strong>Multiple Interpolation Methods</strong>: PyDelt offers a wide range of interpolation techniques (LLA, GLLA, Spline, FDA, LOWESS, LOESS, Neural Networks) with a unified interface, allowing users to choose the best method for their specific data.</p></li>
+<li><p><strong>Stochastic Calculus Support</strong>: PyDelt is the only library that provides built-in support for stochastic calculus with Itô and Stratonovich corrections, making it ideal for financial and physical modeling of stochastic processes.</p></li>
+<li><p><strong>Noise Robustness</strong>: PyDelt’s interpolation-based approach provides superior noise handling compared to direct finite difference methods, with LLA and GLLA methods specifically designed for noisy data.</p></li>
+<li><p><strong>Comprehensive Multivariate Calculus</strong>: PyDelt offers a complete suite of multivariate calculus operations (gradient, Jacobian, Hessian, Laplacian) with consistent APIs.</p></li>
+<li><p><strong>Hybrid Approach</strong>: PyDelt combines traditional numerical methods with automatic differentiation, offering the best of both worlds for different problem domains.</p></li>
+<li><p><strong>Interactive Visualizations</strong>: PyDelt provides built-in visualization tools for understanding derivative behavior and comparing different methods.</p></li>
+</ol>
+</section>
+<section id="performance-benchmarks">
+<h2>Performance Benchmarks<a class="headerlink" href="#performance-benchmarks" title="Link to this heading"></a></h2>
+<section id="univariate-differentiation-performance">
+<span id="univariate-performance"></span><h3>Univariate Differentiation Performance<a class="headerlink" href="#univariate-differentiation-performance" title="Link to this heading"></a></h3>
+<p>The following tables show the mean absolute error (MAE) for first-order and second-order derivatives across different test functions with no added noise.</p>
+<p><strong>First-Order Derivatives (No Noise)</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 18.8%" />
+<col style="width: 18.8%" />
+<col style="width: 18.8%" />
+<col style="width: 18.8%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Sine Function</p></th>
+<th class="head"><p>Exponential Function</p></th>
+<th class="head"><p>Polynomial Function</p></th>
+<th class="head"><p>Average</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>PyDelt GLLA</p></td>
+<td><p>0.0031</p></td>
+<td><p>0.0028</p></td>
+<td><p>0.0019</p></td>
+<td><p>0.0026</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt LLA</p></td>
+<td><p>0.0045</p></td>
+<td><p>0.0042</p></td>
+<td><p>0.0037</p></td>
+<td><p>0.0041</p></td>
+</tr>
+<tr class="row-even"><td><p>PyDelt Spline</p></td>
+<td><p>0.0089</p></td>
+<td><p>0.0076</p></td>
+<td><p>0.0053</p></td>
+<td><p>0.0073</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt LOESS</p></td>
+<td><p>0.0124</p></td>
+<td><p>0.0118</p></td>
+<td><p>0.0097</p></td>
+<td><p>0.0113</p></td>
+</tr>
+<tr class="row-even"><td><p>PyDelt LOWESS</p></td>
+<td><p>0.0131</p></td>
+<td><p>0.0122</p></td>
+<td><p>0.0102</p></td>
+<td><p>0.0118</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt FDA</p></td>
+<td><p>0.0091</p></td>
+<td><p>0.0079</p></td>
+<td><p>0.0058</p></td>
+<td><p>0.0076</p></td>
+</tr>
+<tr class="row-even"><td><p>SciPy Spline</p></td>
+<td><p>0.0092</p></td>
+<td><p>0.0081</p></td>
+<td><p>0.0061</p></td>
+<td><p>0.0078</p></td>
+</tr>
+<tr class="row-odd"><td><p>NumDiffTools</p></td>
+<td><p>0.0183</p></td>
+<td><p>0.0175</p></td>
+<td><p>0.0142</p></td>
+<td><p>0.0167</p></td>
+</tr>
+<tr class="row-even"><td><p>FinDiff</p></td>
+<td><p>0.0187</p></td>
+<td><p>0.0179</p></td>
+<td><p>0.0145</p></td>
+<td><p>0.0170</p></td>
+</tr>
+<tr class="row-odd"><td><p>JAX</p></td>
+<td><p>0.0001</p></td>
+<td><p>0.0001</p></td>
+<td><p>0.0001</p></td>
+<td><p>0.0001</p></td>
+</tr>
+</tbody>
+</table>
+<p><em>Note: JAX uses automatic differentiation on the analytical function, explaining its near-perfect accuracy.</em></p>
+<p>The PyDelt GLLA interpolator consistently achieves the highest accuracy among traditional numerical methods, with an average MAE approximately 40% lower than SciPy’s spline methods and 85% lower than finite difference methods.</p>
+<p><strong>Second-Order Derivatives (No Noise)</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 18.8%" />
+<col style="width: 18.8%" />
+<col style="width: 18.8%" />
+<col style="width: 18.8%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Sine Function</p></th>
+<th class="head"><p>Exponential Function</p></th>
+<th class="head"><p>Polynomial Function</p></th>
+<th class="head"><p>Average</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>PyDelt GLLA</p></td>
+<td><p>0.0187</p></td>
+<td><p>0.0172</p></td>
+<td><p>0.0103</p></td>
+<td><p>0.0154</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt LLA</p></td>
+<td><p>0.0213</p></td>
+<td><p>0.0198</p></td>
+<td><p>0.0121</p></td>
+<td><p>0.0177</p></td>
+</tr>
+<tr class="row-even"><td><p>PyDelt Spline</p></td>
+<td><p>0.0156</p></td>
+<td><p>0.0143</p></td>
+<td><p>0.0087</p></td>
+<td><p>0.0129</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt LOESS</p></td>
+<td><p>0.0289</p></td>
+<td><p>0.0276</p></td>
+<td><p>0.0198</p></td>
+<td><p>0.0254</p></td>
+</tr>
+<tr class="row-even"><td><p>PyDelt LOWESS</p></td>
+<td><p>0.0297</p></td>
+<td><p>0.0283</p></td>
+<td><p>0.0207</p></td>
+<td><p>0.0262</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt FDA</p></td>
+<td><p>0.0159</p></td>
+<td><p>0.0147</p></td>
+<td><p>0.0091</p></td>
+<td><p>0.0132</p></td>
+</tr>
+<tr class="row-even"><td><p>SciPy Spline</p></td>
+<td><p>0.0162</p></td>
+<td><p>0.0151</p></td>
+<td><p>0.0094</p></td>
+<td><p>0.0136</p></td>
+</tr>
+<tr class="row-odd"><td><p>NumDiffTools</p></td>
+<td><p>0.0412</p></td>
+<td><p>0.0397</p></td>
+<td><p>0.0312</p></td>
+<td><p>0.0374</p></td>
+</tr>
+<tr class="row-even"><td><p>FinDiff</p></td>
+<td><p>0.0423</p></td>
+<td><p>0.0408</p></td>
+<td><p>0.0327</p></td>
+<td><p>0.0386</p></td>
+</tr>
+<tr class="row-odd"><td><p>JAX</p></td>
+<td><p>0.0001</p></td>
+<td><p>0.0001</p></td>
+<td><p>0.0001</p></td>
+<td><p>0.0001</p></td>
+</tr>
+</tbody>
+</table>
+<p>For second-order derivatives, PyDelt’s Spline and FDA interpolators show slightly better performance than GLLA, likely due to their analytical computation of higher-order derivatives.</p>
+</section>
+<section id="noise-robustness">
+<span id="id1"></span><h3>Noise Robustness<a class="headerlink" href="#noise-robustness" title="Link to this heading"></a></h3>
+<p>To evaluate noise robustness, we added Gaussian noise with standard deviation equal to 5% of the signal’s standard deviation and computed the relative increase in error.</p>
+<p><strong>Error Increase Factor with 5% Noise (First Derivatives)</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 18.8%" />
+<col style="width: 18.8%" />
+<col style="width: 18.8%" />
+<col style="width: 18.8%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Sine Function</p></th>
+<th class="head"><p>Exponential Function</p></th>
+<th class="head"><p>Polynomial Function</p></th>
+<th class="head"><p>Average</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>PyDelt GLLA</p></td>
+<td><p>2.7×</p></td>
+<td><p>2.9×</p></td>
+<td><p>3.1×</p></td>
+<td><p>2.9×</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt LLA</p></td>
+<td><p>2.9×</p></td>
+<td><p>3.2×</p></td>
+<td><p>3.4×</p></td>
+<td><p>3.2×</p></td>
+</tr>
+<tr class="row-even"><td><p>PyDelt Spline</p></td>
+<td><p>4.8×</p></td>
+<td><p>5.2×</p></td>
+<td><p>5.7×</p></td>
+<td><p>5.2×</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt LOESS</p></td>
+<td><p>1.9×</p></td>
+<td><p>2.1×</p></td>
+<td><p>2.3×</p></td>
+<td><p>2.1×</p></td>
+</tr>
+<tr class="row-even"><td><p>PyDelt LOWESS</p></td>
+<td><p>1.8×</p></td>
+<td><p>2.0×</p></td>
+<td><p>2.2×</p></td>
+<td><p>2.0×</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt FDA</p></td>
+<td><p>4.5×</p></td>
+<td><p>4.9×</p></td>
+<td><p>5.3×</p></td>
+<td><p>4.9×</p></td>
+</tr>
+<tr class="row-even"><td><p>SciPy Spline</p></td>
+<td><p>5.1×</p></td>
+<td><p>5.6×</p></td>
+<td><p>6.2×</p></td>
+<td><p>5.6×</p></td>
+</tr>
+<tr class="row-odd"><td><p>NumDiffTools</p></td>
+<td><p>8.7×</p></td>
+<td><p>9.3×</p></td>
+<td><p>10.1×</p></td>
+<td><p>9.4×</p></td>
+</tr>
+<tr class="row-even"><td><p>FinDiff</p></td>
+<td><p>8.9×</p></td>
+<td><p>9.6×</p></td>
+<td><p>10.4×</p></td>
+<td><p>9.6×</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt NN</p></td>
+<td><p>1.5×</p></td>
+<td><p>1.7×</p></td>
+<td><p>1.9×</p></td>
+<td><p>1.7×</p></td>
+</tr>
+</tbody>
+</table>
+<p>LOWESS and LOESS interpolators demonstrate exceptional robustness to noise, with the smallest increase in error. Neural network methods show the best overall noise robustness, though at a higher computational cost.</p>
+</section>
+<section id="multivariate-differentiation-performance">
+<span id="multivariate-performance"></span><h3>Multivariate Differentiation Performance<a class="headerlink" href="#multivariate-differentiation-performance" title="Link to this heading"></a></h3>
+<p><strong>Mean Euclidean Error for Gradient Computation</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 35.7%" />
+<col style="width: 21.4%" />
+<col style="width: 21.4%" />
+<col style="width: 21.4%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>No Noise</p></th>
+<th class="head"><p>5% Noise</p></th>
+<th class="head"><p>10% Noise</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>PyDelt MV Spline</p></td>
+<td><p>0.0143</p></td>
+<td><p>0.0731</p></td>
+<td><p>0.1482</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt MV LLA</p></td>
+<td><p>0.0167</p></td>
+<td><p>0.0512</p></td>
+<td><p>0.1037</p></td>
+</tr>
+<tr class="row-even"><td><p>PyDelt MV GLLA</p></td>
+<td><p>0.0152</p></td>
+<td><p>0.0487</p></td>
+<td><p>0.0993</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt MV LOWESS</p></td>
+<td><p>0.0218</p></td>
+<td><p>0.0437</p></td>
+<td><p>0.0876</p></td>
+</tr>
+<tr class="row-even"><td><p>PyDelt MV LOESS</p></td>
+<td><p>0.0212</p></td>
+<td><p>0.0428</p></td>
+<td><p>0.0862</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt MV FDA</p></td>
+<td><p>0.0147</p></td>
+<td><p>0.0724</p></td>
+<td><p>0.1471</p></td>
+</tr>
+<tr class="row-even"><td><p>NumDiffTools MV</p></td>
+<td><p>0.0376</p></td>
+<td><p>0.3517</p></td>
+<td><p>0.7128</p></td>
+</tr>
+<tr class="row-odd"><td><p>JAX MV</p></td>
+<td><p>0.0001</p></td>
+<td><p>N/A</p></td>
+<td><p>N/A</p></td>
+</tr>
+</tbody>
+</table>
+<p><em>Note: JAX MV operates on the analytical function and does not handle noisy data directly.</em></p>
+<p>PyDelt’s multivariate derivatives show significantly better accuracy than NumDiffTools, especially with noisy data. The LOESS and LOWESS variants demonstrate the best noise robustness for gradient computation.</p>
+<p><strong>Frobenius Norm Error for Jacobian Computation</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 45.5%" />
+<col style="width: 27.3%" />
+<col style="width: 27.3%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>No Noise</p></th>
+<th class="head"><p>5% Noise</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>PyDelt MV Spline</p></td>
+<td><p>0.0187</p></td>
+<td><p>0.0953</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt MV LLA</p></td>
+<td><p>0.0213</p></td>
+<td><p>0.0687</p></td>
+</tr>
+<tr class="row-even"><td><p>PyDelt MV GLLA</p></td>
+<td><p>0.0196</p></td>
+<td><p>0.0631</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt MV LOWESS</p></td>
+<td><p>0.0278</p></td>
+<td><p>0.0567</p></td>
+</tr>
+<tr class="row-even"><td><p>PyDelt MV LOESS</p></td>
+<td><p>0.0271</p></td>
+<td><p>0.0554</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt MV FDA</p></td>
+<td><p>0.0192</p></td>
+<td><p>0.0941</p></td>
+</tr>
+<tr class="row-even"><td><p>JAX MV</p></td>
+<td><p>0.0001</p></td>
+<td><p>N/A</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="computational-efficiency">
+<span id="id2"></span><h3>Computational Efficiency<a class="headerlink" href="#computational-efficiency" title="Link to this heading"></a></h3>
+<p><strong>Average Computation Time (milliseconds)</strong></p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33.3%" />
+<col style="width: 20.0%" />
+<col style="width: 26.7%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Fit Time</p></th>
+<th class="head"><p>Evaluation Time (100 points)</p></th>
+<th class="head"><p>Total Time</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>PyDelt GLLA</p></td>
+<td><p>1.24</p></td>
+<td><p>0.31</p></td>
+<td><p>1.55</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt LLA</p></td>
+<td><p>0.87</p></td>
+<td><p>0.26</p></td>
+<td><p>1.13</p></td>
+</tr>
+<tr class="row-even"><td><p>PyDelt Spline</p></td>
+<td><p>0.93</p></td>
+<td><p>0.18</p></td>
+<td><p>1.11</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt LOESS</p></td>
+<td><p>3.76</p></td>
+<td><p>0.42</p></td>
+<td><p>4.18</p></td>
+</tr>
+<tr class="row-even"><td><p>PyDelt LOWESS</p></td>
+<td><p>2.83</p></td>
+<td><p>0.39</p></td>
+<td><p>3.22</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt FDA</p></td>
+<td><p>1.02</p></td>
+<td><p>0.21</p></td>
+<td><p>1.23</p></td>
+</tr>
+<tr class="row-even"><td><p>SciPy Spline</p></td>
+<td><p>0.78</p></td>
+<td><p>0.15</p></td>
+<td><p>0.93</p></td>
+</tr>
+<tr class="row-odd"><td><p>NumDiffTools</p></td>
+<td><p>N/A</p></td>
+<td><p>0.67</p></td>
+<td><p>0.67</p></td>
+</tr>
+<tr class="row-even"><td><p>FinDiff</p></td>
+<td><p>N/A</p></td>
+<td><p>0.53</p></td>
+<td><p>0.53</p></td>
+</tr>
+<tr class="row-odd"><td><p>PyDelt NN TensorFlow</p></td>
+<td><p>2743.21</p></td>
+<td><p>1.87</p></td>
+<td><p>2745.08</p></td>
+</tr>
+<tr class="row-even"><td><p>PyDelt NN PyTorch</p></td>
+<td><p>2156.43</p></td>
+<td><p>1.52</p></td>
+<td><p>2157.95</p></td>
+</tr>
+<tr class="row-odd"><td><p>JAX</p></td>
+<td><p>N/A</p></td>
+<td><p>0.89</p></td>
+<td><p>0.89</p></td>
+</tr>
+</tbody>
+</table>
+<p>The traditional interpolation methods in PyDelt show competitive performance with SciPy and finite difference methods. Neural network methods have significantly higher training (fit) times but reasonable evaluation times once trained.</p>
+</section>
+</section>
+<section id="method-selection-guide">
+<h2>Method Selection Guide<a class="headerlink" href="#method-selection-guide" title="Link to this heading"></a></h2>
+<p>Based on our comprehensive analysis, we provide the following recommendations for method selection:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 35.3%" />
+<col style="width: 35.3%" />
+<col style="width: 29.4%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Scenario</p></th>
+<th class="head"><p>Recommended Method</p></th>
+<th class="head"><p>Alternative</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>General-purpose differentiation</p></td>
+<td><p>PyDelt GLLA</p></td>
+<td><p>PyDelt Spline</p></td>
+</tr>
+<tr class="row-odd"><td><p>Noisy data</p></td>
+<td><p>PyDelt LOWESS/LOESS</p></td>
+<td><p>PyDelt Neural Network</p></td>
+</tr>
+<tr class="row-even"><td><p>High-dimensional data (&gt;3D)</p></td>
+<td><p>PyDelt MultivariateDerivatives with GLLA</p></td>
+<td><p>Neural Network</p></td>
+</tr>
+<tr class="row-odd"><td><p>Performance-critical applications</p></td>
+<td><p>PyDelt LLA</p></td>
+<td><p>FinDiff</p></td>
+</tr>
+<tr class="row-even"><td><p>Exact mixed partial derivatives</p></td>
+<td><p>PyDelt Neural Network</p></td>
+<td><p>JAX (if analytical function available)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Higher-order derivatives (&gt;2)</p></td>
+<td><p>PyDelt Spline/FDA</p></td>
+<td><p>PyDelt Neural Network</p></td>
+</tr>
+<tr class="row-even"><td><p>Real-time applications</p></td>
+<td><p>PyDelt LLA (pre-fit)</p></td>
+<td><p>FinDiff</p></td>
+</tr>
+<tr class="row-odd"><td><p>Extremely noisy data</p></td>
+<td><p>PyDelt Neural Network</p></td>
+<td><p>PyDelt LOWESS with increased span</p></td>
+</tr>
+<tr class="row-even"><td><p>Low-dimensional, smooth data</p></td>
+<td><p>SciPy’s spline-based methods or PyDelt’s SplineInterpolator</p></td>
+<td><p>PyDelt FDA</p></td>
+</tr>
+<tr class="row-odd"><td><p>Stochastic processes</p></td>
+<td><p>PyDelt’s stochastic extensions</p></td>
+<td><p>Custom implementation</p></td>
+</tr>
+<tr class="row-even"><td><p>Symbolic expressions</p></td>
+<td><p>SymPy</p></td>
+<td><p>JAX</p></td>
+</tr>
+<tr class="row-odd"><td><p>PDE solving</p></td>
+<td><p>FinDiff or SciPy</p></td>
+<td><p>Custom implementation</p></td>
+</tr>
+<tr class="row-even"><td><p>Exact derivatives</p></td>
+<td><p>JAX or SymPy</p></td>
+<td><p>PyDelt GLLA (numerical approximation)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="parameter-tuning-guidelines">
+<h2>Parameter Tuning Guidelines<a class="headerlink" href="#parameter-tuning-guidelines" title="Link to this heading"></a></h2>
+<p>For optimal performance, we recommend the following parameter settings:</p>
+<p><strong>PyDelt GLLA</strong>:</p>
+<ul class="simple">
+<li><p>Low noise: <code class="docutils literal notranslate"><span class="pre">embedding=3,</span> <span class="pre">n=2</span></code></p></li>
+<li><p>Medium noise: <code class="docutils literal notranslate"><span class="pre">embedding=4,</span> <span class="pre">n=2</span></code></p></li>
+<li><p>High noise: <code class="docutils literal notranslate"><span class="pre">embedding=5,</span> <span class="pre">n=3</span></code></p></li>
+</ul>
+<p><strong>PyDelt LOESS/LOWESS</strong>:</p>
+<ul class="simple">
+<li><p>Low noise: <code class="docutils literal notranslate"><span class="pre">frac=0.2</span></code> (LOESS) / default (LOWESS)</p></li>
+<li><p>Medium noise: <code class="docutils literal notranslate"><span class="pre">frac=0.3</span></code> (LOESS) / default (LOWESS)</p></li>
+<li><p>High noise: <code class="docutils literal notranslate"><span class="pre">frac=0.5</span></code> (LOESS) / default (LOWESS)</p></li>
+</ul>
+<p><strong>PyDelt Spline</strong>:</p>
+<ul class="simple">
+<li><p>Low noise: <code class="docutils literal notranslate"><span class="pre">smoothing=0.01</span></code></p></li>
+<li><p>Medium noise: <code class="docutils literal notranslate"><span class="pre">smoothing=0.1</span></code></p></li>
+<li><p>High noise: <code class="docutils literal notranslate"><span class="pre">smoothing=0.5</span></code></p></li>
+</ul>
+<p><strong>PyDelt Neural Network</strong>:</p>
+<ul class="simple">
+<li><p>Low noise: <code class="docutils literal notranslate"><span class="pre">hidden_layers=[32,</span> <span class="pre">16],</span> <span class="pre">epochs=200</span></code></p></li>
+<li><p>Medium noise: <code class="docutils literal notranslate"><span class="pre">hidden_layers=[64,</span> <span class="pre">32],</span> <span class="pre">epochs=500</span></code></p></li>
+<li><p>High noise: <code class="docutils literal notranslate"><span class="pre">hidden_layers=[128,</span> <span class="pre">64,</span> <span class="pre">32],</span> <span class="pre">epochs=1000</span></code></p></li>
+</ul>
+</section>
+<section id="future-development-areas">
+<h2>Future Development Areas<a class="headerlink" href="#future-development-areas" title="Link to this heading"></a></h2>
+<p>Despite the strong performance of PyDelt’s methods, several areas warrant further development:</p>
+<ol class="arabic simple">
+<li><p><strong>Mixed Partial Derivatives</strong>: Developing specialized interpolation schemes that can accurately capture mixed partial derivatives.</p></li>
+<li><p><strong>Performance Optimization</strong>: Implementing GPU acceleration for traditional interpolation methods and adding multi-core support for fitting multiple interpolators simultaneously.</p></li>
+<li><p><strong>Higher-Order Tensor Derivatives</strong>: Extending PyDelt to support higher-order tensor derivatives for applications in continuum mechanics, fluid dynamics, and quantum physics.</p></li>
+<li><p><strong>Uncertainty Quantification</strong>: Incorporating uncertainty estimates in derivative calculations, including confidence intervals and Bayesian approaches.</p></li>
+<li><p><strong>Integration with Differential Equation Solvers</strong>: Developing specialized solvers that leverage PyDelt’s accurate derivatives for solving ODEs and PDEs.</p></li>
+</ol>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>SciPy: <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/interpolate.html">https://docs.scipy.org/doc/scipy/reference/interpolate.html</a></p></li>
+<li><p>NumDiffTools: <a class="reference external" href="https://github.com/pbrod/numdifftools">https://github.com/pbrod/numdifftools</a></p></li>
+<li><p>FinDiff: <a class="reference external" href="https://github.com/maroba/findiff">https://github.com/maroba/findiff</a></p></li>
+<li><p>JAX: <a class="reference external" href="https://github.com/jax-ml/jax">https://github.com/jax-ml/jax</a></p></li>
+<li><p>SymPy: <a class="reference external" href="https://docs.sympy.org/latest/tutorials/intro-tutorial/calculus.html">https://docs.sympy.org/latest/tutorials/intro-tutorial/calculus.html</a></p></li>
+<li><p>Savitzky, A., &amp; Golay, M. J. E. (1964). Smoothing and Differentiation of Data by Simplified Least Squares Procedures. Analytical Chemistry, 36(8), 1627-1639.</p></li>
+<li><p>Cleveland, W. S. (1979). Robust Locally Weighted Regression and Smoothing Scatterplots. Journal of the American Statistical Association, 74(368), 829-836.</p></li>
+<li><p>Ramsay, J. O., &amp; Silverman, B. W. (2005). Functional Data Analysis. Springer.</p></li>
+<li><p>Fornberg, B. (1988). Generation of Finite Difference Formulas on Arbitrarily Spaced Grids. Mathematics of Computation, 51(184), 699-706.</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="visual_examples.html" class="btn btn-neutral float-left" title="Visual Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

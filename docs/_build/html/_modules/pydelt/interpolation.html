@@ -39,21 +39,23 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Start Here:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start Guide</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Progressive Learning Path:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference &amp; Help:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../visual_examples.html">Visual Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../feature_comparison.html">Feature Comparison Matrix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../faq.html">Frequently Asked Questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Changelog</a></li>
@@ -1302,6 +1304,106 @@
             <span class="n">h11</span> <span class="o">=</span> <span class="n">u</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="n">u</span><span class="o">**</span><span class="mi">2</span>
             <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">h00</span><span class="o">*</span><span class="n">s_prev</span> <span class="o">+</span> <span class="n">h10</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">d_prev</span> <span class="o">+</span> <span class="n">h01</span><span class="o">*</span><span class="n">s_next</span> <span class="o">+</span> <span class="n">h11</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">d_next</span>
         <span class="k">return</span> <span class="n">result</span> <span class="k">if</span> <span class="n">query_time</span><span class="o">.</span><span class="n">shape</span> <span class="k">else</span> <span class="n">result</span><span class="o">.</span><span class="n">item</span><span class="p">()</span></div>
+
+        
+<div class="viewcode-block" id="GoldInterpolator.differentiate">
+<a class="viewcode-back" href="../../api.html#pydelt.interpolation.GoldInterpolator.differentiate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">differentiate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the derivative of the interpolated function.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        order : int, optional</span>
+<span class="sd">            Order of the derivative to compute. Default is 1.</span>
+<span class="sd">        mask : array-like or None, optional</span>
+<span class="sd">            Mask for partial derivatives. Not used for univariate functions.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        callable</span>
+<span class="sd">            Function that evaluates the derivative at specified points.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitted_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Interpolator must be fitted before computing derivatives.&quot;</span><span class="p">)</span>
+            
+        <span class="n">t</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fitted_data</span>
+        
+        <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># For first derivative, we already have the values from np.gradient</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">derivative_func</span><span class="p">(</span><span class="n">query_time</span><span class="p">):</span>
+                <span class="n">query_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">query_time</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">query_time</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t_i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">query_time</span><span class="p">):</span>
+                    <span class="n">idx_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t_i</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">idx_next</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">idx_prev</span> <span class="o">=</span> <span class="n">idx_next</span>
+                    <span class="k">elif</span> <span class="n">idx_next</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+                        <span class="n">idx_prev</span> <span class="o">=</span> <span class="n">idx_next</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">idx_prev</span> <span class="o">=</span> <span class="n">idx_next</span> <span class="o">-</span> <span class="mi">1</span>
+                    
+                    <span class="n">s_prev</span><span class="p">,</span> <span class="n">s_next</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">idx_prev</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">idx_next</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+                    <span class="n">d_prev</span><span class="p">,</span> <span class="n">d_next</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">idx_prev</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">idx_next</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+                    <span class="n">t_prev</span><span class="p">,</span> <span class="n">t_next</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">idx_prev</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">idx_next</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+                    
+                    <span class="n">h</span> <span class="o">=</span> <span class="n">t_next</span> <span class="o">-</span> <span class="n">t_prev</span>
+                    <span class="n">u</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_i</span> <span class="o">-</span> <span class="n">t_prev</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span> <span class="k">if</span> <span class="n">h</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+                    
+                    <span class="c1"># Derivative of cubic Hermite basis functions</span>
+                    <span class="n">dh00</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span><span class="o">*</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">6</span><span class="o">*</span><span class="n">u</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span>
+                    <span class="n">dh10</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="n">u</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span>
+                    <span class="n">dh01</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="o">*</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">6</span><span class="o">*</span><span class="n">u</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span>
+                    <span class="n">dh11</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">u</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span>
+                    
+                    <span class="c1"># Compute derivative</span>
+                    <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dh00</span><span class="o">*</span><span class="n">s_prev</span> <span class="o">+</span> <span class="n">dh10</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">d_prev</span> <span class="o">+</span> <span class="n">dh01</span><span class="o">*</span><span class="n">s_next</span> <span class="o">+</span> <span class="n">dh11</span><span class="o">*</span><span class="n">h</span><span class="o">*</span><span class="n">d_next</span>
+                
+                <span class="k">return</span> <span class="n">result</span> <span class="k">if</span> <span class="n">query_time</span><span class="o">.</span><span class="n">shape</span> <span class="k">else</span> <span class="n">result</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+                
+        <span class="k">elif</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="c1"># For second derivative, compute analytically from Hermite basis functions</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">derivative_func</span><span class="p">(</span><span class="n">query_time</span><span class="p">):</span>
+                <span class="n">query_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">query_time</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">query_time</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t_i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">query_time</span><span class="p">):</span>
+                    <span class="n">idx_next</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t_i</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">idx_next</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">idx_prev</span> <span class="o">=</span> <span class="n">idx_next</span>
+                    <span class="k">elif</span> <span class="n">idx_next</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+                        <span class="n">idx_prev</span> <span class="o">=</span> <span class="n">idx_next</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">idx_prev</span> <span class="o">=</span> <span class="n">idx_next</span> <span class="o">-</span> <span class="mi">1</span>
+                    
+                    <span class="n">s_prev</span><span class="p">,</span> <span class="n">s_next</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">idx_prev</span><span class="p">],</span> <span class="n">s</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">idx_next</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+                    <span class="n">d_prev</span><span class="p">,</span> <span class="n">d_next</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="n">idx_prev</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">idx_next</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+                    <span class="n">t_prev</span><span class="p">,</span> <span class="n">t_next</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">idx_prev</span><span class="p">],</span> <span class="n">t</span><span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="n">idx_next</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+                    
+                    <span class="n">h</span> <span class="o">=</span> <span class="n">t_next</span> <span class="o">-</span> <span class="n">t_prev</span>
+                    <span class="n">u</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_i</span> <span class="o">-</span> <span class="n">t_prev</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span> <span class="k">if</span> <span class="n">h</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+                    
+                    <span class="c1"># Second derivative of cubic Hermite basis functions</span>
+                    <span class="n">d2h00</span> <span class="o">=</span> <span class="mi">12</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+                    <span class="n">d2h10</span> <span class="o">=</span> <span class="mi">6</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="mi">2</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span>
+                    <span class="n">d2h01</span> <span class="o">=</span> <span class="o">-</span><span class="mi">12</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">h</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+                    <span class="n">d2h11</span> <span class="o">=</span> <span class="mi">6</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">-</span> <span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="n">h</span>
+                    
+                    <span class="c1"># Compute second derivative</span>
+                    <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">d2h00</span><span class="o">*</span><span class="n">s_prev</span> <span class="o">+</span> <span class="n">d2h10</span><span class="o">*</span><span class="n">d_prev</span> <span class="o">+</span> <span class="n">d2h01</span><span class="o">*</span><span class="n">s_next</span> <span class="o">+</span> <span class="n">d2h11</span><span class="o">*</span><span class="n">d_next</span>
+                
+                <span class="k">return</span> <span class="n">result</span> <span class="k">if</span> <span class="n">query_time</span><span class="o">.</span><span class="n">shape</span> <span class="k">else</span> <span class="n">result</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># For higher order derivatives, use finite differences on lower order derivatives</span>
+            <span class="n">prev_deriv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="o">-</span><span class="mi">1</span><span class="p">)(</span><span class="n">t</span><span class="p">)</span>
+            
+            <span class="k">def</span><span class="w"> </span><span class="nf">derivative_func</span><span class="p">(</span><span class="n">query_time</span><span class="p">):</span>
+                <span class="c1"># Create a new interpolator for the previous derivative</span>
+                <span class="n">interp</span> <span class="o">=</span> <span class="n">GoldInterpolator</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">window_size</span><span class="p">)</span>
+                <span class="n">interp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">prev_deriv</span><span class="p">)</span>
+                <span class="c1"># Compute the derivative of the previous derivative</span>
+                <span class="k">return</span> <span class="n">interp</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">query_time</span><span class="p">)</span>
+        
+        <span class="k">return</span> <span class="n">derivative_func</span></div>
 </div>
 
 

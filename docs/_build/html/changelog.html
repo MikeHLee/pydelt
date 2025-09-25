@@ -56,13 +56,21 @@
 <p class="caption" role="heading"><span class="caption-text">Reference &amp; Help:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visual_examples.html">Visual Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature_comparison.html">Feature Comparison Matrix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changelog</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-6-1-2025-08-26">Version 0.6.1 (2025-08-26)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#documentation-ux-overhaul">🎨 <strong>Documentation &amp; UX Overhaul</strong></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#visual-enhancements">🚀 <strong>Visual Enhancements</strong></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#technical-improvements">🔧 <strong>Technical Improvements</strong></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-6-0-2025-08-25">Version 0.6.0 (2025-08-25)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#major-new-features">🎉 <strong>Major New Features</strong></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#enhanced-features">🚀 <strong>Enhanced Features</strong></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#technical-improvements">🔧 <strong>Technical Improvements</strong></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">🔧 <strong>Technical Improvements</strong></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#documentation">📚 <strong>Documentation</strong></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#applications-enabled">🎯 <strong>Applications Enabled</strong></a></li>
 </ul>
@@ -106,6 +114,49 @@
   <section id="changelog">
 <h1>Changelog<a class="headerlink" href="#changelog" title="Link to this heading"></a></h1>
 <p>All notable changes to this project will be documented in this file.</p>
+<section id="version-0-6-1-2025-08-26">
+<h2>Version 0.6.1 (2025-08-26)<a class="headerlink" href="#version-0-6-1-2025-08-26" title="Link to this heading"></a></h2>
+<section id="documentation-ux-overhaul">
+<h3>🎨 <strong>Documentation &amp; UX Overhaul</strong><a class="headerlink" href="#documentation-ux-overhaul" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>New Title</strong>: Rebranded to “PyDelt: Advanced Numerical Function Interpolation &amp; Differentiation”</p></li>
+<li><p><strong>Enhanced Documentation</strong>: Complete revision with narrative flow and concept explanations instead of just code blocks</p></li>
+<li><p><strong>Interactive Visualizations</strong>: Beautiful Plotly plots embedded in documentation showing:</p>
+<ul>
+<li><p>Universal API demonstration with method comparison</p></li>
+<li><p>3D multivariate surface plots with gradient vector fields</p></li>
+<li><p>Method performance analysis with error visualization</p></li>
+</ul>
+</li>
+<li><p><strong>Improved Bullet Points</strong>: Fixed formatting issues - clean bullet points without newlines</p></li>
+<li><p><strong>Better Narrative</strong>: Sections now explain what’s happening rather than just showing massive code blocks</p></li>
+<li><p><strong>PyPI Metadata</strong>: Updated package description to reflect advanced interpolation focus</p></li>
+</ul>
+</section>
+<section id="visual-enhancements">
+<h3>🚀 <strong>Visual Enhancements</strong><a class="headerlink" href="#visual-enhancements" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Generated Visualizations</strong>: Created <cite>generate_visualizations.py</cite> script producing:</p>
+<ul>
+<li><p><cite>universal_api_demo.html</cite>: Interactive comparison of Spline, LLA, and GLLA methods</p></li>
+<li><p><cite>multivariate_surface.html</cite>: 3D surface with gradient fields and component analysis</p></li>
+<li><p><cite>method_comparison.html</cite>: Performance comparison on complex functions with noise</p></li>
+</ul>
+</li>
+<li><p><strong>Embedded Plots</strong>: Documentation now includes interactive HTML plots for better understanding</p></li>
+<li><p><strong>Professional Presentation</strong>: Clean, modern documentation layout with proper spacing and organization</p></li>
+</ul>
+</section>
+<section id="technical-improvements">
+<h3>🔧 <strong>Technical Improvements</strong><a class="headerlink" href="#technical-improvements" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Fixed Documentation Build</strong>: Resolved all Sphinx warnings with proper title underlines</p></li>
+<li><p><strong>Universal Interface Emphasis</strong>: Highlighted the consistent <cite>.fit().differentiate()</cite> API pattern</p></li>
+<li><p><strong>Method Selection Guidance</strong>: Clear explanations of when to use each interpolation method</p></li>
+<li><p><strong>Real-World Focus</strong>: Emphasized practical applications and noise handling capabilities</p></li>
+</ul>
+</section>
+</section>
 <section id="version-0-6-0-2025-08-25">
 <h2>Version 0.6.0 (2025-08-25)<a class="headerlink" href="#version-0-6-0-2025-08-25" title="Link to this heading"></a></h2>
 <section id="major-new-features">
@@ -138,8 +189,8 @@
 <li><p><strong>Comprehensive Testing</strong>: Full test suite for stochastic derivatives across all interpolation methods</p></li>
 </ul>
 </section>
-<section id="technical-improvements">
-<h3>🔧 <strong>Technical Improvements</strong><a class="headerlink" href="#technical-improvements" title="Link to this heading"></a></h3>
+<section id="id1">
+<h3>🔧 <strong>Technical Improvements</strong><a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><strong>New Module</strong>: <cite>src/pydelt/stochastic.py</cite> - Complete stochastic calculus framework</p></li>
 <li><p><strong>Enhanced Interpolation</strong>: All interpolator classes extended with stochastic link function support</p></li>
