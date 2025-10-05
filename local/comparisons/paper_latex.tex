@@ -596,62 +596,141 @@ The performance of each method depends critically on its parameters. We provide 
     \item \textbf{PyDelt Neural Network}: The network architecture and regularization parameter $\lambda$ affect both accuracy and generalization. For derivative estimation, deeper networks (more layers) generally perform better than wider networks (more neurons per layer) due to their ability to capture higher-order derivatives more effectively.
 \end{itemize}
 
-\section{Areas for Continued Development}
+\section{Advanced Features: Tensor Calculus and Stochastic Computing}
 
-\subsection{Theoretical and Algorithmic Enhancements}
+\subsection{Tensor Calculus Operations (Fully Implemented)}
 
-Despite the strong performance of PyDelt's methods, several areas warrant further theoretical and algorithmic development:
+PyDelt provides comprehensive tensor calculus operations through the \texttt{TensorDerivatives} class for continuum mechanics, fluid dynamics, and physics applications. All operations are \textbf{fully implemented and production-ready}:
 
 \begin{enumerate}
-    \item \textbf{Mixed Partial Derivatives}: Current interpolation-based methods approximate mixed partial derivatives as zero due to the separable nature of the interpolation approach. A promising direction is to develop specialized tensor product interpolation schemes that can accurately capture mixed derivatives. For a function $f: \mathbb{R}^n \rightarrow \mathbb{R}$, the mixed partial derivative can be expressed as:
+    \item \textbf{Divergence}: For a vector field $\mathbf{F}: \mathbb{R}^n \rightarrow \mathbb{R}^n$, the divergence measures expansion or contraction:
     
     \begin{equation}
-        \frac{\partial^2 f}{\partial x_i \partial x_j}(\mathbf{x}) = \lim_{h_i, h_j \to 0} \frac{f(\mathbf{x} + h_i\mathbf{e}_i + h_j\mathbf{e}_j) - f(\mathbf{x} + h_i\mathbf{e}_i) - f(\mathbf{x} + h_j\mathbf{e}_j) + f(\mathbf{x})}{h_i h_j}
+        \nabla \cdot \mathbf{F} = \sum_{i=1}^{n} \frac{\partial F_i}{\partial x_i}
     \end{equation}
     
-    Future work could explore tensor product B-splines or radial basis functions that naturally represent cross-dimensional interactions.
     
-    \item \textbf{Performance Optimization}: The computational complexity of multivariate derivatives can be improved through GPU acceleration and parallel processing. For gradient computation of a scalar function $f: \mathbb{R}^n \rightarrow \mathbb{R}$, the partial derivatives can be computed in parallel:
+    \textit{Implementation}: \texttt{TensorDerivatives.divergence()}
+    
+    \item \textbf{Curl}: For 3D vector fields $\mathbf{F}: \mathbb{R}^3 \rightarrow \mathbb{R}^3$, the curl measures rotation or vorticity:
     
     \begin{equation}
-        \nabla f(\mathbf{x}) = \left[ \frac{\partial f}{\partial x_1}(\mathbf{x}), \frac{\partial f}{\partial x_2}(\mathbf{x}), \ldots, \frac{\partial f}{\partial x_n}(\mathbf{x}) \right]^T
+        \nabla \times \mathbf{F} = \begin{bmatrix}
+        \frac{\partial F_3}{\partial x_2} - \frac{\partial F_2}{\partial x_3} \\
+        \frac{\partial F_1}{\partial x_3} - \frac{\partial F_3}{\partial x_1} \\
+        \frac{\partial F_2}{\partial x_1} - \frac{\partial F_1}{\partial x_2}
+        \end{bmatrix}
     \end{equation}
     
-    This parallelization can achieve near-linear speedup with respect to the number of dimensions.
+    For 2D fields, scalar curl: $\nabla \times \mathbf{F} = \frac{\partial F_y}{\partial x} - \frac{\partial F_x}{\partial y}$
     
-    \item \textbf{Higher-Order Tensor Derivatives}: Extending support for tensor calculus operations would benefit applications in continuum mechanics and fluid dynamics. For a vector field $\mathbf{F}: \mathbb{R}^3 \rightarrow \mathbb{R}^3$, operations like divergence, curl, and Laplacian can be expressed as:
     
-    \begin{align}
-        \nabla \cdot \mathbf{F} &= \sum_{i=1}^{3} \frac{\partial F_i}{\partial x_i} \\[5pt]
-        \nabla \times \mathbf{F} &= \left[ \frac{\partial F_3}{\partial x_2} - \frac{\partial F_2}{\partial x_3}, \frac{\partial F_1}{\partial x_3} - \frac{\partial F_3}{\partial x_1}, \frac{\partial F_2}{\partial x_1} - \frac{\partial F_1}{\partial x_2} \right]^T \\[5pt]
-        \nabla^2 \mathbf{F} &= \left[ \nabla^2 F_1, \nabla^2 F_2, \nabla^2 F_3 \right]^T
-    \end{align}
+    \textit{Implementation}: \texttt{TensorDerivatives.curl()}
     
-    Implementing these operations as first-class citizens in the API would enhance usability for physics applications.
-    
-    \item \textbf{Uncertainty Quantification}: Incorporating uncertainty estimates in derivative calculations would provide valuable information for scientific applications. For a derivative estimate $\hat{f}'(x)$ with noise variance $\sigma^2$, confidence intervals can be constructed as:
+    \item \textbf{Strain and Stress Tensors}: For displacement fields $\mathbf{u}$, the strain tensor is:
     
     \begin{equation}
-        \hat{f}'(x) \pm z_{\alpha/2} \cdot \sqrt{\text{Var}[\hat{f}'(x)]}
+        \epsilon_{ij} = \frac{1}{2}\left(\frac{\partial u_i}{\partial x_j} + \frac{\partial u_j}{\partial x_i}\right)
     \end{equation}
     
-    where $\text{Var}[\hat{f}'(x)]$ depends on the specific method used. For spline interpolation, this variance can be derived from the influence matrix of the spline.
+    The stress tensor (linear elasticity) is:
     
-    \item \textbf{Integration with Differential Equation Solvers}: Developing specialized solvers that leverage PyDelt's accurate derivatives could enhance numerical integration of differential equations. For an ODE system $\mathbf{y}' = \mathbf{f}(t, \mathbf{y})$, implicit methods like backward differentiation formulas (BDF) require accurate Jacobian matrices $\frac{\partial \mathbf{f}}{\partial \mathbf{y}}$, which PyDelt can provide more accurately than finite difference approximations.
+    \begin{equation}
+        \sigma_{ij} = \lambda \delta_{ij} \epsilon_{kk} + 2\mu \epsilon_{ij}
+    \end{equation}
+    
+    where $\lambda, \mu$ are Lamé parameters.
+    
+    
+    \textit{Implementation}: \texttt{TensorDerivatives.strain\_tensor()}, \texttt{TensorDerivatives.stress\_tensor()}
+    
+    \item \textbf{Directional Derivatives}: Derivative along a specific direction $\mathbf{v}$:
+    
+    \begin{equation}
+        D_{\mathbf{v}}f = \nabla f \cdot \mathbf{v}
+    \end{equation}
+    
+    
+    \textit{Implementation}: \texttt{TensorDerivatives.directional\_derivative()}
 \end{enumerate}
 
-\subsection{Theoretical Limitations and Future Research Directions}
+\subsection{Stochastic Calculus Extensions (Fully Implemented)}
 
-Several fundamental theoretical challenges remain in numerical differentiation that warrant further research:
+PyDelt supports stochastic derivatives for probabilistic modeling and uncertainty quantification in financial applications and stochastic processes:
 
 \begin{enumerate}
-    \item \textbf{Optimal Regularization}: The optimal balance between bias and variance in derivative estimation depends on unknown properties of the underlying function. Adaptive methods that estimate these properties from the data could improve performance.
+    \item \textbf{Itô vs. Stratonovich Calculus}: For stochastic differential equations (SDEs), derivatives transform differently:
     
-    \item \textbf{Non-uniform Sampling}: Most current methods assume uniform or near-uniform sampling of the input space. Developing methods specifically designed for highly non-uniform sampling would benefit applications with data gaps or clusters.
+    \textbf{Itô}: $dY_t = f(X_t)dX_t \implies \frac{dY}{dX} = f'(X_t)$
     
-    \item \textbf{Boundary Effects}: Derivative estimation near boundaries remains challenging due to the lack of data on one side. Specialized boundary treatment methods could improve accuracy in these regions.
+    \textbf{Stratonovich}: $dY_t = f(X_t) \circ dX_t \implies \frac{dY}{dX} = f'(X_t) + \frac{1}{2}f''(X_t)\sigma^2$
     
-    \item \textbf{Theoretical Error Bounds}: Developing tighter error bounds for derivative estimates under different noise models would provide more reliable uncertainty quantification.
+    
+    \textit{Implementation}: \texttt{set\_stochastic\_link(method='ito')} or \texttt{method='stratonovich'}
+    
+    \item \textbf{Stochastic Link Functions}: Transform derivatives through probability distributions with automatic correction terms. Supported distributions:
+    
+    \begin{itemize}
+        \item \textbf{Normal}: Symmetric, unbounded (interest rates, errors)
+        \item \textbf{Lognormal}: Positive, right-skewed (stock prices, volumes)
+        \item \textbf{Gamma}: Positive, flexible shape (waiting times, rates)
+        \item \textbf{Beta}: Bounded [0,1] (proportions, ratios)
+        \item \textbf{Exponential}: Memoryless (survival times)
+        \item \textbf{Poisson}: Discrete, non-negative (count processes)
+    \end{itemize}
+    
+    
+    \textit{Implementation}: \texttt{interpolator.set\_stochastic\_link(...)}
+    
+    \textit{Applications}: Option Greeks, risk analysis, volatility modeling, Brownian motion, population dynamics
+\end{enumerate}
+
+\subsection{Mixed Partial Derivatives with Neural Networks}
+
+While traditional interpolation methods approximate mixed partial derivatives as zero, PyDelt's neural network implementation computes exact mixed partials through automatic differentiation:
+
+\begin{equation}
+    \frac{\partial^2 f_{\theta}(\mathbf{x})}{\partial x_i \partial x_j} = \frac{\partial}{\partial x_i}\left(\frac{\partial f_{\theta}(\mathbf{x})}{\partial x_j}\right)
+\end{equation}
+
+\textit{Implementation}: \texttt{NeuralNetworkMultivariateDerivatives} with PyTorch/TensorFlow
+
+\subsection{Applicability to Known vs. Unknown Functions}
+
+PyDelt's methods are applicable to both analytical functions and empirical data:
+
+\begin{enumerate}
+    \item \textbf{Known Functions} (analytical form available):
+    \begin{itemize}
+        \item \textit{Use Case}: When $f(x) = \sin(x)$ or other explicit formulas are known but numerical derivatives are needed
+        \item \textit{Why Numerical}: Automatic differentiation, avoiding symbolic complexity, validating analytical derivatives
+        \item \textit{Best Methods}: Neural networks with autodiff (exact), splines (high accuracy), LLA/GLLA (robust)
+    \end{itemize}
+    
+    \item \textbf{Unknown Functions} (only discrete data available):
+    \begin{itemize}
+        \item \textit{Use Case}: Experimental measurements, sensor data, financial time series, physical observations
+        \item \textit{Challenge}: Reconstruct smooth function from noisy, sparse, or irregularly sampled data
+        \item \textit{Best Methods}: LOWESS/LOESS (robust to noise), FDA (functional data), splines (smooth data), neural networks (complex patterns)
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Universal Approach}: All methods work seamlessly for both cases through the unified \texttt{.fit(input\_data, output\_data).differentiate(order)} interface.
+
+\subsection{Future Research Directions}
+
+Several areas warrant continued research:
+
+\begin{enumerate}
+    \item \textbf{Optimal Regularization}: Adaptive methods that estimate function properties from data for automatic parameter tuning
+    
+    \item \textbf{Non-uniform Sampling}: Specialized methods for highly non-uniform sampling with data gaps or clusters
+    
+    \item \textbf{Boundary Effects}: Enhanced boundary treatment methods for improved edge accuracy
+    
+    \item \textbf{Uncertainty Quantification}: Tighter error bounds under different noise models for reliable confidence intervals
+    
+    \item \textbf{GPU Acceleration}: Parallel processing for multivariate derivatives to achieve near-linear speedup
 \end{enumerate}
 
 \section{Conclusion}
@@ -670,9 +749,9 @@ This paper has presented a comprehensive mathematical analysis of PyDelt's numer
     \item \textbf{Parameter Optimization}: We have derived theoretical expressions for optimal parameter selection based on the bias-variance trade-off, providing a principled approach to method tuning.
 \end{enumerate}
 
-\subsection{Practical Significance}
+\subsection{Practical Significance and Implementation Status}
 
-PyDelt provides state-of-the-art numerical differentiation methods that outperform traditional approaches in terms of accuracy, noise robustness, and flexibility. The library's universal differentiation interface allows seamless switching between methods, enabling users to select the most appropriate approach for their specific application.
+PyDelt provides state-of-the-art numerical differentiation methods that outperform traditional approaches in terms of accuracy, noise robustness, and flexibility. \textbf{All theoretical methods described in this paper are fully implemented and production-ready}.
 
 The key strengths of PyDelt include:
 
@@ -683,7 +762,11 @@ The key strengths of PyDelt include:
     
     \item \textbf{Comprehensive Multivariate Support}: Full implementation of gradient, Jacobian, Hessian, and Laplacian operations with consistent API and superior accuracy.
     
-    \item \textbf{Universal API}: The consistent `.fit().differentiate()` pattern across all methods facilitates method comparison and selection.
+    \item \textbf{Advanced Tensor Operations}: Divergence, curl, strain/stress tensors, and directional derivatives for continuum mechanics and fluid dynamics.
+    
+    \item \textbf{Stochastic Calculus}: Itô/Stratonovich corrections with six probability distributions for financial and probabilistic applications.
+    
+    \item \textbf{Universal API}: The consistent \texttt{.fit().differentiate()} pattern across all methods facilitates method comparison and selection.
     
     \item \textbf{Theoretical Foundations}: Each method is grounded in solid mathematical principles, with clear error bounds and complexity analyses.
 \end{itemize}
@@ -715,5 +798,39 @@ By addressing the theoretical challenges outlined in this paper, PyDelt can furt
 
 \bibitem{knowles1995variational} I. Knowles and R. Wallace, ``A variational method for numerical differentiation,'' Numerische Mathematik, vol. 70, no. 1, pp. 91-110, 1995.
 \end{thebibliography}
+
+\section*{Software Availability and Citation}
+
+\subsection*{License}
+
+PyDelt is released under the MIT License, permitting commercial use, modification, distribution, and private use.
+
+\subsection*{Citation}
+
+If you use PyDelt in your research, please cite:
+
+\textbf{BibTeX}:
+\begin{verbatim}
+@software{pydelt2025,
+  title = {PyDelt: Advanced Numerical Function 
+           Interpolation and Differentiation},
+  author = {Lee, Michael},
+  year = {2025},
+  url = {https://github.com/MikeHLee/pydelt},
+  version = {0.6.1}
+}
+\end{verbatim}
+
+\textbf{IEEE Style}: M. Lee, ``PyDelt: Advanced Numerical Function Interpolation and Differentiation,'' version 0.6.1, 2025. [Online]. Available: https://github.com/MikeHLee/pydelt
+
+\subsection*{Key Features to Cite}
+
+\begin{itemize}
+    \item Universal differentiation interface across multiple interpolation methods
+    \item Multivariate calculus operations (gradient, Jacobian, Hessian, Laplacian)
+    \item Tensor calculus for continuum mechanics and fluid dynamics
+    \item Stochastic derivatives with Itô/Stratonovich corrections
+    \item Neural network integration with automatic differentiation
+\end{itemize}
 
 \end{document}

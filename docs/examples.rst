@@ -446,3 +446,58 @@ Directional derivative, divergence, curl, and strain/stress
    sxy = stress[:, 0, 1].reshape(X.shape)
    print("mean |ε_xy|:", float(np.mean(np.abs(exy))))
    print("mean |σ_xy|:", float(np.mean(np.abs(sxy))))
+
+Example 8: Stochastic Derivatives
+----------------------------------
+
+Computing derivatives with stochastic corrections for financial applications:
+
+.. code-block:: python
+
+   import numpy as np
+   from pydelt.interpolation import SplineInterpolator
+   
+   # Simulate stock price following geometric Brownian motion
+   # dS_t = μS_t dt + σS_t dW_t
+   np.random.seed(42)
+   T = 1.0          # 1 year
+   N = 252          # Daily observations
+   dt = T / N
+   mu = 0.05        # Expected return (5%)
+   sigma = 0.2      # Volatility (20%)
+   S0 = 100         # Initial stock price
+   
+   # Generate price path
+   t = np.linspace(0, T, N+1)
+   W = np.random.randn(N+1).cumsum() * np.sqrt(dt)  # Brownian motion
+   S = S0 * np.exp((mu - 0.5*sigma**2)*t + sigma*W)  # GBM solution
+   
+   # Fit interpolator
+   spline = SplineInterpolator(smoothing=0.01)
+   spline.fit(t, S)
+   
+   # Regular derivative (deterministic)
+   regular_deriv_func = spline.differentiate(order=1)
+   regular_derivatives = regular_deriv_func(t)
+   
+   # Stochastic derivative with lognormal correction (Itô)
+   spline.set_stochastic_link('lognormal', sigma=sigma, method='ito')
+   stochastic_deriv_func = spline.differentiate(order=1)
+   stochastic_derivatives = stochastic_deriv_func(t)
+   
+   # Compare corrections
+   correction = stochastic_derivatives - regular_derivatives
+   print(f"Mean stochastic correction: {np.mean(correction):.4f}")
+   print(f"Std of correction: {np.std(correction):.4f}")
+   
+   # Option Greeks approximation
+   # Delta ≈ ∂S/∂t (rate of change)
+   delta_approx = stochastic_derivatives[-1]
+   print(f"Approximate Delta at maturity: {delta_approx:.4f}")
+   
+   # Compare different stochastic methods
+   spline.set_stochastic_link('lognormal', sigma=sigma, method='stratonovich')
+   stratonovich_deriv = spline.differentiate(order=1)(t)
+   
+   method_diff = stratonovich_deriv - stochastic_derivatives
+   print(f"Itô vs Stratonovich difference: {np.mean(np.abs(method_diff)):.6f}")
