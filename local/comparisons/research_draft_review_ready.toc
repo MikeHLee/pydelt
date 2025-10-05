@@ -1,0 +1,94 @@
+\contentsline {section}{\numberline {1}Introduction}{4}{section.1}%
+\contentsline {section}{\numberline {2}Advanced Calculus Implementations}{5}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Multivariate Calculus Implementation}{5}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {2.1.1}Design Approach}{5}{subsubsection.2.1.1}%
+\contentsline {subsubsection}{\numberline {2.1.2}Mathematical Formulation}{6}{subsubsection.2.1.2}%
+\contentsline {subsubsection}{\numberline {2.1.3}Limitations and Considerations}{6}{subsubsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.2}Tensor Calculus Operations}{6}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Tensor Field Operations}{7}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Implementation Approach}{7}{subsubsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.3}Stochastic Calculus}{7}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}Itô Calculus}{7}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}Stratonovich Calculus}{8}{subsubsection.2.3.2}%
+\contentsline {subsubsection}{\numberline {2.3.3}Stochastic Link Functions}{8}{subsubsection.2.3.3}%
+\contentsline {subsection}{\numberline {2.4}Integration with Neural Networks}{8}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {2.4.1}Neural Network Interpolation}{9}{subsubsection.2.4.1}%
+\contentsline {subsubsection}{\numberline {2.4.2}Physics-Informed Neural Networks}{9}{subsubsection.2.4.2}%
+\contentsline {section}{\numberline {3}Motivation and Applications}{9}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Key Motivations}{9}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}Noise Sensitivity in Traditional Methods}{9}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}Method Selection Complexity}{10}{subsubsection.3.1.2}%
+\contentsline {subsubsection}{\numberline {3.1.3}Fragmentation of Implementations}{10}{subsubsection.3.1.3}%
+\contentsline {subsubsection}{\numberline {3.1.4}Limited Support for Advanced Use Cases}{10}{subsubsection.3.1.4}%
+\contentsline {subsection}{\numberline {3.2}Application Domains}{11}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Scientific Computing}{11}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Financial Modeling}{11}{subsubsection.3.2.2}%
+\contentsline {subsubsection}{\numberline {3.2.3}Engineering Design}{11}{subsubsection.3.2.3}%
+\contentsline {subsubsection}{\numberline {3.2.4}Data Science}{12}{subsubsection.3.2.4}%
+\contentsline {subsubsection}{\numberline {3.2.5}Environmental Science}{12}{subsubsection.3.2.5}%
+\contentsline {section}{\numberline {4}Related Work}{12}{section.4}%
+\contentsline {subsection}{\numberline {4.1}SciPy}{13}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}NumDiffTools}{13}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}FinDiff}{14}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}JAX}{14}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}SymPy}{15}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}Specialized Time Series Derivative Methods}{15}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}Neural Network Approaches}{16}{subsection.4.7}%
+\contentsline {subsection}{\numberline {4.8}Comparison to PyDelt}{16}{subsection.4.8}%
+\contentsline {section}{\numberline {5}PyDelt: Design and Features}{17}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Universal Differentiation Interface}{17}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Multiple Interpolation Methods}{18}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Comprehensive Multivariate Calculus}{18}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Stochastic Calculus Extensions}{19}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Neural Network Integration}{20}{subsection.5.5}%
+\contentsline {subsection}{\numberline {5.6}Implementation Details}{20}{subsection.5.6}%
+\contentsline {subsubsection}{\numberline {5.6.1}Architecture}{20}{subsubsection.5.6.1}%
+\contentsline {subsubsection}{\numberline {5.6.2}Performance Considerations}{21}{subsubsection.5.6.2}%
+\contentsline {subsubsection}{\numberline {5.6.3}Error Handling and Validation}{21}{subsubsection.5.6.3}%
+\contentsline {section}{\numberline {6}Methodology}{21}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Test Functions}{22}{subsection.6.1}%
+\contentsline {subsubsection}{\numberline {6.1.1}Univariate Functions}{22}{subsubsection.6.1.1}%
+\contentsline {subsubsection}{\numberline {6.1.2}Multivariate Functions}{22}{subsubsection.6.1.2}%
+\contentsline {subsection}{\numberline {6.2}Data Generation}{22}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Evaluation Metrics}{23}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Compared Methods}{24}{subsection.6.4}%
+\contentsline {subsubsection}{\numberline {6.4.1}PyDelt Methods}{24}{subsubsection.6.4.1}%
+\contentsline {subsubsection}{\numberline {6.4.2}External Libraries}{24}{subsubsection.6.4.2}%
+\contentsline {subsection}{\numberline {6.5}Experimental Procedure}{24}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}Implementation Details}{25}{subsection.6.6}%
+\contentsline {section}{\numberline {7}Results and Discussion}{25}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Univariate Differentiation Performance}{25}{subsection.7.1}%
+\contentsline {subsubsection}{\numberline {7.1.1}First-Order Derivatives}{25}{subsubsection.7.1.1}%
+\contentsline {subsubsection}{\numberline {7.1.2}Second-Order Derivatives}{26}{subsubsection.7.1.2}%
+\contentsline {subsubsection}{\numberline {7.1.3}Noise Robustness}{26}{subsubsection.7.1.3}%
+\contentsline {subsection}{\numberline {7.2}Multivariate Differentiation Performance}{28}{subsection.7.2}%
+\contentsline {subsubsection}{\numberline {7.2.1}Gradient Computation}{28}{subsubsection.7.2.1}%
+\contentsline {subsubsection}{\numberline {7.2.2}Jacobian Computation}{28}{subsubsection.7.2.2}%
+\contentsline {subsection}{\numberline {7.3}Computational Efficiency}{29}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Feature Comparison}{30}{subsection.7.4}%
+\contentsline {section}{\numberline {8}Applications}{31}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Scientific Computing}{31}{subsection.8.1}%
+\contentsline {subsubsection}{\numberline {8.1.1}Differential Equation Discovery}{31}{subsubsection.8.1.1}%
+\contentsline {subsubsection}{\numberline {8.1.2}Phase Space Analysis}{32}{subsubsection.8.1.2}%
+\contentsline {subsubsection}{\numberline {8.1.3}Fluid Dynamics}{32}{subsubsection.8.1.3}%
+\contentsline {subsection}{\numberline {8.2}Financial Modeling}{33}{subsection.8.2}%
+\contentsline {subsubsection}{\numberline {8.2.1}Option Greeks Calculation}{33}{subsubsection.8.2.1}%
+\contentsline {subsubsection}{\numberline {8.2.2}Volatility Surface Modeling}{34}{subsubsection.8.2.2}%
+\contentsline {subsection}{\numberline {8.3}Engineering Design}{35}{subsection.8.3}%
+\contentsline {subsubsection}{\numberline {8.3.1}System Identification}{35}{subsubsection.8.3.1}%
+\contentsline {subsubsection}{\numberline {8.3.2}Control Design}{35}{subsubsection.8.3.2}%
+\contentsline {subsection}{\numberline {8.4}Data Science}{37}{subsection.8.4}%
+\contentsline {subsubsection}{\numberline {8.4.1}Feature Engineering}{37}{subsubsection.8.4.1}%
+\contentsline {subsubsection}{\numberline {8.4.2}Signal Processing}{38}{subsubsection.8.4.2}%
+\contentsline {subsection}{\numberline {8.5}Environmental Science}{39}{subsection.8.5}%
+\contentsline {subsubsection}{\numberline {8.5.1}Climate Data Analysis}{39}{subsubsection.8.5.1}%
+\contentsline {subsubsection}{\numberline {8.5.2}Ecological Modeling}{40}{subsubsection.8.5.2}%
+\contentsline {section}{\numberline {9}Areas for Continued Development}{41}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Mixed Partial Derivatives}{41}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Performance Optimization}{41}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}Higher-Order Tensor Derivatives}{42}{subsection.9.3}%
+\contentsline {subsection}{\numberline {9.4}Uncertainty Quantification}{42}{subsection.9.4}%
+\contentsline {subsection}{\numberline {9.5}Integration with Differential Equation Solvers}{43}{subsection.9.5}%
+\contentsline {subsection}{\numberline {9.6}Enhanced Documentation and Educational Resources}{43}{subsection.9.6}%
+\contentsline {subsection}{\numberline {9.7}Community Building and Ecosystem Integration}{44}{subsection.9.7}%
+\contentsline {section}{\numberline {10}Conclusion}{44}{section.10}%

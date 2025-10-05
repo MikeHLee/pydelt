@@ -1,0 +1,290 @@
+<style type="text/css">
+#T_fdc26 th {
+  font-weight: bold;
+  text-align: center;
+}
+#T_fdc26 td {
+  text-align: center;
+}
+</style>
+<table id="T_fdc26">
+  <thead>
+    <tr>
+      <th class="blank level0" >&nbsp;</th>
+      <th id="T_fdc26_level0_col0" class="col_heading level0 col0" >Method</th>
+      <th id="T_fdc26_level0_col1" class="col_heading level0 col1" >Type</th>
+      <th id="T_fdc26_level0_col2" class="col_heading level0 col2" >Dimensionality</th>
+      <th id="T_fdc26_level0_col3" class="col_heading level0 col3" >Accuracy</th>
+      <th id="T_fdc26_level0_col4" class="col_heading level0 col4" >Speed</th>
+      <th id="T_fdc26_level0_col5" class="col_heading level0 col5" >Noise Robustness</th>
+      <th id="T_fdc26_level0_col6" class="col_heading level0 col6" >Key Strength</th>
+      <th id="T_fdc26_level0_col7" class="col_heading level0 col7" >Key Weakness</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th id="T_fdc26_level0_row0" class="row_heading level0 row0" >0</th>
+      <td id="T_fdc26_row0_col0" class="data row0 col0" >FinDiff</td>
+      <td id="T_fdc26_row0_col1" class="data row0 col1" >Finite Difference</td>
+      <td id="T_fdc26_row0_col2" class="data row0 col2" >Univariate</td>
+      <td id="T_fdc26_row0_col3" class="data row0 col3" >Low</td>
+      <td id="T_fdc26_row0_col4" class="data row0 col4" >Very Fast</td>
+      <td id="T_fdc26_row0_col5" class="data row0 col5" >Low</td>
+      <td id="T_fdc26_row0_col6" class="data row0 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row0_col7" class="data row0 col7" >Lower accuracy</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row1" class="row_heading level0 row1" >1</th>
+      <td id="T_fdc26_row1_col0" class="data row1 col0" >JAX</td>
+      <td id="T_fdc26_row1_col1" class="data row1 col1" >Automatic Differentiation</td>
+      <td id="T_fdc26_row1_col2" class="data row1 col2" >Univariate</td>
+      <td id="T_fdc26_row1_col3" class="data row1 col3" >Low</td>
+      <td id="T_fdc26_row1_col4" class="data row1 col4" >Medium</td>
+      <td id="T_fdc26_row1_col5" class="data row1 col5" >N/A (requires analytical function)</td>
+      <td id="T_fdc26_row1_col6" class="data row1 col6" >General purpose</td>
+      <td id="T_fdc26_row1_col7" class="data row1 col7" >Lower accuracy</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row2" class="row_heading level0 row2" >2</th>
+      <td id="T_fdc26_row2_col0" class="data row2 col0" >JAX MV</td>
+      <td id="T_fdc26_row2_col1" class="data row2 col1" >Other</td>
+      <td id="T_fdc26_row2_col2" class="data row2 col2" >Multivariate</td>
+      <td id="T_fdc26_row2_col3" class="data row2 col3" >Very High</td>
+      <td id="T_fdc26_row2_col4" class="data row2 col4" >Fast</td>
+      <td id="T_fdc26_row2_col5" class="data row2 col5" >Low</td>
+      <td id="T_fdc26_row2_col6" class="data row2 col6" >Highest accuracy</td>
+      <td id="T_fdc26_row2_col7" class="data row2 col7" >Requires analytical function</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row3" class="row_heading level0 row3" >3</th>
+      <td id="T_fdc26_row3_col0" class="data row3 col0" >NumDiffTools</td>
+      <td id="T_fdc26_row3_col1" class="data row3 col1" >Adaptive Finite Difference</td>
+      <td id="T_fdc26_row3_col2" class="data row3 col2" >Univariate</td>
+      <td id="T_fdc26_row3_col3" class="data row3 col3" >Low</td>
+      <td id="T_fdc26_row3_col4" class="data row3 col4" >Very Fast</td>
+      <td id="T_fdc26_row3_col5" class="data row3 col5" >Low</td>
+      <td id="T_fdc26_row3_col6" class="data row3 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row3_col7" class="data row3 col7" >Lower accuracy</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row4" class="row_heading level0 row4" >4</th>
+      <td id="T_fdc26_row4_col0" class="data row4 col0" >PyDelt FDA</td>
+      <td id="T_fdc26_row4_col1" class="data row4 col1" >Interpolation</td>
+      <td id="T_fdc26_row4_col2" class="data row4 col2" >Univariate</td>
+      <td id="T_fdc26_row4_col3" class="data row4 col3" >Low</td>
+      <td id="T_fdc26_row4_col4" class="data row4 col4" >Very Fast</td>
+      <td id="T_fdc26_row4_col5" class="data row4 col5" >Medium</td>
+      <td id="T_fdc26_row4_col6" class="data row4 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row4_col7" class="data row4 col7" >Lower accuracy</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row5" class="row_heading level0 row5" >5</th>
+      <td id="T_fdc26_row5_col0" class="data row5 col0" >PyDelt GLLA</td>
+      <td id="T_fdc26_row5_col1" class="data row5 col1" >Interpolation</td>
+      <td id="T_fdc26_row5_col2" class="data row5 col2" >Univariate</td>
+      <td id="T_fdc26_row5_col3" class="data row5 col3" >Low</td>
+      <td id="T_fdc26_row5_col4" class="data row5 col4" >Very Fast</td>
+      <td id="T_fdc26_row5_col5" class="data row5 col5" >Medium</td>
+      <td id="T_fdc26_row5_col6" class="data row5 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row5_col7" class="data row5 col7" >Lower accuracy</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row6" class="row_heading level0 row6" >6</th>
+      <td id="T_fdc26_row6_col0" class="data row6 col0" >PyDelt GOLD</td>
+      <td id="T_fdc26_row6_col1" class="data row6 col1" >Interpolation</td>
+      <td id="T_fdc26_row6_col2" class="data row6 col2" >Univariate</td>
+      <td id="T_fdc26_row6_col3" class="data row6 col3" >Low</td>
+      <td id="T_fdc26_row6_col4" class="data row6 col4" >Very Fast</td>
+      <td id="T_fdc26_row6_col5" class="data row6 col5" >Low</td>
+      <td id="T_fdc26_row6_col6" class="data row6 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row6_col7" class="data row6 col7" >Lower accuracy</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row7" class="row_heading level0 row7" >7</th>
+      <td id="T_fdc26_row7_col0" class="data row7 col0" >PyDelt LLA</td>
+      <td id="T_fdc26_row7_col1" class="data row7 col1" >Interpolation</td>
+      <td id="T_fdc26_row7_col2" class="data row7 col2" >Univariate</td>
+      <td id="T_fdc26_row7_col3" class="data row7 col3" >Low</td>
+      <td id="T_fdc26_row7_col4" class="data row7 col4" >Very Fast</td>
+      <td id="T_fdc26_row7_col5" class="data row7 col5" >Medium</td>
+      <td id="T_fdc26_row7_col6" class="data row7 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row7_col7" class="data row7 col7" >Lower accuracy</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row8" class="row_heading level0 row8" >8</th>
+      <td id="T_fdc26_row8_col0" class="data row8 col0" >PyDelt LOESS</td>
+      <td id="T_fdc26_row8_col1" class="data row8 col1" >Interpolation</td>
+      <td id="T_fdc26_row8_col2" class="data row8 col2" >Univariate</td>
+      <td id="T_fdc26_row8_col3" class="data row8 col3" >Low</td>
+      <td id="T_fdc26_row8_col4" class="data row8 col4" >Very Fast</td>
+      <td id="T_fdc26_row8_col5" class="data row8 col5" >High</td>
+      <td id="T_fdc26_row8_col6" class="data row8 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row8_col7" class="data row8 col7" >Lower accuracy</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row9" class="row_heading level0 row9" >9</th>
+      <td id="T_fdc26_row9_col0" class="data row9 col0" >PyDelt LOWESS</td>
+      <td id="T_fdc26_row9_col1" class="data row9 col1" >Interpolation</td>
+      <td id="T_fdc26_row9_col2" class="data row9 col2" >Univariate</td>
+      <td id="T_fdc26_row9_col3" class="data row9 col3" >Low</td>
+      <td id="T_fdc26_row9_col4" class="data row9 col4" >Very Fast</td>
+      <td id="T_fdc26_row9_col5" class="data row9 col5" >High</td>
+      <td id="T_fdc26_row9_col6" class="data row9 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row9_col7" class="data row9 col7" >Lower accuracy</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row10" class="row_heading level0 row10" >10</th>
+      <td id="T_fdc26_row10_col0" class="data row10 col0" >PyDelt MV FDA</td>
+      <td id="T_fdc26_row10_col1" class="data row10 col1" >Multivariate</td>
+      <td id="T_fdc26_row10_col2" class="data row10 col2" >Multivariate</td>
+      <td id="T_fdc26_row10_col3" class="data row10 col3" >High</td>
+      <td id="T_fdc26_row10_col4" class="data row10 col4" >Very Fast</td>
+      <td id="T_fdc26_row10_col5" class="data row10 col5" >Medium</td>
+      <td id="T_fdc26_row10_col6" class="data row10 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row10_col7" class="data row10 col7" >No mixed partial derivatives</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row11" class="row_heading level0 row11" >11</th>
+      <td id="T_fdc26_row11_col0" class="data row11 col0" >PyDelt MV GLLA</td>
+      <td id="T_fdc26_row11_col1" class="data row11 col1" >Multivariate</td>
+      <td id="T_fdc26_row11_col2" class="data row11 col2" >Multivariate</td>
+      <td id="T_fdc26_row11_col3" class="data row11 col3" >High</td>
+      <td id="T_fdc26_row11_col4" class="data row11 col4" >Very Fast</td>
+      <td id="T_fdc26_row11_col5" class="data row11 col5" >Medium</td>
+      <td id="T_fdc26_row11_col6" class="data row11 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row11_col7" class="data row11 col7" >No mixed partial derivatives</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row12" class="row_heading level0 row12" >12</th>
+      <td id="T_fdc26_row12_col0" class="data row12 col0" >PyDelt MV GOLD</td>
+      <td id="T_fdc26_row12_col1" class="data row12 col1" >Multivariate</td>
+      <td id="T_fdc26_row12_col2" class="data row12 col2" >Multivariate</td>
+      <td id="T_fdc26_row12_col3" class="data row12 col3" >High</td>
+      <td id="T_fdc26_row12_col4" class="data row12 col4" >Very Fast</td>
+      <td id="T_fdc26_row12_col5" class="data row12 col5" >Low</td>
+      <td id="T_fdc26_row12_col6" class="data row12 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row12_col7" class="data row12 col7" >No mixed partial derivatives</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row13" class="row_heading level0 row13" >13</th>
+      <td id="T_fdc26_row13_col0" class="data row13 col0" >PyDelt MV LLA</td>
+      <td id="T_fdc26_row13_col1" class="data row13 col1" >Multivariate</td>
+      <td id="T_fdc26_row13_col2" class="data row13 col2" >Multivariate</td>
+      <td id="T_fdc26_row13_col3" class="data row13 col3" >High</td>
+      <td id="T_fdc26_row13_col4" class="data row13 col4" >Very Fast</td>
+      <td id="T_fdc26_row13_col5" class="data row13 col5" >Medium</td>
+      <td id="T_fdc26_row13_col6" class="data row13 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row13_col7" class="data row13 col7" >No mixed partial derivatives</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row14" class="row_heading level0 row14" >14</th>
+      <td id="T_fdc26_row14_col0" class="data row14 col0" >PyDelt MV LOESS</td>
+      <td id="T_fdc26_row14_col1" class="data row14 col1" >Multivariate</td>
+      <td id="T_fdc26_row14_col2" class="data row14 col2" >Multivariate</td>
+      <td id="T_fdc26_row14_col3" class="data row14 col3" >Medium</td>
+      <td id="T_fdc26_row14_col4" class="data row14 col4" >Very Fast</td>
+      <td id="T_fdc26_row14_col5" class="data row14 col5" >High</td>
+      <td id="T_fdc26_row14_col6" class="data row14 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row14_col7" class="data row14 col7" >No mixed partial derivatives</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row15" class="row_heading level0 row15" >15</th>
+      <td id="T_fdc26_row15_col0" class="data row15 col0" >PyDelt MV LOWESS</td>
+      <td id="T_fdc26_row15_col1" class="data row15 col1" >Multivariate</td>
+      <td id="T_fdc26_row15_col2" class="data row15 col2" >Multivariate</td>
+      <td id="T_fdc26_row15_col3" class="data row15 col3" >Medium</td>
+      <td id="T_fdc26_row15_col4" class="data row15 col4" >Very Fast</td>
+      <td id="T_fdc26_row15_col5" class="data row15 col5" >High</td>
+      <td id="T_fdc26_row15_col6" class="data row15 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row15_col7" class="data row15 col7" >No mixed partial derivatives</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row16" class="row_heading level0 row16" >16</th>
+      <td id="T_fdc26_row16_col0" class="data row16 col0" >PyDelt MV Spline</td>
+      <td id="T_fdc26_row16_col1" class="data row16 col1" >Multivariate</td>
+      <td id="T_fdc26_row16_col2" class="data row16 col2" >Multivariate</td>
+      <td id="T_fdc26_row16_col3" class="data row16 col3" >High</td>
+      <td id="T_fdc26_row16_col4" class="data row16 col4" >Very Fast</td>
+      <td id="T_fdc26_row16_col5" class="data row16 col5" >Medium</td>
+      <td id="T_fdc26_row16_col6" class="data row16 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row16_col7" class="data row16 col7" >No mixed partial derivatives</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row17" class="row_heading level0 row17" >17</th>
+      <td id="T_fdc26_row17_col0" class="data row17 col0" >PyDelt NN Pytorch</td>
+      <td id="T_fdc26_row17_col1" class="data row17 col1" >Neural Network</td>
+      <td id="T_fdc26_row17_col2" class="data row17 col2" >Univariate</td>
+      <td id="T_fdc26_row17_col3" class="data row17 col3" >Medium</td>
+      <td id="T_fdc26_row17_col4" class="data row17 col4" >Slow</td>
+      <td id="T_fdc26_row17_col5" class="data row17 col5" >High</td>
+      <td id="T_fdc26_row17_col6" class="data row17 col6" >Robust to noise</td>
+      <td id="T_fdc26_row17_col7" class="data row17 col7" >Computational overhead</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row18" class="row_heading level0 row18" >18</th>
+      <td id="T_fdc26_row18_col0" class="data row18 col0" >PyDelt NN Tensorflow</td>
+      <td id="T_fdc26_row18_col1" class="data row18 col1" >Neural Network</td>
+      <td id="T_fdc26_row18_col2" class="data row18 col2" >Univariate</td>
+      <td id="T_fdc26_row18_col3" class="data row18 col3" >Low</td>
+      <td id="T_fdc26_row18_col4" class="data row18 col4" >Slow</td>
+      <td id="T_fdc26_row18_col5" class="data row18 col5" >High</td>
+      <td id="T_fdc26_row18_col6" class="data row18 col6" >Robust to noise</td>
+      <td id="T_fdc26_row18_col7" class="data row18 col7" >Computational overhead</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row19" class="row_heading level0 row19" >19</th>
+      <td id="T_fdc26_row19_col0" class="data row19 col0" >PyDelt Neural Network</td>
+      <td id="T_fdc26_row19_col1" class="data row19 col1" >Interpolation</td>
+      <td id="T_fdc26_row19_col2" class="data row19 col2" >Univariate</td>
+      <td id="T_fdc26_row19_col3" class="data row19 col3" >Low</td>
+      <td id="T_fdc26_row19_col4" class="data row19 col4" >Slow</td>
+      <td id="T_fdc26_row19_col5" class="data row19 col5" >Low</td>
+      <td id="T_fdc26_row19_col6" class="data row19 col6" >General purpose</td>
+      <td id="T_fdc26_row19_col7" class="data row19 col7" >Computational overhead</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row20" class="row_heading level0 row20" >20</th>
+      <td id="T_fdc26_row20_col0" class="data row20 col0" >PyDelt Spline</td>
+      <td id="T_fdc26_row20_col1" class="data row20 col1" >Interpolation</td>
+      <td id="T_fdc26_row20_col2" class="data row20 col2" >Univariate</td>
+      <td id="T_fdc26_row20_col3" class="data row20 col3" >Low</td>
+      <td id="T_fdc26_row20_col4" class="data row20 col4" >Very Fast</td>
+      <td id="T_fdc26_row20_col5" class="data row20 col5" >Medium</td>
+      <td id="T_fdc26_row20_col6" class="data row20 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row20_col7" class="data row20 col7" >Lower accuracy</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row21" class="row_heading level0 row21" >21</th>
+      <td id="T_fdc26_row21_col0" class="data row21 col0" >PyDelt Spline (smoothed)</td>
+      <td id="T_fdc26_row21_col1" class="data row21 col1" >Interpolation</td>
+      <td id="T_fdc26_row21_col2" class="data row21 col2" >Univariate</td>
+      <td id="T_fdc26_row21_col3" class="data row21 col3" >High</td>
+      <td id="T_fdc26_row21_col4" class="data row21 col4" >Very Fast</td>
+      <td id="T_fdc26_row21_col5" class="data row21 col5" >Medium</td>
+      <td id="T_fdc26_row21_col6" class="data row21 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row21_col7" class="data row21 col7" >Limited dimensionality</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row22" class="row_heading level0 row22" >22</th>
+      <td id="T_fdc26_row22_col0" class="data row22 col0" >SciPy Cubic</td>
+      <td id="T_fdc26_row22_col1" class="data row22 col1" >Interpolation</td>
+      <td id="T_fdc26_row22_col2" class="data row22 col2" >Univariate</td>
+      <td id="T_fdc26_row22_col3" class="data row22 col3" >Low</td>
+      <td id="T_fdc26_row22_col4" class="data row22 col4" >Very Fast</td>
+      <td id="T_fdc26_row22_col5" class="data row22 col5" >Low</td>
+      <td id="T_fdc26_row22_col6" class="data row22 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row22_col7" class="data row22 col7" >Lower accuracy</td>
+    </tr>
+    <tr>
+      <th id="T_fdc26_level0_row23" class="row_heading level0 row23" >23</th>
+      <td id="T_fdc26_row23_col0" class="data row23 col0" >SciPy Spline</td>
+      <td id="T_fdc26_row23_col1" class="data row23 col1" >Interpolation</td>
+      <td id="T_fdc26_row23_col2" class="data row23 col2" >Univariate</td>
+      <td id="T_fdc26_row23_col3" class="data row23 col3" >Low</td>
+      <td id="T_fdc26_row23_col4" class="data row23 col4" >Very Fast</td>
+      <td id="T_fdc26_row23_col5" class="data row23 col5" >Medium</td>
+      <td id="T_fdc26_row23_col6" class="data row23 col6" >Computational efficiency</td>
+      <td id="T_fdc26_row23_col7" class="data row23 col7" >Lower accuracy</td>
+    </tr>
+  </tbody>
+</table>

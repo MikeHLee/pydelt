@@ -1,0 +1,25 @@
+Method,Type,Dimensionality,Accuracy,Speed,Noise Robustness,Key Strength,Key Weakness
+FinDiff,Finite Difference,Univariate,Low,Very Fast,Low,Computational efficiency,Lower accuracy
+JAX,Automatic Differentiation,Univariate,Low,Medium,N/A (requires analytical function),General purpose,Lower accuracy
+JAX MV,Other,Multivariate,Very High,Fast,Low,Highest accuracy,Requires analytical function
+NumDiffTools,Adaptive Finite Difference,Univariate,Low,Very Fast,Low,Computational efficiency,Lower accuracy
+PyDelt FDA,Interpolation,Univariate,Low,Very Fast,Medium,Computational efficiency,Lower accuracy
+PyDelt GLLA,Interpolation,Univariate,Low,Very Fast,Medium,Computational efficiency,Lower accuracy
+PyDelt GOLD,Interpolation,Univariate,Low,Very Fast,Low,Computational efficiency,Lower accuracy
+PyDelt LLA,Interpolation,Univariate,Low,Very Fast,Medium,Computational efficiency,Lower accuracy
+PyDelt LOESS,Interpolation,Univariate,Low,Very Fast,High,Computational efficiency,Lower accuracy
+PyDelt LOWESS,Interpolation,Univariate,Low,Very Fast,High,Computational efficiency,Lower accuracy
+PyDelt MV FDA,Multivariate,Multivariate,High,Very Fast,Medium,Computational efficiency,No mixed partial derivatives
+PyDelt MV GLLA,Multivariate,Multivariate,High,Very Fast,Medium,Computational efficiency,No mixed partial derivatives
+PyDelt MV GOLD,Multivariate,Multivariate,High,Very Fast,Low,Computational efficiency,No mixed partial derivatives
+PyDelt MV LLA,Multivariate,Multivariate,High,Very Fast,Medium,Computational efficiency,No mixed partial derivatives
+PyDelt MV LOESS,Multivariate,Multivariate,Medium,Very Fast,High,Computational efficiency,No mixed partial derivatives
+PyDelt MV LOWESS,Multivariate,Multivariate,Medium,Very Fast,High,Computational efficiency,No mixed partial derivatives
+PyDelt MV Spline,Multivariate,Multivariate,High,Very Fast,Medium,Computational efficiency,No mixed partial derivatives
+PyDelt NN Pytorch,Neural Network,Univariate,Medium,Slow,High,Robust to noise,Computational overhead
+PyDelt NN Tensorflow,Neural Network,Univariate,Low,Slow,High,Robust to noise,Computational overhead
+PyDelt Neural Network,Interpolation,Univariate,Low,Slow,Low,General purpose,Computational overhead
+PyDelt Spline,Interpolation,Univariate,Low,Very Fast,Medium,Computational efficiency,Lower accuracy
+PyDelt Spline (smoothed),Interpolation,Univariate,High,Very Fast,Medium,Computational efficiency,Limited dimensionality
+SciPy Cubic,Interpolation,Univariate,Low,Very Fast,Low,Computational efficiency,Lower accuracy
+SciPy Spline,Interpolation,Univariate,Low,Very Fast,Medium,Computational efficiency,Lower accuracy

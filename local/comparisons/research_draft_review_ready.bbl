@@ -1,0 +1,144 @@
+\begin{thebibliography}{20}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[A{\"i}t-Sahalia and Jacod(2014)]{aitsahalia2014high}
+Yacine A{\"i}t-Sahalia and Jean Jacod.
+\newblock High-frequency financial econometrics.
+\newblock 2014.
+
+\bibitem[Baydin et~al.(2018)Baydin, Pearlmutter, Radul, and
+  Siskind]{baydin2018automatic}
+Atılım~Güneş Baydin, Barak~A Pearlmutter, Alexey~Andreyevich Radul, and
+  Jeffrey~Mark Siskind.
+\newblock Automatic differentiation in machine learning: a survey.
+\newblock \emph{Journal of Machine Learning Research}, 18\penalty0
+  (153):\penalty0 1--43, 2018.
+
+\bibitem[Boker and Nesselroade(2002)]{boker2002method}
+Steven~M Boker and John~R Nesselroade.
+\newblock A method for modeling the intrinsic dynamics of intraindividual
+  variability: Recovering the parameters of simulated oscillators in multi-wave
+  panel data.
+\newblock \emph{Multivariate Behavioral Research}, 37\penalty0 (1):\penalty0
+  127--160, 2002.
+
+\bibitem[Boker et~al.(2010)Boker, Deboeck, Edler, and
+  Keel]{boker2010generalized}
+Steven~M Boker, Pascal~R Deboeck, Christopher Edler, and Pamela~K Keel.
+\newblock Generalized local linear approximation of derivatives from time
+  series.
+\newblock In Sy-Miin Chow, Emilio Ferrer, and Fushing Hsieh, editors,
+  \emph{Statistical methods for modeling human dynamics: An interdisciplinary
+  dialogue}, pages 161--178. Routledge, 2010.
+
+\bibitem[Brodtkorb(2023)]{numdifftools}
+Per~A. Brodtkorb.
+\newblock Numdifftools: Solve automatic numerical differentiation problems in
+  one or more variables, 2023.
+\newblock URL \url{https://github.com/pbrod/numdifftools}.
+
+\bibitem[Chen et~al.(2018)Chen, Rubanova, Bettencourt, and
+  Duvenaud]{chen2018neural}
+Ricky~TQ Chen, Yulia Rubanova, Jesse Bettencourt, and David~K Duvenaud.
+\newblock Neural ordinary differential equations.
+\newblock \emph{Advances in Neural Information Processing Systems}, 31, 2018.
+
+\bibitem[Clark et~al.(2001)Clark, Carpenter, Barber, Collins, Dobson, Foley,
+  Lodge, Pascual, Pielke~Jr, Pizer, et~al.]{clark2001ecological}
+James~S Clark, Stephen~R Carpenter, Mary Barber, Scott Collins, Andy Dobson,
+  Jonathan~A Foley, David~M Lodge, Mercedes Pascual, Roger Pielke~Jr, William
+  Pizer, et~al.
+\newblock Ecological forecasts: An emerging imperative.
+\newblock \emph{Science}, 293\penalty0 (5530):\penalty0 657--660, 2001.
+
+\bibitem[Cleveland(1979)]{cleveland1979robust}
+William~S Cleveland.
+\newblock Robust locally weighted regression and smoothing scatterplots.
+\newblock \emph{Journal of the American Statistical Association}, 74\penalty0
+  (368):\penalty0 829--836, 1979.
+
+\bibitem[Cont and Tankov(2004)]{cont2004financial}
+Rama Cont and Peter Tankov.
+\newblock \emph{Financial modelling with jump processes}.
+\newblock Chapman and Hall/CRC, 2004.
+
+\bibitem[De~Boor(2001)]{de2001numerical}
+Carl De~Boor.
+\newblock \emph{A practical guide to splines}.
+\newblock Springer, 2001.
+
+\bibitem[Fornberg(1988)]{fornberg1988generation}
+Bengt Fornberg.
+\newblock Generation of finite difference formulas on arbitrarily spaced grids.
+\newblock \emph{Mathematics of Computation}, 51\penalty0 (184):\penalty0
+  699--706, 1988.
+
+\bibitem[Meurer et~al.(2017)Meurer, Smith, Paprocki, {\v{C}}ert{\'\i}k,
+  Kirpichev, Rocklin, Kumar, Ivanov, Moore, Singh, et~al.]{sympy2017}
+Aaron Meurer, Christopher~P Smith, Mateusz Paprocki, Ond{\v{r}}ej
+  {\v{C}}ert{\'\i}k, Sergey~B Kirpichev, Matthew Rocklin, AMiT Kumar, Sergiu
+  Ivanov, Jason~K Moore, Sartaj Singh, et~al.
+\newblock Sympy: symbolic computing in python.
+\newblock \emph{PeerJ Computer Science}, 3:\penalty0 e103, 2017.
+
+\bibitem[Piao et~al.(2020)Piao, Wang, Park, Chen, Lian, He, Bjerke, Chen,
+  Ciais, Tømmervik, et~al.]{piao2020characteristics}
+Shilong Piao, Xuhui Wang, Taejin Park, Chi Chen, Xu~Lian, Yue He, Jarle~W
+  Bjerke, Anping Chen, Philippe Ciais, Hans Tømmervik, et~al.
+\newblock Characteristics, drivers and feedbacks of global greening.
+\newblock \emph{Nature Reviews Earth \& Environment}, 1\penalty0 (1):\penalty0
+  14--27, 2020.
+
+\bibitem[Raissi et~al.(2019)Raissi, Perdikaris, and
+  Karniadakis]{raissi2019physics}
+Maziar Raissi, Paris Perdikaris, and George~E Karniadakis.
+\newblock Physics-informed neural networks: A deep learning framework for
+  solving forward and inverse problems involving nonlinear partial differential
+  equations.
+\newblock \emph{Journal of Computational Physics}, 378:\penalty0 686--707,
+  2019.
+
+\bibitem[Ramsay and Silverman(2005)]{ramsay2005functional}
+James~O Ramsay and Bernard~W Silverman.
+\newblock \emph{Functional data analysis}.
+\newblock Springer, 2005.
+
+\bibitem[Ritter(2023)]{findiff}
+Marvin Ritter.
+\newblock Findiff: A python package for numerical derivatives and partial
+  differential equations, 2023.
+\newblock URL \url{https://github.com/maroba/findiff}.
+
+\bibitem[Shu(1998)]{shu1998essentially}
+Chi-Wang Shu.
+\newblock Essentially non-oscillatory and weighted essentially non-oscillatory
+  schemes for hyperbolic conservation laws.
+\newblock \emph{Advanced Numerical Approximation of Nonlinear Hyperbolic
+  Equations}, pages 325--432, 1998.
+
+\bibitem[Solak et~al.(2003)Solak, Murray-Smith, Leithead, Leith, and
+  Rasmussen]{solak2003derivative}
+Ercan Solak, Roderick Murray-Smith, William~E Leithead, Douglas~J Leith, and
+  Carl~E Rasmussen.
+\newblock Derivative observations in gaussian process models of dynamic
+  systems.
+\newblock \emph{Advances in Neural Information Processing Systems}, 15, 2003.
+
+\bibitem[Team(2018)]{jax2018github}
+JAX Team.
+\newblock Jax: Composable transformations of python+numpy programs, 2018.
+\newblock URL \url{https://github.com/jax-ml/jax}.
+
+\bibitem[Virtanen et~al.(2020)Virtanen, Gommers, Oliphant, Haberland, Reddy,
+  Cournapeau, Burovski, Peterson, Weckesser, Bright, et~al.]{virtanen2020scipy}
+Pauli Virtanen, Ralf Gommers, Travis~E Oliphant, Matt Haberland, Tyler Reddy,
+  David Cournapeau, Evgeni Burovski, Pearu Peterson, Warren Weckesser, Jonathan
+  Bright, et~al.
+\newblock Scipy 1.0: fundamental algorithms for scientific computing in python.
+\newblock \emph{Nature Methods}, 17\penalty0 (3):\penalty0 261--272, 2020.
+
+\end{thebibliography}

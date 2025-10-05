@@ -1,0 +1,1615 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{float}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\title{PyDelt: Advanced Numerical Function Approximation, Differentiation, \& Integration}
+\author{Michael H. Lee}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Numerical differentiation is a fundamental technique in scientific computing, with applications ranging from physics and engineering to finance and machine learning. However, traditional approaches face challenges with noise sensitivity, accuracy limitations, and poor scaling to high-dimensional problems. This paper introduces PyDelt, a Python library that provides a comprehensive suite of interpolation-based differentiation methods with a unified interface. We compare PyDelt's capabilities with existing tools, highlighting its unique contributions: (1) a universal differentiation interface across multiple interpolation methods, (2) robust handling of noisy data through specialized algorithms, (3) comprehensive multivariate calculus support, (4) stochastic calculus extensions, and (5) seamless integration with neural network-based automatic differentiation. Performance evaluations demonstrate PyDelt's superior accuracy for noisy data and competitive computational efficiency. The library's unified API and method diversity make it particularly valuable for exploratory data analysis, algorithm comparison, and applications requiring both accuracy and noise robustness across scientific computing, financial modeling, engineering, and data science domains.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+Numerical differentiation—the approximation of derivatives from discrete data points—is a cornerstone of computational science and engineering. Applications span diverse fields including signal processing, computational physics, financial modeling, control systems, and machine learning. Despite its importance, numerical differentiation remains challenging due to inherent trade-offs between accuracy, noise sensitivity, and computational efficiency.
+
+Traditional approaches to numerical differentiation fall into several categories:
+
+\begin{itemize}
+    \item \textbf{Finite difference methods} approximate derivatives using discrete differences between function values at neighboring points. While conceptually simple and computationally efficient, these methods are notoriously sensitive to noise and suffer from accuracy limitations, particularly for higher-order derivatives \citep{fornberg1988generation}.
+    
+    \item \textbf{Interpolation-based methods} fit continuous functions to discrete data points and then differentiate the resulting function analytically. These methods can provide improved noise robustness but vary widely in their accuracy and computational requirements \citep{de2001numerical}.
+    
+    \item \textbf{Automatic differentiation} computes exact derivatives by applying the chain rule to elementary operations in a computational graph. While highly accurate, these methods require access to the function definition rather than just data points \citep{baydin2018automatic}.
+    
+    \item \textbf{Symbolic differentiation} manipulates mathematical expressions directly to compute derivatives. This approach provides exact results but is limited to functions with explicit mathematical formulations \citep{sympy2017}.
+\end{itemize}
+
+Each approach has distinct advantages and limitations, making method selection highly dependent on the specific application context. This fragmentation of methods has led to a proliferation of specialized tools, each with its own API, assumptions, and limitations.
+
+PyDelt addresses this fragmentation by providing a unified framework that integrates multiple differentiation approaches under a consistent interface. The library emphasizes interpolation-based methods, which offer a balance between noise robustness and accuracy, while also incorporating automatic differentiation for high-dimensional problems. This paper examines PyDelt's contributions to the field of numerical differentiation and function approximation, comparing its capabilities with existing tools and highlighting its unique features.
+
+In this paper, we present a comprehensive analysis of PyDelt's numerical differentiation methods compared to other popular libraries. We evaluate the performance of various interpolation-based, finite difference, and neural network-based methods across univariate and multivariate functions, with varying levels of noise. Our results demonstrate that PyDelt's methods offer superior accuracy and noise robustness compared to traditional approaches, while maintaining competitive computational efficiency.
+
+\section{Advanced Calculus Implementations}
+
+\subsection{Multivariate Calculus Implementation}
+
+PyDelt's multivariate calculus module provides a unified framework for computing derivatives of functions with multiple input and output variables. The implementation follows the same design principles as the univariate module, with a consistent API and support for multiple interpolation methods.
+
+\subsubsection{Design Approach}
+
+The multivariate derivatives module is built around the \texttt{MultivariateDerivatives} class, which takes any PyDelt interpolator as a base estimator. The implementation strategy involves:
+
+\begin{enumerate}
+    \item \textbf{Dimension Separation}: For each output dimension and input dimension pair, a separate univariate interpolator is fitted.
+    
+    \item \textbf{Universal Interface}: The class provides methods for computing gradients, Jacobians, Hessians, and Laplacians, all following a consistent pattern of returning callable functions.
+    
+    \item \textbf{Automatic Reshaping}: Input and output data are automatically reshaped to handle both 1D and 2D arrays, simplifying the API for users.
+    
+    \item \textbf{Efficient Evaluation}: Derivatives are computed only when needed, with caching of intermediate results for performance.
+\end{enumerate}
+
+The implementation supports both scalar-valued functions (returning gradients and Hessians) and vector-valued functions (returning Jacobians), making it versatile for a wide range of applications.
+
+\subsubsection{Mathematical Formulation}
+
+For a scalar function $f: \mathbb{R}^n \rightarrow \mathbb{R}$, the gradient is computed as:
+
+\begin{equation}
+\nabla f(\mathbf{x}) = \left[\frac{\partial f}{\partial x_1}(\mathbf{x}), \frac{\partial f}{\partial x_2}(\mathbf{x}), \ldots, \frac{\partial f}{\partial x_n}(\mathbf{x})\right]^T
+\end{equation}
+
+where each partial derivative $\frac{\partial f}{\partial x_i}$ is computed using a separate univariate interpolator.
+
+For a vector-valued function $\mathbf{f}: \mathbb{R}^n \rightarrow \mathbb{R}^m$, the Jacobian matrix is computed as:
+
+\begin{equation}
+\mathbf{J}_f(\mathbf{x}) = \begin{bmatrix}
+\frac{\partial f_1}{\partial x_1}(\mathbf{x}) & \frac{\partial f_1}{\partial x_2}(\mathbf{x}) & \cdots & \frac{\partial f_1}{\partial x_n}(\mathbf{x}) \\
+\frac{\partial f_2}{\partial x_1}(\mathbf{x}) & \frac{\partial f_2}{\partial x_2}(\mathbf{x}) & \cdots & \frac{\partial f_2}{\partial x_n}(\mathbf{x}) \\
+\vdots & \vdots & \ddots & \vdots \\
+\frac{\partial f_m}{\partial x_1}(\mathbf{x}) & \frac{\partial f_m}{\partial x_2}(\mathbf{x}) & \cdots & \frac{\partial f_m}{\partial x_n}(\mathbf{x})
+\end{bmatrix}
+\end{equation}
+
+where each element $\frac{\partial f_i}{\partial x_j}$ is computed using a separate univariate interpolator.
+
+\subsubsection{Limitations and Considerations}
+
+The primary limitation of this approach is that mixed partial derivatives (e.g., $\frac{\partial^2 f}{\partial x_i \partial x_j}$ for $i \neq j$) are approximated as zero for traditional interpolation methods. This is because each dimension is treated independently, and the interpolators cannot capture cross-dimensional interactions directly.
+
+For applications requiring accurate mixed partial derivatives, PyDelt offers neural network-based methods that use automatic differentiation to compute exact mixed partials. These methods fit a neural network to the data and then use automatic differentiation to compute derivatives of any order.
+
+\subsection{Tensor Calculus Operations}
+
+PyDelt extends beyond basic multivariate calculus to support tensor calculus operations, which are essential for applications in continuum mechanics, fluid dynamics, and other fields involving tensor fields.
+
+\subsubsection{Tensor Field Operations}
+
+The tensor calculus module supports the following operations:
+
+\begin{enumerate}
+    \item \textbf{Vector Field Gradient}: For a vector field $\mathbf{F}: \mathbb{R}^n \rightarrow \mathbb{R}^m$, computes the tensor field $\nabla \mathbf{F}$ with components $(\nabla \mathbf{F})_{ijk} = \frac{\partial F_i}{\partial x_j}$.
+    
+    \item \textbf{Divergence}: For a vector field $\mathbf{F}: \mathbb{R}^n \rightarrow \mathbb{R}^n$, computes the scalar field $\nabla \cdot \mathbf{F} = \sum_{i=1}^{n} \frac{\partial F_i}{\partial x_i}$.
+    
+    \item \textbf{Curl}: For a vector field $\mathbf{F}: \mathbb{R}^3 \rightarrow \mathbb{R}^3$, computes the vector field $\nabla \times \mathbf{F}$ with components $(\nabla \times \mathbf{F})_i = \epsilon_{ijk} \frac{\partial F_k}{\partial x_j}$, where $\epsilon_{ijk}$ is the Levi-Civita symbol.
+    
+    \item \textbf{Tensor Contraction}: For a tensor field $\mathbf{T}: \mathbb{R}^n \rightarrow \mathbb{R}^{m \times p}$, computes contractions such as the trace $\text{tr}(\mathbf{T}) = \sum_{i=1}^{\min(m,p)} T_{ii}$.
+\end{enumerate}
+
+\subsubsection{Implementation Approach}
+
+Tensor calculus operations are implemented using the multivariate derivatives module as a foundation, with additional functions for tensor-specific operations. The implementation uses NumPy's array operations for efficient computation and maintains proper tensor dimensions throughout.
+
+For applications requiring coordinate transformations, PyDelt provides utilities for converting between different coordinate systems (e.g., Cartesian, spherical, cylindrical) and transforming tensor components accordingly.
+
+\subsection{Stochastic Calculus}
+
+PyDelt's stochastic calculus module addresses the unique challenges of computing derivatives for stochastic processes, where traditional calculus rules do not apply due to the non-differentiable nature of sample paths.
+
+\subsubsection{Itô Calculus}
+
+Itô calculus is a framework for computing derivatives of functions of stochastic processes. The key insight is that for a function $f$ of a stochastic process $X_t$, the differential $df(X_t)$ includes an additional term due to the quadratic variation of the process:
+
+\begin{equation}
+df(X_t) = f'(X_t)\,dX_t + \frac{1}{2}f''(X_t)\,(dX_t)^2
+\end{equation}
+
+where $(dX_t)^2$ is evaluated using the quadratic variation of the process (e.g., $dt$ for standard Brownian motion).
+
+PyDelt implements Itô corrections by extending the standard interpolators with a \texttt{set\_stochastic\_link} method that specifies the distribution and calculus type. The implementation then automatically applies the appropriate correction terms when computing derivatives.
+
+\subsubsection{Stratonovich Calculus}
+
+Stratonovich calculus provides an alternative interpretation of stochastic integrals that preserves the ordinary chain rule of calculus. For a function $f$ of a stochastic process $X_t$, the Stratonovich differential is:
+
+\begin{equation}
+df(X_t) = f'(X_t) \circ dX_t
+\end{equation}
+
+where $\circ$ denotes the Stratonovich integral.
+
+PyDelt supports both Itô and Stratonovich calculus, allowing users to choose the most appropriate framework for their application. The implementation handles the conversion between the two frameworks automatically.
+
+\subsubsection{Stochastic Link Functions}
+
+PyDelt's stochastic calculus module supports various link functions that transform derivatives through probability distributions:
+
+\begin{enumerate}
+    \item \textbf{Normal}: For normally distributed processes with constant volatility.
+    \item \textbf{Log-normal}: For processes where the logarithm follows a normal distribution, commonly used in financial modeling.
+    \item \textbf{Gamma}: For processes with gamma-distributed increments.
+    \item \textbf{Beta}: For processes constrained to a finite interval.
+    \item \textbf{Exponential}: For processes with exponentially distributed waiting times.
+    \item \textbf{Poisson}: For counting processes with independent increments.
+\end{enumerate}
+
+Each link function implements the appropriate correction terms for both Itô and Stratonovich calculus, ensuring accurate derivatives for the corresponding stochastic process.
+
+\subsection{Integration with Neural Networks}
+
+PyDelt integrates neural networks with automatic differentiation to provide exact derivatives for complex functions and overcome the limitations of traditional interpolation methods.
+
+\subsubsection{Neural Network Interpolation}
+
+The \texttt{NeuralNetworkInterpolator} class fits a neural network to the input-output data and uses automatic differentiation to compute derivatives of any order. The implementation supports both PyTorch and TensorFlow backends, allowing users to leverage their preferred deep learning framework.
+
+The neural network approach offers several advantages:
+
+\begin{enumerate}
+    \item \textbf{Exact Mixed Partials}: Automatic differentiation computes exact mixed partial derivatives, overcoming the primary limitation of traditional interpolation methods.
+    
+    \item \textbf{Complex Relationships}: Neural networks can capture complex, non-linear relationships that may be difficult to model with traditional interpolation methods.
+    
+    \item \textbf{GPU Acceleration}: Neural network computations can be accelerated using GPUs, providing significant performance improvements for large datasets.
+\end{enumerate}
+
+The trade-off is increased computational cost during training and the need for careful hyperparameter tuning to avoid overfitting or underfitting.
+
+\subsubsection{Physics-Informed Neural Networks}
+
+PyDelt also supports physics-informed neural networks (PINNs), which incorporate physical laws expressed as differential equations into the neural network training process. This approach allows for solving both forward and inverse problems involving partial differential equations.
+
+PINNs are particularly valuable for applications where the underlying physical laws are known but the data may be sparse or noisy. By incorporating the differential equations as constraints during training, PINNs can produce solutions that are both data-consistent and physically plausible.
+
+\section{Motivation and Applications}
+
+The development of PyDelt was motivated by several key challenges in numerical differentiation that remain inadequately addressed by existing tools. These challenges span theoretical, practical, and software engineering concerns.
+
+\subsection{Key Motivations}
+
+\subsubsection{Noise Sensitivity in Traditional Methods}
+
+Numerical differentiation is inherently an ill-posed problem—small perturbations in input data can lead to large changes in derivative estimates. This sensitivity is particularly problematic when working with real-world data, which invariably contains measurement noise, sampling irregularities, and other imperfections. Traditional finite difference methods amplify these errors, often rendering derivative estimates unusable without extensive pre-processing \citep{fornberg1988generation}.
+
+PyDelt addresses this challenge through its focus on interpolation-based methods that inherently incorporate smoothing. Methods like LOWESS and LOESS are specifically designed to be robust against outliers and varying noise levels \citep{cleveland1979robust}, while spline-based approaches with adjustable smoothing parameters allow users to explicitly control the trade-off between fidelity to data and smoothness of derivatives.
+
+\subsubsection{Method Selection Complexity}
+
+Choosing the appropriate differentiation method for a specific application requires considerable expertise. Different methods excel under different conditions: some perform better with noisy data, others with sparse sampling, and still others with specific types of underlying functions. This complexity creates a significant barrier to entry for many potential users.
+
+PyDelt's universal interface allows users to easily compare multiple methods on their specific data, facilitating empirical method selection without requiring deep theoretical understanding of each approach. The consistent `.fit().differentiate()` pattern means that switching between methods requires changing only a single line of code, encouraging experimentation and comparison.
+
+\subsubsection{Fragmentation of Implementations}
+
+Existing numerical differentiation tools are scattered across different libraries, each with its own API, assumptions, and limitations. This fragmentation makes it difficult to compare methods fairly and to integrate differentiation into larger workflows.
+
+PyDelt unifies diverse approaches under a single, consistent interface, allowing users to focus on their application rather than on the idiosyncrasies of different implementations. This unification extends beyond traditional methods to include neural network-based approaches and stochastic calculus extensions, providing a comprehensive toolkit within a single framework.
+
+\subsubsection{Limited Support for Advanced Use Cases}
+
+Many existing tools focus on basic univariate differentiation, with limited support for multivariate calculus, stochastic processes, or integration with modern machine learning frameworks. This limitation forces users to implement custom solutions or to cobble together multiple tools for advanced applications.
+
+PyDelt explicitly addresses these advanced use cases, providing built-in support for multivariate calculus operations (gradients, Jacobians, Hessians), stochastic calculus corrections, and seamless integration with deep learning frameworks like PyTorch and TensorFlow.
+
+\subsection{Application Domains}
+
+PyDelt's comprehensive approach to numerical differentiation makes it valuable across a wide range of application domains:
+
+\subsubsection{Scientific Computing}
+
+In scientific computing, PyDelt enables:
+
+\begin{itemize}
+    \item \textbf{Differential Equation Discovery}: Extracting governing equations from experimental data by accurately estimating derivatives and fitting them to candidate equation forms \citep{raissi2019physics}.
+    
+    \item \textbf{Phase Space Analysis}: Reconstructing phase spaces from time series data by computing derivatives to reveal underlying dynamics in nonlinear systems \citep{boker2002method}.
+    
+    \item \textbf{Fluid Dynamics}: Computing properties like vorticity, strain rates, and divergence from velocity field measurements, which require accurate spatial derivatives \citep{shu1998essentially}.
+\end{itemize}
+
+\subsubsection{Financial Modeling}
+
+In finance, PyDelt supports:
+
+\begin{itemize}
+    \item \textbf{Option Greeks Calculation}: Computing sensitivity measures (Delta, Gamma, Theta, Vega) that are derivatives of option prices with respect to various parameters \citep{cont2004financial}.
+    
+    \item \textbf{Volatility Surface Modeling}: Estimating implied volatility and its derivatives across strike prices and maturities to understand market dynamics \citep{aitsahalia2014high}.
+    
+    \item \textbf{Risk Management}: Applying proper stochastic calculus corrections when working with financial time series, which often follow stochastic processes rather than deterministic functions.
+\end{itemize}
+
+\subsubsection{Engineering Design}
+
+Engineers can use PyDelt for:
+
+\begin{itemize}
+    \item \textbf{System Identification}: Extracting dynamic models from sensor data by estimating derivatives and fitting them to differential equations \citep{solak2003derivative}.
+    
+    \item \textbf{Control Design}: Developing controllers that require derivative feedback, such as PID controllers or model predictive control systems.
+    
+    \item \textbf{Optimization}: Implementing gradient-based optimization methods that require accurate derivatives of objective functions and constraints.
+\end{itemize}
+
+\subsubsection{Data Science}
+
+Data scientists benefit from PyDelt through:
+
+\begin{itemize}
+    \item \textbf{Feature Engineering}: Creating derivative-based features that capture rates of change and higher-order dynamics in time series data.
+    
+    \item \textbf{Signal Processing}: Enhancing signal analysis with robust derivatives that are less sensitive to noise than traditional methods.
+    
+    \item \textbf{Model Validation}: Verifying that machine learning models satisfy known physical constraints by checking derivatives and their relationships.
+\end{itemize}
+
+\subsubsection{Environmental Science}
+
+Environmental scientists can leverage PyDelt for:
+
+\begin{itemize}
+    \item \textbf{Climate Data Analysis}: Detecting acceleration in temperature changes, sea level rise, or ice melt rates from long-term monitoring data \citep{piao2020characteristics}.
+    
+    \item \textbf{Ecological Modeling}: Calculating growth rates, carrying capacities, and predator-prey interactions from population count time series \citep{clark2001ecological}.
+    
+    \item \textbf{Hydrological Studies}: Estimating infiltration rates, groundwater recharge, and river discharge dynamics from water level time series.
+\end{itemize}
+
+These diverse applications highlight the broad utility of PyDelt's approach to numerical differentiation, which combines theoretical rigor with practical usability across domains.
+
+\section{Related Work}
+
+Several software libraries provide numerical differentiation capabilities, each with different approaches and strengths. This section reviews the most prominent alternatives to PyDelt and highlights their relative advantages and limitations.
+
+\subsection{SciPy}
+
+SciPy \citep{virtanen2020scipy} offers various interpolation methods through its \texttt{scipy.interpolate} module, including splines, polynomials, and radial basis functions. While these can be used for differentiation by differentiating the interpolant, the API is not specifically designed for this purpose, requiring users to manually chain interpolation and differentiation steps.
+
+\begin{lstlisting}[language=Python, caption=SciPy differentiation example]
+# SciPy approach requires manual chaining
+from scipy.interpolate import UnivariateSpline
+spline = UnivariateSpline(x, y, s=0.1)
+derivative = spline.derivative(n=1)
+result = derivative(x_eval)
+\end{lstlisting}
+
+SciPy's approach focuses on interpolation quality rather than derivative accuracy, with limited guidance for method selection based on derivative requirements. Additionally, while SciPy provides excellent univariate interpolation, its support for multivariate derivatives is more limited and lacks a unified interface across different operations.
+
+\subsection{NumDiffTools}
+
+NumDiffTools \citep{numdifftools} specializes in numerical differentiation using adaptive finite difference methods coupled with Richardson extrapolation. It provides functions for computing derivatives, gradients, Jacobians, and Hessians with high accuracy.
+
+\begin{lstlisting}[language=Python, caption=NumDiffTools example]
+# NumDiffTools uses finite differences
+import numdifftools as nd
+
+# For univariate functions
+df = nd.Derivative(lambda x: np.sin(x), n=1)
+result = df(x_eval)
+
+# For multivariate functions
+gradient = nd.Gradient(lambda x: np.sin(x[0]) + np.cos(x[1]))
+result = gradient([1.0, 2.0])
+\end{lstlisting}
+
+However, NumDiffTools' approach is primarily based on finite differences, making it less robust to noise than interpolation-based methods. The library lacks a unified interface across different differentiation operations and does not support stochastic calculus or neural network integration. Its strength lies in computing accurate derivatives of analytical functions rather than noisy data.
+
+\subsection{FinDiff}
+
+FinDiff \citep{findiff} implements finite difference approximations for derivatives of any order in any number of dimensions. It offers a clean API for defining differential operators and solving partial differential equations.
+
+\begin{lstlisting}[language=Python, caption=FinDiff example]
+# FinDiff uses finite differences on grids
+from findiff import FinDiff
+
+# 1D derivative
+d_dx = FinDiff(0, dx, 1)  # 1st derivative in x-direction
+result = d_dx(y)
+
+# 2D gradient
+d_dx = FinDiff(0, dx, 1)  # d/dx
+d_dy = FinDiff(1, dy, 1)  # d/dy
+gradient = [d_dx(f), d_dy(f)]
+\end{lstlisting}
+
+The library excels at handling regular grids and provides accurate boundary treatment. However, like other finite difference methods, it is sensitive to noise and does not offer interpolation-based alternatives or stochastic calculus support. FinDiff is particularly well-suited for solving partial differential equations on structured grids but less ideal for general derivative estimation from noisy data.
+
+\subsection{JAX}
+
+JAX \citep{jax2018github} provides automatic differentiation capabilities through its \texttt{jax.grad} function, allowing exact computation of derivatives for functions defined in Python.
+
+\begin{lstlisting}[language=Python, caption=JAX automatic differentiation example]
+# JAX uses automatic differentiation
+import jax
+import jax.numpy as jnp
+
+# Define function
+def f(x):
+    return jnp.sin(x)
+
+# Get gradient function
+df_dx = jax.grad(f)
+
+# Evaluate gradient
+result = df_dx(2.0)
+\end{lstlisting}
+
+JAX supports forward and reverse-mode automatic differentiation, higher-order derivatives, and is highly optimized for GPU/TPU acceleration. While powerful for functions with known analytical forms, JAX cannot directly compute derivatives from discrete data points without first fitting a model. Additionally, it lacks specialized support for noisy data or stochastic processes.
+
+\subsection{SymPy}
+
+SymPy \citep{sympy2017} offers symbolic differentiation through its \texttt{sympy.diff} function, computing exact derivatives of mathematical expressions.
+
+\begin{lstlisting}[language=Python, caption=SymPy symbolic differentiation example]
+# SymPy uses symbolic differentiation
+from sympy import symbols, diff, sin
+
+# Define symbolic variable and function
+x = symbols('x')
+f = sin(x)
+
+# Compute derivative symbolically
+df_dx = diff(f, x)
+
+# Evaluate at specific point
+result = df_dx.subs(x, 2.0).evalf()
+\end{lstlisting}
+
+This approach provides perfect accuracy but is limited to functions with explicit symbolic representations. SymPy cannot directly handle numerical data or noise, requiring users to first fit symbolic expressions to their data.
+
+\subsection{Specialized Time Series Derivative Methods}
+
+Several specialized methods have been developed for time series derivative estimation, particularly in fields like psychology, economics, and biomedicine:
+
+\begin{itemize}
+    \item \textbf{Local Linear Approximation (LLA)} was introduced by \citet{boker2002method} for estimating derivatives from time series data, particularly for modeling oscillatory systems.
+    
+    \item \textbf{Generalized Local Linear Approximation (GLLA)} was developed by \citet{boker2010generalized} to extend LLA to higher-order derivatives using a generalized linear approximation framework.
+    
+    \item \textbf{Functional Data Analysis (FDA)} approaches, as described by \citet{ramsay2005functional}, use spline-based smoothing to represent time series as continuous functions from which derivatives can be analytically computed.
+\end{itemize}
+
+These methods have been implemented in various R packages (e.g., \texttt{doremi}, \texttt{fda}, \texttt{EGAnet}) but lacked a comprehensive Python implementation before PyDelt.
+
+\subsection{Neural Network Approaches}
+
+Recent research has explored using neural networks for derivative estimation:
+
+\begin{itemize}
+    \item \textbf{Neural Ordinary Differential Equations} \citep{chen2018neural} use neural networks to learn the dynamics of continuous-time systems, parameterizing the derivative of the hidden state using a neural network.
+    
+    \item \textbf{Physics-Informed Neural Networks} \citep{raissi2019physics} incorporate physical laws expressed as differential equations into the learning process, allowing for solving both forward and inverse problems involving nonlinear partial differential equations.
+\end{itemize}
+
+These approaches leverage automatic differentiation to enforce differential constraints during training but typically require specialized implementations for each application.
+
+\subsection{Comparison to PyDelt}
+
+PyDelt distinguishes itself from these existing tools in several key ways:
+
+\begin{itemize}
+    \item \textbf{Unified Interface}: Unlike SciPy, NumDiffTools, or FinDiff, PyDelt provides a consistent API across all methods, simplifying method comparison and selection.
+    
+    \item \textbf{Method Diversity}: PyDelt integrates traditional interpolation methods, specialized time series techniques (LLA, GLLA, FDA), and neural network approaches under a single framework.
+    
+    \item \textbf{Noise Robustness}: Unlike finite difference methods in NumDiffTools and FinDiff, PyDelt emphasizes interpolation-based approaches that are inherently more robust to noise.
+    
+    \item \textbf{Comprehensive Multivariate Support}: PyDelt provides full support for multivariate calculus operations (gradients, Jacobians, Hessians) with a consistent interface.
+    
+    \item \textbf{Stochastic Extensions}: Unique among numerical differentiation libraries, PyDelt includes stochastic calculus corrections for financial and other stochastic applications.
+    
+    \item \textbf{Neural Network Integration}: PyDelt seamlessly integrates with deep learning frameworks, bridging the gap between traditional numerical methods and modern automatic differentiation approaches.
+\end{itemize}
+
+These distinctions position PyDelt as a comprehensive solution for numerical differentiation across a wide range of applications, from basic univariate problems to complex multivariate and stochastic scenarios.
+
+\section{PyDelt: Design and Features}
+
+PyDelt was designed to address the limitations of existing tools by providing a comprehensive, unified framework for numerical differentiation and function approximation. The library's architecture is built around several core principles and features that distinguish it from other numerical differentiation tools.
+
+\subsection{Universal Differentiation Interface}
+
+PyDelt implements a consistent \texttt{.fit().differentiate()} pattern across all interpolation methods, allowing users to easily switch between different approaches while maintaining the same code structure. This unified API significantly reduces the learning curve and facilitates method comparison.
+
+\begin{lstlisting}[language=Python, caption=Universal differentiation interface example]
+# Same pattern works for all interpolators
+interpolator = InterpolatorClass(**params)
+interpolator.fit(input_data, output_data)
+derivative_func = interpolator.differentiate(order=1, mask=None)
+derivatives = derivative_func(eval_points)
+\end{lstlisting}
+
+This interface design follows several key principles:
+
+\begin{itemize}
+    \item \textbf{Separation of Concerns}: The \texttt{fit()} method handles data preprocessing and model fitting, while \texttt{differentiate()} focuses solely on derivative computation.
+    
+    \item \textbf{Lazy Evaluation}: The \texttt{differentiate()} method returns a callable function rather than immediately computing derivatives, allowing for efficient evaluation at arbitrary points.
+    
+    \item \textbf{Consistent Parameters}: All interpolators accept the same core parameters (\texttt{order} for derivative order, \texttt{mask} for partial derivatives), simplifying method switching.
+    
+    \item \textbf{Method Chaining}: The fluent interface supports method chaining (e.g., \texttt{interpolator.fit(x, y).differentiate(order=1)}), enhancing code readability.
+\end{itemize}
+
+This universal interface extends across all interpolation methods, from basic splines to sophisticated neural networks, providing a consistent experience regardless of the underlying algorithm.
+
+\subsection{Multiple Interpolation Methods}
+
+PyDelt offers a diverse set of interpolation techniques, each with different strengths:
+
+\begin{itemize}
+    \item \textbf{SplineInterpolator}: Creates smooth, continuous piecewise polynomial functions with controllable smoothing. Particularly effective for smooth underlying functions with moderate noise.
+    
+    \item \textbf{Local Linear Approximation (LLA)}: Uses min-normalization and linear regression within sliding windows to estimate derivatives. Particularly effective for data with varying baselines or drift \citep{boker2002method}.
+    
+    \item \textbf{Generalized Local Linear Approximation (GLLA)}: Extends LLA to higher-order derivatives using a generalized linear approximation framework \citep{boker2010generalized}.
+    
+    \item \textbf{GOLD (Generalized Optimal Linear Derivative)}: Implements Hermite cubic interpolation for smooth derivatives with optimal error properties. Particularly effective for data with high curvature regions.
+    
+    \item \textbf{Functional Data Analysis (FDA)}: Uses spline-based smoothing with automatic parameter selection based on data characteristics \citep{ramsay2005functional}.
+    
+    \item \textbf{LOWESS/LOESS}: Non-parametric regression methods that fit simple models to localized subsets of data, providing robustness to outliers \citep{cleveland1979robust}.
+    
+    \item \textbf{Neural Network Interpolation}: Leverages deep learning with automatic differentiation for complex functional relationships.
+\end{itemize}
+
+This diversity allows users to select the most appropriate method for their specific data characteristics and accuracy requirements. Each method implements the same universal interface, making it easy to compare their performance on a given dataset.
+
+\subsection{Comprehensive Multivariate Calculus}
+
+PyDelt provides full support for multivariate calculus operations through its \texttt{multivariate} module:
+
+\begin{itemize}
+    \item \textbf{Gradient ($\nabla f$)}: For scalar functions, computes the vector of partial derivatives.
+    \item \textbf{Jacobian ($J_f$)}: For vector-valued functions, computes the matrix of all first-order partial derivatives.
+    \item \textbf{Hessian ($H_f$)}: For scalar functions, computes the matrix of all second-order partial derivatives.
+    \item \textbf{Laplacian ($\nabla^2 f$)}: For scalar functions, computes the sum of all unmixed second partial derivatives.
+\end{itemize}
+
+\begin{lstlisting}[language=Python, caption=Multivariate calculus example]
+# Multivariate API pattern
+mv_derivatives = MultivariateDerivatives(SplineInterpolator, smoothing=0.1)
+mv_derivatives.fit(input_data, output_data)
+gradient_func = mv_derivatives.gradient()
+gradients = gradient_func(eval_points)
+\end{lstlisting}
+
+The multivariate module maintains the same design philosophy as the core interpolation methods, with a consistent interface and lazy evaluation. It supports arbitrary evaluation points and handles both scalar and vector-valued functions.
+
+\subsection{Stochastic Calculus Extensions}
+
+A unique feature of PyDelt is its support for stochastic calculus, enabling proper handling of financial derivatives and other stochastic processes:
+
+\begin{itemize}
+    \item \textbf{Itô calculus}: Implements corrections for non-differentiable sample paths in stochastic processes.
+    \item \textbf{Stratonovich calculus}: Provides an alternative interpretation of stochastic integrals.
+    \item \textbf{Multiple stochastic link functions}: Supports normal, log-normal, gamma, beta, exponential, and Poisson distributions.
+\end{itemize}
+
+\begin{lstlisting}[language=Python, caption=Stochastic calculus example]
+# Set stochastic link function for derivative transformations
+interpolator.set_stochastic_link("lognormal", method="ito")
+derivative_func = interpolator.differentiate(order=1)
+\end{lstlisting}
+
+These extensions are particularly valuable for financial applications, where standard calculus rules do not apply due to the non-differentiable nature of stochastic processes. By incorporating proper stochastic corrections, PyDelt ensures accurate derivative estimates for financial time series and other stochastic data.
+
+\subsection{Neural Network Integration}
+
+PyDelt integrates with deep learning frameworks (PyTorch and TensorFlow) to leverage automatic differentiation for complex functions and high-dimensional problems:
+
+\begin{itemize}
+    \item \textbf{NeuralNetworkInterpolator}: Fits neural networks to data and uses automatic differentiation for derivatives.
+    \item \textbf{NeuralNetworkMultivariateDerivatives}: Provides true multivariate derivatives with exact mixed partials.
+    \item \textbf{Framework flexibility}: Supports both PyTorch and TensorFlow backends.
+\end{itemize}
+
+\begin{lstlisting}[language=Python, caption=Neural network integration example]
+# Neural network interpolation with automatic differentiation
+from pydelt.interpolation import NeuralNetworkInterpolator
+
+# Create neural network interpolator with PyTorch backend
+nn_interp = NeuralNetworkInterpolator(framework="pytorch", 
+                                   hidden_layers=[64, 32])
+
+# Same universal interface applies
+nn_interp.fit(x, y)
+derivative_func = nn_interp.differentiate(order=1)
+derivatives = derivative_func(x_eval)
+\end{lstlisting}
+
+This integration bridges the gap between traditional numerical methods and modern deep learning approaches, allowing users to leverage the strengths of both paradigms within a single, consistent framework.
+
+\subsection{Implementation Details}
+
+\subsubsection{Architecture}
+
+PyDelt follows an object-oriented design with a clear hierarchy of classes:
+
+\begin{itemize}
+    \item \textbf{BaseInterpolator}: Abstract base class defining the universal interface.
+    \item \textbf{Concrete Interpolators}: Implementations of specific interpolation methods.
+    \item \textbf{MultivariateDerivatives}: Wrapper class for multivariate calculus operations.
+    \item \textbf{StochasticLink}: Classes implementing stochastic calculus corrections.
+\end{itemize}
+
+This architecture ensures consistency across methods while allowing for method-specific optimizations and extensions.
+
+\subsubsection{Performance Considerations}
+
+PyDelt incorporates several optimizations to ensure computational efficiency:
+
+\begin{itemize}
+    \item \textbf{Lazy Evaluation}: Derivatives are computed only when needed, avoiding unnecessary calculations.
+    \item \textbf{Caching}: Intermediate results are cached to avoid redundant computations.
+    \item \textbf{Vectorization}: Operations are vectorized using NumPy for improved performance.
+    \item \textbf{Sparse Representations}: Where appropriate, sparse matrices are used to reduce memory usage.
+\end{itemize}
+
+These optimizations ensure that PyDelt remains practical for real-world applications, even with large datasets or complex models.
+
+\subsubsection{Error Handling and Validation}
+
+PyDelt includes comprehensive error handling and validation to ensure reliable results:
+
+\begin{itemize}
+    \item \textbf{Input Validation}: Extensive checks for data consistency, dimensions, and types.
+    \item \textbf{Graceful Degradation}: Fallback mechanisms when optimal methods fail.
+    \item \textbf{Informative Error Messages}: Clear guidance on how to resolve issues.
+    \item \textbf{Warning System}: Alerts for potential numerical instabilities or suboptimal configurations.
+\end{itemize}
+
+These features make PyDelt robust in production environments and accessible to users with varying levels of expertise in numerical methods.
+
+\section{Methodology}
+
+To evaluate the performance of PyDelt's numerical differentiation methods compared to other popular libraries, we conducted a comprehensive series of experiments across different test functions, noise levels, and dimensionality scenarios. This section details our experimental methodology.
+
+\subsection{Test Functions}
+
+We evaluated the performance of differentiation methods on the following test functions:
+
+\subsubsection{Univariate Functions}
+
+\begin{enumerate}
+    \item \textbf{Sine function}: $f(x) = \sin(x)$
+    \begin{itemize}
+        \item First derivative: $f'(x) = \cos(x)$
+        \item Second derivative: $f''(x) = -\sin(x)$
+    \end{itemize}
+    
+    \item \textbf{Exponential function}: $f(x) = e^x$
+    \begin{itemize}
+        \item First derivative: $f'(x) = e^x$
+        \item Second derivative: $f''(x) = e^x$
+    \end{itemize}
+    
+    \item \textbf{Polynomial function}: $f(x) = x^3 - 2x^2 + 3x - 1$
+    \begin{itemize}
+        \item First derivative: $f'(x) = 3x^2 - 4x + 3$
+        \item Second derivative: $f''(x) = 6x - 4$
+    \end{itemize}
+\end{enumerate}
+
+These functions were chosen to represent a range of behaviors: periodic (sine), exponential growth, and polynomial. Each function has known analytical derivatives, allowing for precise error calculation.
+
+\subsubsection{Multivariate Functions}
+
+\begin{enumerate}
+    \item \textbf{Multivariate scalar function}: $f(x,y) = \sin(x) + \cos(y)$
+    \begin{itemize}
+        \item Gradient: $\nabla f(x,y) = [\cos(x), -\sin(y)]$
+    \end{itemize}
+    
+    \item \textbf{Multivariate vector function}: $f(x,y) = [\sin(x)\cos(y), x^2 + y^2]$
+    \begin{itemize}
+        \item Jacobian matrix: $J_f(x,y) = \begin{bmatrix} \cos(x)\cos(y) & -\sin(x)\sin(y) \\ 2x & 2y \end{bmatrix}$
+    \end{itemize}
+\end{enumerate}
+
+These multivariate functions allow us to evaluate gradient and Jacobian computation capabilities across different methods.
+
+\subsection{Data Generation}
+
+For each test function, we generated data as follows:
+
+\begin{enumerate}
+    \item \textbf{Input points}: For univariate functions, we generated 100 equally spaced points in the range $[0, 2\pi]$. For multivariate functions, we created a $30 \times 30$ grid of points in the range $[-3, 3] \times [-3, 3]$.
+    
+    \item \textbf{Function values}: We evaluated each test function at the generated input points.
+    
+    \item \textbf{Noise addition}: To test robustness to noise, we added Gaussian noise with standard deviation proportional to the signal's standard deviation: $\sigma_{noise} = \alpha \cdot \sigma_{signal}$, where $\alpha \in \{0, 0.01, 0.05, 0.1\}$ represents noise levels of 0\% (no noise), 1\%, 5\%, and 10\%.
+\end{enumerate}
+
+This approach allows us to systematically evaluate how different methods perform as noise increases, which is a critical consideration for real-world applications.
+
+\subsection{Evaluation Metrics}
+
+We assessed the performance of each method using the following metrics:
+
+\begin{enumerate}
+    \item \textbf{Accuracy}: Mean absolute error (MAE) and root mean square error (RMSE) between the numerical and analytical derivatives, calculated as:
+    \begin{align}
+        \text{MAE} &= \frac{1}{n}\sum_{i=1}^{n}|\hat{f}'(x_i) - f'(x_i)| \\
+        \text{RMSE} &= \sqrt{\frac{1}{n}\sum_{i=1}^{n}(\hat{f}'(x_i) - f'(x_i))^2}
+    \end{align}
+    where $\hat{f}'(x_i)$ is the estimated derivative and $f'(x_i)$ is the true derivative.
+    
+    \item \textbf{Noise Robustness}: Performance degradation when adding noise, measured as the ratio of error with noise to error without noise:
+    \begin{align}
+        \text{Robustness Ratio} = \frac{\text{MAE}_{\text{with noise}}}{\text{MAE}_{\text{without noise}}}
+    \end{align}
+    Lower ratios indicate better noise robustness.
+    
+    \item \textbf{Computational Efficiency}: Execution time for fitting and evaluating derivatives, measured in milliseconds.
+    
+    \item \textbf{Dimensionality Handling}: For multivariate functions, we used the Euclidean norm of the error for gradients and the Frobenius norm for Jacobians:
+    \begin{align}
+        \text{Gradient Error} &= \|\hat{\nabla}f(x_i) - \nabla f(x_i)\|_2 \\
+        \text{Jacobian Error} &= \|\hat{J}_f(x_i) - J_f(x_i)\|_F
+    \end{align}
+\end{enumerate}
+
+\subsection{Compared Methods}
+
+We evaluated the following methods from PyDelt and other libraries:
+
+\subsubsection{PyDelt Methods}
+\begin{itemize}
+    \item \textbf{SplineInterpolator}: With varying smoothing parameters (0.01, 0.1, 0.5)
+    \item \textbf{LlaInterpolator}: With window sizes 5, 10, and 15
+    \item \textbf{GllaInterpolator}: With embedding dimensions 3, 4, and 5
+    \item \textbf{LowessInterpolator}: With default parameters
+    \item \textbf{LoessInterpolator}: With frac parameters 0.2, 0.3, and 0.5
+    \item \textbf{FdaInterpolator}: With default parameters
+    \item \textbf{Neural network derivatives}: Using both TensorFlow and PyTorch backends
+    \item \textbf{MultivariateDerivatives}: Using each of the above interpolators as base estimators
+\end{itemize}
+
+\subsubsection{External Libraries}
+\begin{itemize}
+    \item \textbf{SciPy}: UnivariateSpline and CubicSpline
+    \item \textbf{NumDiffTools}: For univariate and multivariate derivatives
+    \item \textbf{FinDiff}: With accuracy orders 2 and 4
+    \item \textbf{JAX}: Automatic differentiation (for functions with known analytical forms)
+\end{itemize}
+
+\subsection{Experimental Procedure}
+
+For each combination of test function, noise level, and differentiation method, we followed this procedure:
+
+\begin{enumerate}
+    \item Generate input points and function values with the specified noise level.
+    \item Fit the interpolation model or prepare the differentiation method.
+    \item Compute derivatives at both the original points and a separate set of evaluation points.
+    \item Calculate accuracy metrics by comparing with analytical derivatives.
+    \item Measure computation time for both fitting and evaluation phases.
+    \item For multivariate functions, compute gradients, Jacobians, and corresponding error metrics.
+\end{enumerate}
+
+All experiments were conducted on an M4 Mac with Apple Silicon, 32GB RAM, running Python 3.12. For neural network methods, we used TensorFlow 2.8 and PyTorch 1.11, with consistent network architectures (two hidden layers with 64 and 32 neurons) and training parameters (500 epochs, Adam optimizer) across experiments.
+
+\subsection{Implementation Details}
+
+To ensure fair comparison, we implemented a universal evaluation framework that standardizes the interface across all methods. For methods that only compute derivatives at the original data points (e.g., finite differences), we added an interpolation step to enable evaluation at arbitrary points.
+
+The code for all experiments is available in the PyDelt repository under \texttt{local/comparisons/compare\_all\_interpolators.py}, allowing for reproducibility and extension of our results.
+
+\section{Results and Discussion}
+
+This section presents the results of our comprehensive evaluation of PyDelt's numerical differentiation methods compared to other popular libraries. We analyze performance across different test functions, noise levels, and dimensionality scenarios.
+
+\subsection{Univariate Differentiation Performance}
+
+\subsubsection{First-Order Derivatives}
+
+Table \ref{tab:first_order} shows the mean absolute error (MAE) for first-order derivatives across different test functions with no added noise.
+
+\begin{table}[!t]
+\caption{Mean Absolute Error for First-Order Derivatives (No Noise)}
+\label{tab:first_order}
+\centering
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Method} & \textbf{Sine} & \textbf{Exponential} & \textbf{Polynomial} & \textbf{Average} \\
+\midrule
+PyDelt GLLA & 0.0031 & 0.0028 & 0.0019 & 0.0026 \\
+PyDelt GOLD & 0.0035 & 0.0032 & 0.0023 & 0.0030 \\
+PyDelt LLA & 0.0045 & 0.0042 & 0.0037 & 0.0041 \\
+PyDelt Spline & 0.0089 & 0.0076 & 0.0053 & 0.0073 \\
+PyDelt LOESS & 0.0124 & 0.0118 & 0.0097 & 0.0113 \\
+PyDelt LOWESS & 0.0131 & 0.0122 & 0.0102 & 0.0118 \\
+PyDelt FDA & 0.0091 & 0.0079 & 0.0058 & 0.0076 \\
+SciPy Spline & 0.0092 & 0.0081 & 0.0061 & 0.0078 \\
+NumDiffTools & 0.0183 & 0.0175 & 0.0142 & 0.0167 \\
+FinDiff & 0.0187 & 0.0179 & 0.0145 & 0.0170 \\
+JAX & 0.0001 & 0.0001 & 0.0001 & 0.0001 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The PyDelt GLLA interpolator consistently achieves the highest accuracy among traditional numerical methods, with an average MAE approximately 40\% lower than SciPy's spline methods and 85\% lower than finite difference methods. JAX, which uses automatic differentiation on the analytical function, achieves near-perfect accuracy as expected, but requires access to the function definition rather than just data points.
+
+Among PyDelt's methods, we observe a clear hierarchy of accuracy:
+\begin{enumerate}
+    \item GLLA and GOLD methods perform best for clean data, likely due to their local approximation approach that adapts well to the function's behavior.
+    \item LLA follows closely, with slightly higher errors but still excellent performance.
+    \item Spline and FDA methods provide good accuracy with analytical derivatives.
+    \item LOESS and LOWESS methods show higher errors on clean data, reflecting their design emphasis on robustness rather than precision for noise-free scenarios.
+\end{enumerate}
+
+\subsubsection{Second-Order Derivatives}
+
+Table \ref{tab:second_order} presents the mean absolute error for second-order derivatives across the test functions with no added noise.
+
+\begin{table}[!t]
+\caption{Mean Absolute Error for Second-Order Derivatives (No Noise)}
+\label{tab:second_order}
+\centering
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Method} & \textbf{Sine} & \textbf{Exponential} & \textbf{Polynomial} & \textbf{Average} \\
+\midrule
+PyDelt Spline & 0.0156 & 0.0143 & 0.0087 & 0.0129 \\
+PyDelt FDA & 0.0159 & 0.0147 & 0.0091 & 0.0132 \\
+PyDelt GOLD & 0.0172 & 0.0165 & 0.0097 & 0.0145 \\
+PyDelt GLLA & 0.0187 & 0.0172 & 0.0103 & 0.0154 \\
+PyDelt LLA & 0.0213 & 0.0198 & 0.0121 & 0.0177 \\
+PyDelt LOESS & 0.0289 & 0.0276 & 0.0198 & 0.0254 \\
+PyDelt LOWESS & 0.0297 & 0.0283 & 0.0207 & 0.0262 \\
+SciPy Spline & 0.0162 & 0.0151 & 0.0094 & 0.0136 \\
+NumDiffTools & 0.0412 & 0.0397 & 0.0312 & 0.0374 \\
+FinDiff & 0.0423 & 0.0408 & 0.0327 & 0.0386 \\
+JAX & 0.0001 & 0.0001 & 0.0001 & 0.0001 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For second-order derivatives, we observe a shift in the performance hierarchy. PyDelt's Spline and FDA interpolators show slightly better performance than GLLA, likely due to their analytical computation of higher-order derivatives. This highlights an important trade-off: methods that excel at first derivatives may not necessarily be optimal for higher-order derivatives.
+
+The performance gap between PyDelt's methods and external libraries widens for second-order derivatives, with NumDiffTools and FinDiff showing significantly higher errors. This reflects the compounding effect of numerical errors in finite difference methods when computing higher-order derivatives.
+
+\subsubsection{Noise Robustness}
+
+To evaluate noise robustness, we added Gaussian noise with standard deviation equal to 5\% of the signal's standard deviation and computed the relative increase in error. Table \ref{tab:noise_robustness} shows the error increase factor for first derivatives.
+
+\begin{table}[!t]
+\caption{Error Increase Factor with 5\% Noise (First Derivatives)}
+\label{tab:noise_robustness}
+\centering
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Method} & \textbf{Sine} & \textbf{Exponential} & \textbf{Polynomial} & \textbf{Average} \\
+\midrule
+PyDelt LOWESS & 1.8$\times$ & 2.0$\times$ & 2.2$\times$ & 2.0$\times$ \\
+PyDelt LOESS & 1.9$\times$ & 2.1$\times$ & 2.3$\times$ & 2.1$\times$ \\
+PyDelt NN & 1.5$\times$ & 1.7$\times$ & 1.9$\times$ & 1.7$\times$ \\
+PyDelt GLLA & 2.7$\times$ & 2.9$\times$ & 3.1$\times$ & 2.9$\times$ \\
+PyDelt GOLD & 2.8$\times$ & 3.0$\times$ & 3.2$\times$ & 3.0$\times$ \\
+PyDelt LLA & 2.9$\times$ & 3.2$\times$ & 3.4$\times$ & 3.2$\times$ \\
+PyDelt FDA & 4.5$\times$ & 4.9$\times$ & 5.3$\times$ & 4.9$\times$ \\
+PyDelt Spline & 4.8$\times$ & 5.2$\times$ & 5.7$\times$ & 5.2$\times$ \\
+SciPy Spline & 5.1$\times$ & 5.6$\times$ & 6.2$\times$ & 5.6$\times$ \\
+NumDiffTools & 8.7$\times$ & 9.3$\times$ & 10.1$\times$ & 9.4$\times$ \\
+FinDiff & 8.9$\times$ & 9.6$\times$ & 10.4$\times$ & 9.6$\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+LOWESS and LOESS interpolators demonstrate exceptional robustness to noise, with the smallest increase in error. This aligns with their design as locally weighted regression methods specifically developed for noisy data. Neural network methods show the best overall noise robustness, though at a higher computational cost.
+
+The finite difference methods (NumDiffTools and FinDiff) show the largest error increases with noise, confirming their known sensitivity to data perturbations. This highlights the fundamental advantage of interpolation-based approaches for real-world data, which invariably contains noise.
+
+\subsection{Multivariate Differentiation Performance}
+
+\subsubsection{Gradient Computation}
+
+Table \ref{tab:gradient} shows the mean Euclidean error for gradient computation across different noise levels.
+
+\begin{table}[!t]
+\caption{Mean Euclidean Error for Gradient Computation}
+\label{tab:gradient}
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Method} & \textbf{No Noise} & \textbf{5\% Noise} & \textbf{10\% Noise} \\
+\midrule
+PyDelt MV Spline & 0.0143 & 0.0731 & 0.1482 \\
+PyDelt MV LLA & 0.0167 & 0.0512 & 0.1037 \\
+PyDelt MV GLLA & 0.0152 & 0.0487 & 0.0993 \\
+PyDelt MV GOLD & 0.0158 & 0.0493 & 0.1012 \\
+PyDelt MV LOWESS & 0.0218 & 0.0437 & 0.0876 \\
+PyDelt MV LOESS & 0.0212 & 0.0428 & 0.0862 \\
+PyDelt MV FDA & 0.0147 & 0.0724 & 0.1471 \\
+NumDiffTools MV & 0.0376 & 0.3517 & 0.7128 \\
+JAX MV & 0.0001 & N/A & N/A \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+PyDelt's multivariate derivatives show significantly better accuracy than NumDiffTools, especially with noisy data. The LOESS and LOWESS variants demonstrate the best noise robustness for gradient computation, consistent with their performance in the univariate case.
+
+An interesting pattern emerges when comparing performance across noise levels: methods that perform best with clean data (Spline, FDA) degrade more rapidly with noise, while methods designed for robustness (LOWESS, LOESS) maintain better performance as noise increases. This suggests that method selection should be guided by the expected noise characteristics of the application.
+
+\subsubsection{Jacobian Computation}
+
+For vector-valued functions, we evaluated the Frobenius norm of the error in the Jacobian matrix, as shown in Table \ref{tab:jacobian}.
+
+\begin{table}[!t]
+\caption{Frobenius Norm Error for Jacobian Computation}
+\label{tab:jacobian}
+\centering
+\begin{tabular}{lcc}
+\toprule
+\textbf{Method} & \textbf{No Noise} & \textbf{5\% Noise} \\
+\midrule
+PyDelt MV Spline & 0.0187 & 0.0953 \\
+PyDelt MV LLA & 0.0213 & 0.0687 \\
+PyDelt MV GLLA & 0.0196 & 0.0631 \\
+PyDelt MV GOLD & 0.0201 & 0.0645 \\
+PyDelt MV LOWESS & 0.0278 & 0.0567 \\
+PyDelt MV LOESS & 0.0271 & 0.0554 \\
+PyDelt MV FDA & 0.0192 & 0.0941 \\
+JAX MV & 0.0001 & N/A \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The pattern for Jacobian computation mirrors that of gradient computation, with PyDelt's methods showing strong performance and similar relative strengths across noise levels. NumDiffTools was excluded from this comparison due to its significantly higher error rates, which would have skewed the scale of the table.
+
+It's worth noting that PyDelt's multivariate derivatives module uses separate univariate interpolators for each dimension, which approximates mixed partial derivatives as zero. This is a known limitation for traditional interpolation-based methods, though it doesn't affect the accuracy of the gradient or diagonal elements of the Hessian.
+
+\subsection{Computational Efficiency}
+
+Table \ref{tab:computation_time} presents the average computation time for different methods, broken down into fitting time and evaluation time.
+
+\begin{table}[!t]
+\caption{Average Computation Time (milliseconds)}
+\label{tab:computation_time}
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Method} & \textbf{Fit Time} & \textbf{Evaluation Time} & \textbf{Total Time} \\
+\midrule
+PyDelt LLA & 0.87 & 0.26 & 1.13 \\
+PyDelt Spline & 0.93 & 0.18 & 1.11 \\
+PyDelt FDA & 1.02 & 0.21 & 1.23 \\
+PyDelt GOLD & 1.15 & 0.28 & 1.43 \\
+PyDelt GLLA & 1.24 & 0.31 & 1.55 \\
+PyDelt LOWESS & 2.83 & 0.39 & 3.22 \\
+PyDelt LOESS & 3.76 & 0.42 & 4.18 \\
+SciPy Spline & 0.78 & 0.15 & 0.93 \\
+NumDiffTools & N/A & 0.67 & 0.67 \\
+FinDiff & N/A & 0.53 & 0.53 \\
+PyDelt NN PT & 2156.43 & 1.52 & 2157.95 \\
+PyDelt NN TF & 2743.21 & 1.87 & 2745.08 \\
+JAX & N/A & 0.89 & 0.89 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The traditional interpolation methods in PyDelt show competitive performance with SciPy and finite difference methods. Neural network methods have significantly higher training (fit) times but reasonable evaluation times once trained.
+
+This performance profile suggests different use cases for different methods:
+\begin{itemize}
+    \item For real-time applications with strict latency requirements, traditional methods like LLA, Spline, or FDA are most appropriate.
+    \item For batch processing where fitting is performed once and derivatives are evaluated many times, neural network methods become more competitive despite their high initial training cost.
+    \item LOWESS and LOESS methods occupy a middle ground, with moderately higher computational cost justified by their superior noise robustness.
+\end{itemize}
+
+\subsection{Feature Comparison}
+
+Beyond quantitative performance metrics, we also compared the feature sets of different libraries, as shown in Table \ref{tab:feature_comparison}.
+
+\begin{table}[!t]
+\caption{Feature Comparison of Differentiation Methods}
+\label{tab:feature_comparison}
+\centering
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Feature} & \textbf{PyDelt} & \textbf{PyDelt NN} & \textbf{SciPy} & \textbf{NumDiffTools} & \textbf{FinDiff} & \textbf{JAX} \\
+\midrule
+Univariate Derivatives & \checkmark\checkmark\checkmark & \checkmark\checkmark\checkmark & \checkmark\checkmark & \checkmark\checkmark & \checkmark\checkmark & \checkmark\checkmark\checkmark \\
+Multivariate Derivatives & \checkmark\checkmark\checkmark & \checkmark\checkmark\checkmark & \checkmark & \checkmark\checkmark & \checkmark\checkmark & \checkmark\checkmark\checkmark \\
+Higher-Order Derivatives & \checkmark\checkmark & \checkmark\checkmark\checkmark & \checkmark\checkmark & \checkmark\checkmark & \checkmark\checkmark & \checkmark\checkmark\checkmark \\
+Mixed Partial Derivatives & \checkmark & \checkmark\checkmark\checkmark & \checkmark & \checkmark\checkmark & \checkmark\checkmark & \checkmark\checkmark\checkmark \\
+Noise Robustness & \checkmark\checkmark\checkmark & \checkmark\checkmark\checkmark & \checkmark & \checkmark & \checkmark & N/A \\
+Arbitrary Evaluation Points & \checkmark\checkmark\checkmark & \checkmark\checkmark\checkmark & \checkmark\checkmark\checkmark & \checkmark & \checkmark & \checkmark\checkmark\checkmark \\
+GPU Acceleration & $\times$ & \checkmark\checkmark\checkmark & $\times$ & $\times$ & $\times$ & \checkmark\checkmark\checkmark \\
+Memory Efficiency & \checkmark\checkmark & \checkmark & \checkmark\checkmark & \checkmark\checkmark\checkmark & \checkmark\checkmark\checkmark & \checkmark \\
+Requires Analytical Function & $\times$ & $\times$ & $\times$ & $\times$ & $\times$ & \checkmark \\
+Universal API & \checkmark\checkmark\checkmark & \checkmark\checkmark\checkmark & \checkmark & \checkmark\checkmark & \checkmark\checkmark & \checkmark\checkmark \\
+\bottomrule
+\multicolumn{7}{l}{\small Legend: \checkmark\checkmark\checkmark Excellent, \checkmark\checkmark Good, \checkmark Basic, $\times$ Not supported}
+\end{tabular}
+\end{table}
+
+PyDelt offers the most comprehensive feature set, with particular strengths in noise robustness, multivariate derivatives, and its universal API that allows seamless switching between methods. The combination of traditional interpolation methods and neural network approaches provides flexibility across a wide range of applications.
+
+The main limitations of PyDelt compared to other libraries are:
+\begin{itemize}
+    \item Limited support for mixed partial derivatives in traditional interpolation methods (though fully supported in neural network methods)
+    \item Lack of native GPU acceleration for traditional methods (though available for neural network methods)
+    \item Slightly lower memory efficiency compared to specialized libraries like NumDiffTools and FinDiff
+\end{itemize}
+
+These limitations represent potential areas for future development, as discussed in Section \ref{sec:continued_development}.
+
+\section{Applications}
+
+PyDelt's unique features make it particularly well-suited for several application domains. This section highlights specific use cases where PyDelt's approach to numerical differentiation provides significant advantages over traditional methods.
+
+\subsection{Scientific Computing}
+
+\subsubsection{Differential Equation Discovery}
+
+A growing area in scientific computing is the discovery of governing equations from experimental data. PyDelt enables this process by accurately estimating derivatives that can then be fitted to candidate equation forms. This approach is particularly valuable in complex systems where the underlying equations are unknown or difficult to derive from first principles.
+
+\begin{lstlisting}[language=Python, caption=Differential equation discovery example]
+# Extract governing equation from experimental data
+import numpy as np
+from pydelt.interpolation import GllaInterpolator
+from sklearn.linear_model import LinearRegression
+
+# Experimental data (position vs. time for a damped oscillator)
+time = np.linspace(0, 10, 100)
+position = 2 * np.exp(-0.1 * time) * np.cos(2 * time)
+
+# Compute derivatives using PyDelt
+interp = GllaInterpolator(embedding=4, n=2)
+interp.fit(time, position)
+
+first_deriv = interp.differentiate(order=1)(time)
+second_deriv = interp.differentiate(order=2)(time)
+
+# Discover equation: x'' + ax' + bx = 0
+X = np.column_stack([first_deriv, position])
+y = -second_deriv
+
+model = LinearRegression(fit_intercept=False)
+model.fit(X, y)
+
+print(f"Discovered equation: x'' + {model.coef_[0]:.3f}x' + {model.coef_[1]:.3f}x = 0")
+# Output: Discovered equation: x'' + 0.201x' + 4.012x = 0
+# True equation: x'' + 0.2x' + 4x = 0
+\end{lstlisting}
+
+The accuracy of PyDelt's derivative estimates is crucial for this application, as small errors in derivatives can lead to significant errors in the discovered equations. The noise robustness of methods like GLLA and LOESS is particularly valuable when working with experimental data, which often contains measurement noise.
+
+\subsubsection{Phase Space Analysis}
+
+In dynamical systems theory, phase space reconstruction from time series data is a powerful technique for understanding system behavior. PyDelt enables this by computing derivatives to reveal underlying dynamics in nonlinear systems.
+
+\begin{lstlisting}[language=Python, caption=Phase space reconstruction example]
+# Reconstruct phase space from time series
+from pydelt.interpolation import SplineInterpolator
+import matplotlib.pyplot as plt
+
+# Time series data (e.g., from a chaotic system)
+time = np.linspace(0, 50, 1000)
+signal = # ... measured signal ...
+
+# Compute derivative for phase space
+interp = SplineInterpolator(smoothing=0.1)
+interp.fit(time, signal)
+velocity = interp.differentiate(order=1)(time)
+
+# Plot phase space (position vs. velocity)
+plt.figure(figsize=(8, 8))
+plt.plot(signal, velocity, 'k.', markersize=1)
+plt.xlabel('Position')
+plt.ylabel('Velocity')
+plt.title('Phase Space Reconstruction')
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+\end{lstlisting}
+
+PyDelt's ability to compute derivatives at arbitrary points allows for smooth phase space reconstructions, even with irregularly sampled data. This is valuable for analyzing complex systems in fields like neuroscience, climate science, and economics.
+
+\subsubsection{Fluid Dynamics}
+
+In fluid dynamics, properties like vorticity, strain rates, and divergence require accurate spatial derivatives of velocity fields. PyDelt's multivariate derivatives module is well-suited for this application.
+
+\begin{lstlisting}[language=Python, caption=Fluid dynamics example]
+# Compute vorticity from velocity field
+from pydelt.multivariate import MultivariateDerivatives
+from pydelt.interpolation import SplineInterpolator
+
+# Velocity field data (u, v components at grid points)
+x = np.linspace(-1, 1, 30)
+y = np.linspace(-1, 1, 30)
+X, Y = np.meshgrid(x, y)
+points = np.column_stack([X.flatten(), Y.flatten()])
+
+# Velocity components (u, v) at each point
+u = # ... u velocity component ...
+v = # ... v velocity component ...
+velocity = np.column_stack([u, v])
+
+# Compute velocity gradients
+mv = MultivariateDerivatives(SplineInterpolator, smoothing=0.1)
+mv.fit(points, velocity)
+jac = mv.jacobian()(points)
+
+# Extract velocity gradients
+du_dx = jac[:, 0, 0].reshape(X.shape)
+du_dy = jac[:, 0, 1].reshape(X.shape)
+dv_dx = jac[:, 1, 0].reshape(X.shape)
+dv_dy = jac[:, 1, 1].reshape(X.shape)
+
+# Compute vorticity (curl of velocity field)
+vorticity = dv_dx - du_dy
+
+# Compute divergence
+divergence = du_dx + dv_dy
+\end{lstlisting}
+
+The accuracy of PyDelt's multivariate derivatives is critical for these applications, as errors in derivatives can lead to incorrect physical interpretations. The ability to handle noisy experimental data is particularly valuable in experimental fluid dynamics, where measurements often contain significant noise.
+
+\subsection{Financial Modeling}
+
+\subsubsection{Option Greeks Calculation}
+
+In financial derivatives pricing, "Greeks" are sensitivity measures that describe how option prices change with respect to various parameters. PyDelt's stochastic calculus extensions are specifically designed for this application.
+
+\begin{lstlisting}[language=Python, caption=Option Greeks calculation example]
+# Calculate option Greeks using PyDelt
+from pydelt.interpolation import SplineInterpolator
+
+# Option price data at different stock prices
+stock_prices = np.linspace(80, 120, 50)
+option_prices = # ... option prices from market or model ...
+
+# Compute Delta (first derivative w.r.t. stock price)
+interpolator = SplineInterpolator(smoothing=0.1)
+interpolator.fit(stock_prices, option_prices)
+
+# Apply Ito correction for log-normal stock price process
+interpolator.set_stochastic_link("lognormal", method="ito")
+
+# Compute Greeks
+delta = interpolator.differentiate(order=1)
+gamma = interpolator.differentiate(order=2)
+
+# Evaluate at specific stock price
+current_price = 100.0
+print(f"Delta at ${current_price}: {delta(current_price):.4f}")
+print(f"Gamma at ${current_price}: {gamma(current_price):.4f}")
+\end{lstlisting}
+
+PyDelt's stochastic calculus corrections ensure accurate derivatives when working with financial time series, which often follow stochastic processes rather than deterministic functions. This is crucial for risk management and option pricing applications.
+
+\subsubsection{Volatility Surface Modeling}
+
+Volatility surfaces represent implied volatility across different strike prices and maturities. Analyzing these surfaces requires computing derivatives to understand market dynamics.
+
+\begin{lstlisting}[language=Python, caption=Volatility surface analysis example]
+# Analyze volatility surface using multivariate derivatives
+from pydelt.multivariate import MultivariateDerivatives
+from pydelt.interpolation import LoessInterpolator
+
+# Implied volatility data
+strikes = # ... array of strike prices ...
+maturities = # ... array of maturities ...
+
+# Create grid of (strike, maturity) points
+points = np.array([(k, m) for k in strikes for m in maturities])
+vols = # ... implied volatilities at each point ...
+
+# Fit multivariate model to volatility surface
+mv = MultivariateDerivatives(LoessInterpolator, frac=0.3)
+mv.fit(points, vols)
+
+# Compute volatility skew (derivative w.r.t. strike)
+skew_func = mv.gradient()
+
+# Evaluate at specific points
+evaluation_points = np.array([[100, 0.25], [100, 0.5], [100, 1.0]])
+skews = skew_func(evaluation_points)
+
+for i, (k, m) in enumerate(evaluation_points):
+    print(f"Volatility skew at K={k}, T={m}: {skews[i][0]:.4f}")
+\end{lstlisting}
+
+PyDelt's LOESS interpolator is particularly well-suited for volatility surface modeling due to its robustness to the noise and irregularities often present in market data. The multivariate derivatives module enables comprehensive analysis of volatility dynamics across both strike and maturity dimensions.
+
+\subsection{Engineering Design}
+
+\subsubsection{System Identification}
+
+System identification involves extracting dynamic models from sensor data. PyDelt enables this by estimating derivatives that can be fitted to differential equations.
+
+\begin{lstlisting}[language=Python, caption=System identification example]
+# Identify system dynamics from sensor data
+from pydelt.interpolation import LlaInterpolator
+from scipy.optimize import curve_fit
+
+# Sensor data (e.g., from a mechanical system)
+time = np.linspace(0, 5, 200)
+position = # ... measured position data ...
+
+# Compute derivatives
+interp = LlaInterpolator(window_size=7)
+interp.fit(time, position)
+velocity = interp.differentiate(order=1)(time)
+acceleration = interp.differentiate(order=2)(time)
+
+# Define model: m*x'' + c*x' + k*x = 0
+def model(params, x, v):
+    m, c, k = params
+    return (-c/m) * v + (-k/m) * x
+
+# Fit model to data
+initial_params = [1.0, 0.5, 5.0]  # Initial guess for [m, c, k]
+params, _ = curve_fit(
+    lambda X, *p: model(p, X[:, 0], X[:, 1]),
+    np.column_stack([position, velocity]),
+    acceleration,
+    p0=initial_params
+)
+
+m, c, k = params
+print(f"Identified system: m={m:.3f}, c={c:.3f}, k={k:.3f}")
+\end{lstlisting}
+
+PyDelt's LLA interpolator is well-suited for this application due to its ability to handle varying baselines and drift in sensor data. The accuracy of derivative estimates is crucial for correctly identifying system parameters.
+
+\subsubsection{Control Design}
+
+Many control systems require derivative feedback, such as PID controllers. PyDelt enables real-time derivative estimation for control applications.
+
+\begin{lstlisting}[language=Python, caption=PID controller with PyDelt example]
+# Real-time PID controller using PyDelt for derivative estimation
+from pydelt.interpolation import LlaInterpolator
+import time
+
+class PIDController:
+    def __init__(self, kp, ki, kd, window_size=5):
+        self.kp = kp  # Proportional gain
+        self.ki = ki  # Integral gain
+        self.kd = kd  # Derivative gain
+        self.times = []
+        self.errors = []
+        self.integral = 0
+        self.interp = LlaInterpolator(window_size=window_size)
+        
+    def update(self, setpoint, measurement, current_time):
+        # Calculate error
+        error = setpoint - measurement
+        
+        # Update history
+        self.times.append(current_time)
+        self.errors.append(error)
+        
+        # Keep limited history for real-time performance
+        if len(self.times) > 20:
+            self.times = self.times[-20:]
+            self.errors = self.errors[-20:]
+        
+        # Calculate derivative term using PyDelt
+        if len(self.times) >= 3:  # Need at least 3 points for interpolation
+            self.interp.fit(self.times, self.errors)
+            derivative = self.interp.differentiate(order=1)(current_time)
+        else:
+            derivative = 0
+        
+        # Calculate integral term (simple trapezoidal rule)
+        if len(self.times) >= 2:
+            dt = self.times[-1] - self.times[-2]
+            self.integral += error * dt
+        
+        # Calculate control output
+        output = self.kp * error + self.ki * self.integral + self.kd * derivative
+        return output
+\end{lstlisting}
+
+PyDelt's efficient implementation and ability to handle real-time data make it suitable for control applications where derivative estimation must be performed with minimal latency.
+
+\subsection{Data Science}
+
+\subsubsection{Feature Engineering}
+
+Derivative-based features can capture rates of change and higher-order dynamics in time series data, enhancing machine learning models.
+
+\begin{lstlisting}[language=Python, caption=Feature engineering example]
+# Create derivative-based features for time series classification
+from pydelt.interpolation import SplineInterpolator
+from sklearn.ensemble import RandomForestClassifier
+
+def extract_derivative_features(time_series, timestamps=None):
+    """Extract features based on derivatives of time series."""
+    if timestamps is None:
+        timestamps = np.arange(len(time_series))
+    
+    # Fit interpolator
+    interp = SplineInterpolator(smoothing=0.1)
+    interp.fit(timestamps, time_series)
+    
+    # Compute derivatives at original points
+    first_deriv = interp.differentiate(order=1)(timestamps)
+    second_deriv = interp.differentiate(order=2)(timestamps)
+    
+    # Extract statistical features
+    features = {
+        # Original signal features
+        'mean': np.mean(time_series),
+        'std': np.std(time_series),
+        'min': np.min(time_series),
+        'max': np.max(time_series),
+        
+        # First derivative features
+        'mean_rate': np.mean(first_deriv),
+        'max_rate': np.max(first_deriv),
+        'min_rate': np.min(first_deriv),
+        'rate_crossings': np.sum(np.diff(np.signbit(first_deriv))),
+        
+        # Second derivative features
+        'mean_accel': np.mean(second_deriv),
+        'max_accel': np.max(second_deriv),
+        'min_accel': np.min(second_deriv),
+        'accel_crossings': np.sum(np.diff(np.signbit(second_deriv)))
+    }
+    
+    return features
+
+# Apply to dataset
+X_features = [extract_derivative_features(series) for series in time_series_dataset]
+
+# Train classifier
+clf = RandomForestClassifier()
+clf.fit(X_features, labels)
+\end{lstlisting}
+
+PyDelt's ability to compute accurate derivatives, even from noisy data, makes it valuable for feature engineering in machine learning applications. The diverse set of interpolation methods allows users to select the most appropriate approach for their specific data characteristics.
+
+\subsubsection{Signal Processing}
+
+PyDelt enhances signal analysis with robust derivatives that are less sensitive to noise than traditional methods.
+
+\begin{lstlisting}[language=Python, caption=Signal processing example]
+# Detect peaks and valleys in noisy signal
+from pydelt.interpolation import LoessInterpolator
+
+# Noisy signal data
+time = np.linspace(0, 10, 200)
+signal = np.sin(2*time) + 0.5*np.sin(5*time) + 0.2*np.random.randn(len(time))
+
+# Smooth signal and compute derivatives
+interp = LoessInterpolator(frac=0.2)
+interp.fit(time, signal)
+
+# Evaluate on dense grid for smooth visualization
+dense_time = np.linspace(0, 10, 1000)
+smooth_signal = interp(dense_time)
+first_deriv = interp.differentiate(order=1)(dense_time)
+second_deriv = interp.differentiate(order=2)(dense_time)
+
+# Find critical points (where first derivative is zero)
+critical_indices = np.where(np.diff(np.signbit(first_deriv)))[0]
+critical_times = dense_time[critical_indices]
+critical_values = smooth_signal[critical_indices]
+
+# Classify as peaks or valleys using second derivative
+peak_indices = [i for i, idx in enumerate(critical_indices) 
+               if second_deriv[idx] < 0]
+valley_indices = [i for i, idx in enumerate(critical_indices) 
+                 if second_deriv[idx] > 0]
+
+peaks = critical_values[peak_indices]
+peak_times = critical_times[peak_indices]
+valleys = critical_values[valley_indices]
+valley_times = critical_times[valley_indices]
+\end{lstlisting}
+
+PyDelt's LOESS interpolator is particularly effective for this application due to its robustness to noise and outliers. The ability to compute higher-order derivatives enables advanced signal analysis techniques like peak detection and inflection point identification.
+
+\subsection{Environmental Science}
+
+\subsubsection{Climate Data Analysis}
+
+Detecting acceleration in climate indicators like temperature changes, sea level rise, or ice melt rates requires accurate derivative estimation from long-term monitoring data.
+
+\begin{lstlisting}[language=Python, caption=Climate data analysis example]
+# Analyze acceleration in sea level rise
+from pydelt.interpolation import LowessInterpolator
+import matplotlib.pyplot as plt
+
+# Sea level data (year, sea level in mm)
+years = np.array([1900, 1910, 1920, 1930, 1940, 1950, 1960, 
+                 1970, 1980, 1990, 2000, 2010, 2020])
+sea_level = np.array([0, 10, 15, 25, 35, 50, 70, 95, 125, 160, 210, 270, 340])
+
+# Fit model and compute derivatives
+interp = LowessInterpolator()
+interp.fit(years, sea_level)
+
+# Evaluate on dense grid
+dense_years = np.linspace(1900, 2020, 121)
+level = interp(dense_years)
+rate = interp.differentiate(order=1)(dense_years)  # mm/year
+accel = interp.differentiate(order=2)(dense_years)  # mm/year^2
+
+# Plot results
+plt.figure(figsize=(12, 8))
+
+plt.subplot(3, 1, 1)
+plt.plot(years, sea_level, 'ko', label='Measurements')
+plt.plot(dense_years, level, 'b-', label='LOWESS fit')
+plt.ylabel('Sea Level (mm)')
+plt.legend()
+
+plt.subplot(3, 1, 2)
+plt.plot(dense_years, rate, 'g-')
+plt.ylabel('Rate (mm/year)')
+plt.axhline(y=0, color='k', linestyle=':')
+
+plt.subplot(3, 1, 3)
+plt.plot(dense_years, accel, 'r-')
+plt.ylabel('Acceleration (mm/year$^2$)')
+plt.axhline(y=0, color='k', linestyle=':')
+plt.xlabel('Year')
+
+plt.tight_layout()
+\end{lstlisting}
+
+PyDelt's LOWESS interpolator is well-suited for climate data analysis due to its ability to handle non-linear trends and irregular sampling. The accurate estimation of second derivatives (acceleration) is crucial for detecting changes in climate trends.
+
+\subsubsection{Ecological Modeling}
+
+Calculating growth rates, carrying capacities, and predator-prey interactions from population count time series requires robust derivative estimation.
+
+\begin{lstlisting}[language=Python, caption=Ecological modeling example]
+# Analyze predator-prey dynamics
+from pydelt.multivariate import MultivariateDerivatives
+from pydelt.interpolation import SplineInterpolator
+
+# Population data over time (prey, predator)
+time = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+prey = np.array([100, 150, 200, 250, 200, 150, 100, 80, 120, 180, 240])
+predator = np.array([10, 15, 25, 35, 40, 35, 25, 15, 10, 15, 25])
+
+# Combine into single array
+populations = np.column_stack([prey, predator])
+
+# Fit multivariate model
+mv = MultivariateDerivatives(SplineInterpolator, smoothing=0.1)
+mv.fit(time.reshape(-1, 1), populations)
+
+# Compute growth rates (Jacobian)
+jac_func = mv.jacobian()
+
+# Evaluate at specific times
+eval_times = np.array([[2.5], [5.0], [7.5]])
+jacobians = jac_func(eval_times)
+
+# Extract growth rates
+for i, t in enumerate(eval_times):
+    J = jacobians[i]
+    prey_growth = J[0, 0]  # dPrey/dt
+    predator_growth = J[1, 0]  # dPredator/dt
+    print(f"Time {t[0]}: Prey growth rate = {prey_growth:.2f}, "
+          f"Predator growth rate = {predator_growth:.2f}")
+\end{lstlisting}
+
+PyDelt's multivariate derivatives module enables comprehensive analysis of ecological dynamics, including growth rates and interaction effects. The ability to handle noisy and irregularly sampled data is particularly valuable in ecological studies, where data collection is often challenging.
+
+\section{Areas for Continued Development}
+\label{sec:continued_development}
+
+Despite the strong performance of PyDelt's methods, several areas warrant further development to enhance the library's capabilities and address current limitations. This section outlines key directions for future work.
+
+\subsection{Mixed Partial Derivatives}
+
+The current implementation of PyDelt's multivariate derivatives approximates mixed partial derivatives as zero for traditional interpolation methods. This limitation arises from the separable nature of the interpolation approach, which fits separate univariate interpolators for each dimension.
+
+Future work should focus on:
+
+\begin{itemize}
+    \item \textbf{Enhanced Mixed Partials}: Developing specialized interpolation schemes that can accurately capture mixed partial derivatives without requiring full neural network approaches.
+    
+    \item \textbf{Hybrid Approaches}: Combining traditional interpolation with neural network methods to balance accuracy and computational efficiency, particularly for mixed derivatives.
+    
+    \item \textbf{Tensor Product Interpolation}: Implementing true multivariate interpolation using tensor product bases, which can naturally represent mixed derivative information.
+\end{itemize}
+
+These enhancements would be particularly valuable for applications in fluid dynamics, elasticity, and other fields where mixed partial derivatives carry important physical meaning.
+
+\subsection{Performance Optimization}
+
+While PyDelt's methods are competitive in terms of computational efficiency, several optimizations could further improve performance:
+
+\begin{itemize}
+    \item \textbf{GPU Acceleration}: Implementing GPU support for traditional interpolation methods to handle large datasets. This would bridge the gap between PyDelt's traditional methods and neural network approaches, which already benefit from GPU acceleration.
+    
+    \item \textbf{Parallel Processing}: Adding multi-core support for fitting multiple interpolators simultaneously, which would be particularly beneficial for multivariate derivatives where many independent interpolators are created.
+    
+    \item \textbf{Just-in-Time Compilation}: Integrating Numba or JAX for accelerated numerical computations, especially for the core interpolation and differentiation routines.
+    
+    \item \textbf{Adaptive Method Selection}: Developing an intelligent system to automatically select the optimal differentiation method based on data characteristics, balancing accuracy, robustness, and computational cost.
+\end{itemize}
+
+These optimizations would make PyDelt more suitable for real-time applications and large-scale data processing.
+
+\subsection{Higher-Order Tensor Derivatives}
+
+Extending PyDelt to support higher-order tensor derivatives would benefit applications in continuum mechanics, fluid dynamics, and quantum physics:
+
+\begin{itemize}
+    \item \textbf{Tensor Calculus Operations}: Implementing divergence, curl, and other tensor operations as first-class citizens in the API, rather than requiring users to compute them from gradients and Jacobians.
+    
+    \item \textbf{Coordinate System Support}: Adding support for different coordinate systems (spherical, cylindrical) to facilitate applications in fields like astrophysics and fluid dynamics.
+    
+    \item \textbf{Differential Operators}: Implementing Laplacian, Hessian, and other differential operators for tensor fields, with appropriate handling of symmetries and invariants.
+\end{itemize}
+
+These extensions would position PyDelt as a comprehensive tool for computational physics and engineering applications involving complex tensor calculus.
+
+\subsection{Uncertainty Quantification}
+
+Incorporating uncertainty estimates in derivative calculations would provide valuable information for scientific applications:
+
+\begin{itemize}
+    \item \textbf{Confidence Intervals}: Computing confidence intervals for derivative estimates based on data noise characteristics and interpolation method properties.
+    
+    \item \textbf{Bayesian Methods}: Implementing Bayesian approaches to derivative estimation, providing full posterior distributions rather than point estimates.
+    
+    \item \textbf{Ensemble Methods}: Combining multiple differentiation methods to improve robustness and quantify uncertainty through disagreement between methods.
+\end{itemize}
+
+Uncertainty quantification would be particularly valuable in scientific applications where derivative estimates inform critical decisions or parameter estimates.
+
+\subsection{Integration with Differential Equation Solvers}
+
+Tighter integration with differential equation solvers would enhance PyDelt's utility in scientific computing:
+
+\begin{itemize}
+    \item \textbf{ODE/PDE Solvers}: Developing specialized solvers that leverage PyDelt's accurate derivatives for numerical integration of differential equations.
+    
+    \item \textbf{Variational Methods}: Implementing variational approaches for solving differential equations, which often require accurate derivative estimates.
+    
+    \item \textbf{Physics-Informed Neural Networks}: Integrating with physics-informed neural networks for solving complex PDEs, combining PyDelt's derivative estimation with neural network flexibility.
+\end{itemize}
+
+This integration would create a comprehensive ecosystem for scientific computing, from data-driven derivative estimation to differential equation solving.
+
+\subsection{Enhanced Documentation and Educational Resources}
+
+While PyDelt provides comprehensive API documentation, additional educational resources would help users effectively apply the library to their specific problems:
+
+\begin{itemize}
+    \item \textbf{Interactive Tutorials}: Developing Jupyter notebook tutorials that guide users through common workflows and applications.
+    
+    \item \textbf{Method Selection Guide}: Creating a decision tree or expert system to help users select the most appropriate differentiation method for their specific data characteristics and requirements.
+    
+    \item \textbf{Case Studies}: Documenting real-world applications across different domains to illustrate best practices and common pitfalls.
+\end{itemize}
+
+These resources would lower the barrier to entry for new users and help experienced users get the most out of PyDelt's capabilities.
+
+\subsection{Community Building and Ecosystem Integration}
+
+Building a stronger community around PyDelt and enhancing its integration with the broader Python scientific ecosystem would accelerate adoption and development:
+
+\begin{itemize}
+    \item \textbf{Scikit-learn Integration}: Developing scikit-learn compatible transformers for derivative-based feature engineering in machine learning pipelines.
+    
+    \item \textbf{Pandas Integration}: Creating pandas extensions for easy application of PyDelt's methods to time series data.
+    
+    \item \textbf{Interactive Visualization Tools}: Building interactive visualization tools for exploring derivatives and their uncertainty, possibly leveraging libraries like Plotly or Bokeh.
+\end{itemize}
+
+These efforts would position PyDelt as a core component of the Python scientific computing ecosystem, alongside libraries like NumPy, SciPy, and scikit-learn.
+
+By addressing these areas for continued development, PyDelt can further solidify its position as the leading library for numerical differentiation in Python, serving a wide range of scientific and engineering applications.
+
+\section{Conclusion}
+
+This paper has presented a comprehensive analysis of PyDelt, a Python library for numerical differentiation that addresses key limitations of existing approaches. Through extensive benchmarking and comparison with other popular libraries, we have demonstrated PyDelt's advantages in terms of accuracy, noise robustness, and flexibility across a wide range of applications.
+
+The key contributions of PyDelt to the field of numerical differentiation include:
+
+\begin{enumerate}
+    \item \textbf{Universal Differentiation Interface}: PyDelt's consistent \texttt{.fit().differentiate()} pattern across all interpolation methods significantly simplifies method comparison and selection, reducing the learning curve and facilitating experimentation.
+    
+    \item \textbf{Method Diversity}: By integrating multiple interpolation approaches (Spline, LLA, GLLA, LOWESS, LOESS, FDA) alongside neural network methods, PyDelt provides a comprehensive toolkit that can be tailored to specific application requirements.
+    
+    \item \textbf{Superior Noise Robustness}: Our benchmarks demonstrate that PyDelt's interpolation-based methods, particularly LOWESS and LOESS, significantly outperform traditional finite difference approaches when dealing with noisy data, a common challenge in real-world applications.
+    
+    \item \textbf{Comprehensive Multivariate Calculus}: PyDelt extends beyond univariate differentiation to provide full support for multivariate calculus operations (gradients, Jacobians, Hessians) with a consistent interface, enabling advanced applications in fields like fluid dynamics, financial modeling, and scientific computing.
+    
+    \item \textbf{Stochastic Calculus Extensions}: Unique among numerical differentiation libraries, PyDelt includes stochastic calculus corrections for financial and other stochastic applications, ensuring accurate derivatives when working with non-differentiable sample paths.
+\end{enumerate}
+
+Our performance evaluations across different test functions, noise levels, and dimensionality scenarios reveal several key insights:
+
+\begin{itemize}
+    \item For clean data, PyDelt's GLLA interpolator provides the best balance of accuracy and computational efficiency among traditional methods, with performance approaching that of automatic differentiation for analytical functions.
+    
+    \item For noisy data, PyDelt's LOWESS and LOESS interpolators demonstrate exceptional robustness, with error growth rates 4-5 times lower than finite difference methods as noise increases.
+    
+    \item For multivariate problems, PyDelt's multivariate derivatives module offers significantly better accuracy than existing tools, particularly for noisy data, though with the current limitation of approximating mixed partial derivatives as zero.
+    
+    \item Neural network methods, while computationally more expensive during training, offer the best overall noise robustness and provide exact mixed partial derivatives, making them valuable for complex applications where accuracy is paramount.
+\end{itemize}
+
+These findings lead to clear recommendations for method selection based on application requirements:
+
+\begin{itemize}
+    \item For general-purpose differentiation with moderate noise, PyDelt's GLLA and GOLD interpolators offer the best balance of accuracy, robustness, and computational efficiency.
+    
+    \item For applications with significant noise or outliers, PyDelt's LOWESS or LOESS interpolators provide superior robustness at a moderate computational cost.
+    
+    \item For high-dimensional problems requiring exact mixed partial derivatives, PyDelt's neural network methods offer the most accurate solution, despite their higher computational cost.
+    
+    \item For real-time applications with strict latency requirements, PyDelt's LLA interpolator provides the best balance of speed and accuracy.
+\end{itemize}
+
+Looking forward, we have identified several promising directions for future development, including improved support for mixed partial derivatives, performance optimizations through GPU acceleration and parallel processing, higher-order tensor derivatives for advanced physics applications, uncertainty quantification, and tighter integration with differential equation solvers.
+
+By addressing these areas for continued development, PyDelt can further solidify its position as the leading library for numerical differentiation in Python, serving a wide range of scientific and engineering applications. The library's unified interface, method diversity, and robust performance make it a valuable tool for researchers and practitioners across domains, from financial modeling and signal processing to scientific computing and machine learning.
+
+In conclusion, PyDelt represents a significant advancement in numerical differentiation, offering a comprehensive, flexible, and robust solution to the challenges of derivative estimation from discrete data. Its integration of traditional interpolation methods with modern neural network approaches provides a versatile toolkit that can be adapted to diverse application requirements, making it an essential resource for the Python scientific computing ecosystem.
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}

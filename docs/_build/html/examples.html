@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="API Reference" href="api.html" />
+    <link rel="next" title="Visual Examples" href="visual_examples.html" />
     <link rel="prev" title="Stochastic Computing &amp; Probabilistic Derivatives" href="stochastic_computing.html" /> 
 </head>
 
@@ -42,19 +42,19 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Start Here:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Progressive Learning Path:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
 <li class="toctree-l1"><a class="reference internal" href="neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference &amp; Help:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#example-1-comparing-derivative-methods">Example 1: Comparing Derivative Methods</a></li>
@@ -64,8 +64,11 @@
 <li class="toctree-l2"><a class="reference internal" href="#example-5-multivariate-time-series">Example 5: Multivariate Time Series</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#example-6-understanding-numerical-limitations">Example 6: Understanding Numerical Limitations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#example-7-tensor-calculus">Example 7: Tensor Calculus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-8-stochastic-derivatives">Example 8: Stochastic Derivatives</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="visual_examples.html">Visual Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature_comparison.html">Feature Comparison Matrix</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
@@ -528,6 +531,59 @@
 </pre></div>
 </div>
 </section>
+<section id="example-8-stochastic-derivatives">
+<h2>Example 8: Stochastic Derivatives<a class="headerlink" href="#example-8-stochastic-derivatives" title="Link to this heading"></a></h2>
+<p>Computing derivatives with stochastic corrections for financial applications:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+
+<span class="c1"># Simulate stock price following geometric Brownian motion</span>
+<span class="c1"># dS_t = μS_t dt + σS_t dW_t</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="mf">1.0</span>          <span class="c1"># 1 year</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">252</span>          <span class="c1"># Daily observations</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">T</span> <span class="o">/</span> <span class="n">N</span>
+<span class="n">mu</span> <span class="o">=</span> <span class="mf">0.05</span>        <span class="c1"># Expected return (5%)</span>
+<span class="n">sigma</span> <span class="o">=</span> <span class="mf">0.2</span>      <span class="c1"># Volatility (20%)</span>
+<span class="n">S0</span> <span class="o">=</span> <span class="mi">100</span>         <span class="c1"># Initial stock price</span>
+
+<span class="c1"># Generate price path</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>  <span class="c1"># Brownian motion</span>
+<span class="n">S</span> <span class="o">=</span> <span class="n">S0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">((</span><span class="n">mu</span> <span class="o">-</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="n">t</span> <span class="o">+</span> <span class="n">sigma</span><span class="o">*</span><span class="n">W</span><span class="p">)</span>  <span class="c1"># GBM solution</span>
+
+<span class="c1"># Fit interpolator</span>
+<span class="n">spline</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="n">spline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">S</span><span class="p">)</span>
+
+<span class="c1"># Regular derivative (deterministic)</span>
+<span class="n">regular_deriv_func</span> <span class="o">=</span> <span class="n">spline</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">regular_derivatives</span> <span class="o">=</span> <span class="n">regular_deriv_func</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Stochastic derivative with lognormal correction (Itô)</span>
+<span class="n">spline</span><span class="o">.</span><span class="n">set_stochastic_link</span><span class="p">(</span><span class="s1">&#39;lognormal&#39;</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;ito&#39;</span><span class="p">)</span>
+<span class="n">stochastic_deriv_func</span> <span class="o">=</span> <span class="n">spline</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">stochastic_derivatives</span> <span class="o">=</span> <span class="n">stochastic_deriv_func</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Compare corrections</span>
+<span class="n">correction</span> <span class="o">=</span> <span class="n">stochastic_derivatives</span> <span class="o">-</span> <span class="n">regular_derivatives</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean stochastic correction: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">correction</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Std of correction: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">correction</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Option Greeks approximation</span>
+<span class="c1"># Delta ≈ ∂S/∂t (rate of change)</span>
+<span class="n">delta_approx</span> <span class="o">=</span> <span class="n">stochastic_derivatives</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Approximate Delta at maturity: </span><span class="si">{</span><span class="n">delta_approx</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Compare different stochastic methods</span>
+<span class="n">spline</span><span class="o">.</span><span class="n">set_stochastic_link</span><span class="p">(</span><span class="s1">&#39;lognormal&#39;</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="n">sigma</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;stratonovich&#39;</span><span class="p">)</span>
+<span class="n">stratonovich_deriv</span> <span class="o">=</span> <span class="n">spline</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="n">method_diff</span> <span class="o">=</span> <span class="n">stratonovich_deriv</span> <span class="o">-</span> <span class="n">stochastic_derivatives</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Itô vs Stratonovich difference: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">method_diff</span><span class="p">))</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 </section>
 
 
@@ -535,7 +591,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="stochastic_computing.html" class="btn btn-neutral float-left" title="Stochastic Computing &amp; Probabilistic Derivatives" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="api.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="visual_examples.html" class="btn btn-neutral float-right" title="Visual Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

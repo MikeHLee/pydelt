@@ -1,0 +1,885 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mathematical Theory &mdash; pydelt 0.4.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=6c02275b"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start Here:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference &amp; Help:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visual_examples.html">Visual Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature_comparison.html">Feature Comparison Matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Mathematical Theory</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/theory.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mathematical-theory">
+<h1>Mathematical Theory<a class="headerlink" href="#mathematical-theory" title="Link to this heading"></a></h1>
+<p>This section explains the mathematical foundations behind PyDelt’s numerical differentiation methods, from classical finite differences to modern interpolation-based approaches.</p>
+<nav class="contents local" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#notation-and-problem-setup" id="id2">Notation and Problem Setup</a></p>
+<ul>
+<li><p><a class="reference internal" href="#continuous-vs-discrete-functions" id="id3">Continuous vs. Discrete Functions</a></p></li>
+<li><p><a class="reference internal" href="#grid-types" id="id4">Grid Types</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#method-categories" id="id5">Method Categories</a></p>
+<ul>
+<li><p><a class="reference internal" href="#applicability-to-known-vs-unknown-functions" id="id6">Applicability to Known vs. Unknown Functions</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#finite-difference-methods" id="id7">Finite Difference Methods</a></p>
+<ul>
+<li><p><a class="reference internal" href="#basic-principle" id="id8">Basic Principle</a></p></li>
+<li><p><a class="reference internal" href="#central-difference-2nd-order" id="id9">Central Difference (2nd Order)</a></p></li>
+<li><p><a class="reference internal" href="#higher-order-derivatives" id="id10">Higher-Order Derivatives</a></p></li>
+<li><p><a class="reference internal" href="#accuracy-and-stability" id="id11">Accuracy and Stability</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#interpolation-based-methods" id="id12">Interpolation-Based Methods</a></p>
+<ul>
+<li><p><a class="reference internal" href="#core-idea" id="id13">Core Idea</a></p></li>
+<li><p><a class="reference internal" href="#spline-interpolation" id="id14">Spline Interpolation</a></p></li>
+<li><p><a class="reference internal" href="#local-linear-approximation-lla" id="id15">Local Linear Approximation (LLA)</a></p></li>
+<li><p><a class="reference internal" href="#generalized-lla-glla" id="id16">Generalized LLA (GLLA)</a></p></li>
+<li><p><a class="reference internal" href="#lowess-loess-methods" id="id17">LOWESS/LOESS Methods</a></p></li>
+<li><p><a class="reference internal" href="#functional-data-analysis-fda" id="id18">Functional Data Analysis (FDA)</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#neural-network-methods" id="id19">Neural Network Methods</a></p>
+<ul>
+<li><p><a class="reference internal" href="#automatic-differentiation" id="id20">Automatic Differentiation</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#multivariate-derivatives" id="id21">Multivariate Derivatives</a></p>
+<ul>
+<li><p><a class="reference internal" href="#gradient-scalar-functions" id="id22">Gradient (Scalar Functions)</a></p></li>
+<li><p><a class="reference internal" href="#jacobian-vector-functions" id="id23">Jacobian (Vector Functions)</a></p></li>
+<li><p><a class="reference internal" href="#hessian-second-derivatives" id="id24">Hessian (Second Derivatives)</a></p></li>
+<li><p><a class="reference internal" href="#laplacian-divergence-of-gradient" id="id25">Laplacian (Divergence of Gradient)</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#tensor-calculus-operations" id="id26">Tensor Calculus Operations</a></p>
+<ul>
+<li><p><a class="reference internal" href="#divergence-vector-fields" id="id27">Divergence (Vector Fields)</a></p></li>
+<li><p><a class="reference internal" href="#curl-vector-fields" id="id28">Curl (Vector Fields)</a></p></li>
+<li><p><a class="reference internal" href="#strain-and-stress-tensors" id="id29">Strain and Stress Tensors</a></p></li>
+<li><p><a class="reference internal" href="#directional-derivatives" id="id30">Directional Derivatives</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#stochastic-calculus-extensions" id="id31">Stochastic Calculus Extensions</a></p>
+<ul>
+<li><p><a class="reference internal" href="#ito-vs-stratonovich" id="id32">Itô vs. Stratonovich</a></p></li>
+<li><p><a class="reference internal" href="#stochastic-link-functions" id="id33">Stochastic Link Functions</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#error-analysis-and-accuracy" id="id34">Error Analysis and Accuracy</a></p>
+<ul>
+<li><p><a class="reference internal" href="#sources-of-error" id="id35">Sources of Error</a></p></li>
+<li><p><a class="reference internal" href="#error-bounds" id="id36">Error Bounds</a></p></li>
+<li><p><a class="reference internal" href="#method-selection-guidelines" id="id37">Method Selection Guidelines</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#theoretical-guarantees" id="id38">Theoretical Guarantees</a></p>
+<ul>
+<li><p><a class="reference internal" href="#convergence-properties" id="id39">Convergence Properties</a></p></li>
+<li><p><a class="reference internal" href="#consistency" id="id40">Consistency</a></p></li>
+<li><p><a class="reference internal" href="#asymptotic-normality" id="id41">Asymptotic Normality</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#references-and-further-reading" id="id42">References and Further Reading</a></p></li>
+<li><p><a class="reference internal" href="#summary" id="id43">Summary</a></p></li>
+<li><p><a class="reference internal" href="#implementation-status" id="id44">Implementation Status</a></p></li>
+<li><p><a class="reference internal" href="#citing-pydelt" id="id45">Citing PyDelt</a></p></li>
+<li><p><a class="reference internal" href="#license" id="id46">License</a></p></li>
+<li><p><a class="reference internal" href="#contributing" id="id47">Contributing</a></p></li>
+</ul>
+</nav>
+<section id="notation-and-problem-setup">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Notation and Problem Setup</a><a class="headerlink" href="#notation-and-problem-setup" title="Link to this heading"></a></h2>
+<section id="continuous-vs-discrete-functions">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">Continuous vs. Discrete Functions</a><a class="headerlink" href="#continuous-vs-discrete-functions" title="Link to this heading"></a></h3>
+<p>In numerical differentiation, we work with <strong>discrete data points</strong> rather than continuous functions:</p>
+<ul class="simple">
+<li><p><strong>Continuous case</strong>: We have a function <span class="math notranslate nohighlight">\(f: \mathbb{R} \to \mathbb{R}\)</span> and want <span class="math notranslate nohighlight">\(\frac{df}{dx}\)</span></p></li>
+<li><p><strong>Discrete case</strong>: We have data points <span class="math notranslate nohighlight">\(\{(t_i, s_i)\}_{i=1}^N\)</span> and want to estimate <span class="math notranslate nohighlight">\(\frac{ds}{dt}\)</span> at these or other points</p></li>
+</ul>
+<p>PyDelt addresses the discrete case by:</p>
+<ol class="arabic simple">
+<li><p><strong>Interpolation</strong>: Constructing a smooth function <span class="math notranslate nohighlight">\(\hat{f}\)</span> that approximates the data</p></li>
+<li><p><strong>Differentiation</strong>: Computing derivatives of <span class="math notranslate nohighlight">\(\hat{f}\)</span> analytically or numerically</p></li>
+</ol>
+</section>
+<section id="grid-types">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Grid Types</a><a class="headerlink" href="#grid-types" title="Link to this heading"></a></h3>
+<p>PyDelt supports both uniform and non-uniform grids:</p>
+<ul class="simple">
+<li><p><strong>Uniform grid</strong>: <span class="math notranslate nohighlight">\(t_i = a + i \cdot \Delta t\)</span> for constant spacing <span class="math notranslate nohighlight">\(\Delta t\)</span></p></li>
+<li><p><strong>Non-uniform grid</strong>: Arbitrary spacing <span class="math notranslate nohighlight">\(t_{i+1} - t_i \neq \text{constant}\)</span></p></li>
+</ul>
+<p>Most real-world data uses non-uniform grids, which PyDelt handles naturally through interpolation.</p>
+</section>
+</section>
+<section id="method-categories">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Method Categories</a><a class="headerlink" href="#method-categories" title="Link to this heading"></a></h2>
+<p>PyDelt implements three fundamental approaches to numerical differentiation, applicable to both <strong>known analytical functions</strong> (where we want numerical approximations) and <strong>unknown functions</strong> (where we only have discrete data):</p>
+<ol class="arabic simple">
+<li><p><strong>Finite Difference Methods</strong>: Direct approximation using neighboring points</p></li>
+<li><p><strong>Interpolation-Based Methods</strong>: Fit smooth functions, then differentiate</p></li>
+<li><p><strong>Learning-Based Methods</strong>: Neural networks with automatic differentiation</p></li>
+</ol>
+<p>Each has distinct advantages and theoretical properties.</p>
+<section id="applicability-to-known-vs-unknown-functions">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Applicability to Known vs. Unknown Functions</a><a class="headerlink" href="#applicability-to-known-vs-unknown-functions" title="Link to this heading"></a></h3>
+<p><strong>Known Functions</strong> (analytical form available):</p>
+<ul class="simple">
+<li><p><strong>Use Case</strong>: When you have f(x) = sin(x) or other explicit formulas but need numerical derivatives</p></li>
+<li><p><strong>Why Numerical Methods</strong>: Automatic differentiation, avoiding symbolic complexity, or validating analytical derivatives</p></li>
+<li><p><strong>Best Methods</strong>: Neural networks with autodiff (exact), splines (high accuracy), LLA/GLLA (robust)</p></li>
+</ul>
+<p><strong>Unknown Functions</strong> (only discrete data available):</p>
+<ul class="simple">
+<li><p><strong>Use Case</strong>: Experimental measurements, sensor data, financial time series, physical observations</p></li>
+<li><p><strong>Challenge</strong>: Must reconstruct smooth function from noisy, sparse, or irregularly sampled data</p></li>
+<li><p><strong>Best Methods</strong>: LOWESS/LOESS (robust to noise), FDA (functional data), splines (smooth data), neural networks (complex patterns)</p></li>
+</ul>
+<p><strong>PyDelt’s Universal Approach</strong>: All methods work seamlessly for both cases through the unified <cite>.fit(input_data, output_data).differentiate(order)</cite> interface.</p>
+</section>
+</section>
+<section id="finite-difference-methods">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Finite Difference Methods</a><a class="headerlink" href="#finite-difference-methods" title="Link to this heading"></a></h2>
+<section id="basic-principle">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Basic Principle</a><a class="headerlink" href="#basic-principle" title="Link to this heading"></a></h3>
+<p>Finite differences approximate derivatives as linear combinations of function values at neighboring points:</p>
+<div class="math notranslate nohighlight">
+\[\frac{d^n f}{dt^n}\bigg|_{t=t_k} \approx \sum_{i \in A} c_i \cdot f(t_{k+i})\]</div>
+<p>where <span class="math notranslate nohighlight">\(A\)</span> is a set of offsets (the <strong>stencil</strong>) and <span class="math notranslate nohighlight">\(c_i\)</span> are <strong>finite difference coefficients</strong>.</p>
+</section>
+<section id="central-difference-2nd-order">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Central Difference (2nd Order)</a><a class="headerlink" href="#central-difference-2nd-order" title="Link to this heading"></a></h3>
+<p>The most common scheme is the <strong>central difference</strong> for first derivatives:</p>
+<div class="math notranslate nohighlight">
+\[f'(t_k) \approx \frac{f(t_{k+1}) - f(t_{k-1})}{2\Delta t}\]</div>
+<p><strong>Derivation from Taylor Series</strong>:</p>
+<p>Expand <span class="math notranslate nohighlight">\(f(t_{k+1})\)</span> and <span class="math notranslate nohighlight">\(f(t_{k-1})\)</span> around <span class="math notranslate nohighlight">\(t_k\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}f(t_{k+1}) &amp;= f(t_k) + \Delta t \cdot f'(t_k) + \frac{(\Delta t)^2}{2} f''(t_k) + O(\Delta t^3) \\
+f(t_{k-1}) &amp;= f(t_k) - \Delta t \cdot f'(t_k) + \frac{(\Delta t)^2}{2} f''(t_k) + O(\Delta t^3)\end{split}\]</div>
+<p>Subtracting:</p>
+<div class="math notranslate nohighlight">
+\[f(t_{k+1}) - f(t_{k-1}) = 2\Delta t \cdot f'(t_k) + O(\Delta t^3)\]</div>
+<p>Therefore:</p>
+<div class="math notranslate nohighlight">
+\[f'(t_k) = \frac{f(t_{k+1}) - f(t_{k-1})}{2\Delta t} + O(\Delta t^2)\]</div>
+<p>The error is <span class="math notranslate nohighlight">\(O(\Delta t^2)\)</span>, making this a <strong>second-order accurate</strong> method.</p>
+<p><strong>Stencil Visualization</strong>:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Points:    t_{k-1}    t_k    t_{k+1}
+Weights:     -1/2Δt     0      +1/2Δt
+</pre></div>
+</div>
+</section>
+<section id="higher-order-derivatives">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">Higher-Order Derivatives</a><a class="headerlink" href="#higher-order-derivatives" title="Link to this heading"></a></h3>
+<p>For second derivatives, the central difference formula is:</p>
+<div class="math notranslate nohighlight">
+\[f''(t_k) \approx \frac{f(t_{k+1}) - 2f(t_k) + f(t_{k-1})}{(\Delta t)^2}\]</div>
+<p><strong>Stencil</strong>:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Points:    t_{k-1}      t_k      t_{k+1}
+Weights:    1/Δt²     -2/Δt²      1/Δt²
+</pre></div>
+</div>
+<p><strong>Iterative Approach</strong> (used in PyDelt):</p>
+<p>For <span class="math notranslate nohighlight">\(n\)</span>-th order derivatives, apply central differences recursively:</p>
+<div class="math notranslate nohighlight">
+\[f^{(n)}(t) \approx \frac{f^{(n-1)}(t+h) - f^{(n-1)}(t-h)}{2h}\]</div>
+<p>This is implemented in <code class="docutils literal notranslate"><span class="pre">LowessInterpolator</span></code> and <code class="docutils literal notranslate"><span class="pre">LoessInterpolator</span></code>.</p>
+</section>
+<section id="accuracy-and-stability">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Accuracy and Stability</a><a class="headerlink" href="#accuracy-and-stability" title="Link to this heading"></a></h3>
+<p><strong>Accuracy</strong>: Central differences are <span class="math notranslate nohighlight">\(O(\Delta t^2)\)</span> accurate</p>
+<p><strong>Stability Issues</strong>:</p>
+<ul class="simple">
+<li><p><strong>Noise amplification</strong>: Differentiation amplifies high-frequency noise</p></li>
+<li><p><strong>Truncation error</strong>: Finite <span class="math notranslate nohighlight">\(\Delta t\)</span> introduces approximation errors</p></li>
+<li><p><strong>Cancellation error</strong>: Subtracting similar numbers loses precision</p></li>
+</ul>
+<p><strong>PyDelt’s Solution</strong>: Use interpolation to smooth data before applying finite differences.</p>
+</section>
+</section>
+<section id="interpolation-based-methods">
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Interpolation-Based Methods</a><a class="headerlink" href="#interpolation-based-methods" title="Link to this heading"></a></h2>
+<section id="core-idea">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Core Idea</a><a class="headerlink" href="#core-idea" title="Link to this heading"></a></h3>
+<p>Instead of directly using finite differences on raw data:</p>
+<ol class="arabic simple">
+<li><p><strong>Fit</strong> a smooth interpolating function <span class="math notranslate nohighlight">\(\hat{f}(t)\)</span> to the data</p></li>
+<li><p><strong>Differentiate</strong> <span class="math notranslate nohighlight">\(\hat{f}(t)\)</span> analytically or numerically</p></li>
+</ol>
+<p>This approach:</p>
+<ul class="simple">
+<li><p>Reduces noise sensitivity</p></li>
+<li><p>Provides derivatives at arbitrary points (not just grid points)</p></li>
+<li><p>Enables higher-order derivatives with better stability</p></li>
+</ul>
+</section>
+<section id="spline-interpolation">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">Spline Interpolation</a><a class="headerlink" href="#spline-interpolation" title="Link to this heading"></a></h3>
+<p><strong>Method</strong>: Fit piecewise cubic polynomials with continuous second derivatives</p>
+<p><strong>Mathematical Form</strong>:</p>
+<p>On interval <span class="math notranslate nohighlight">\([t_i, t_{i+1}]\)</span>, the spline is:</p>
+<div class="math notranslate nohighlight">
+\[S(t) = a_i + b_i(t-t_i) + c_i(t-t_i)^2 + d_i(t-t_i)^3\]</div>
+<p><strong>Derivative Computation</strong>:</p>
+<p>Analytical differentiation of the spline:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}S'(t) &amp;= b_i + 2c_i(t-t_i) + 3d_i(t-t_i)^2 \\
+S''(t) &amp;= 2c_i + 6d_i(t-t_i)\end{split}\]</div>
+<p><strong>Advantages</strong>:</p>
+<ul class="simple">
+<li><p>Smooth interpolation (C² continuity)</p></li>
+<li><p>Analytical derivatives (no numerical errors)</p></li>
+<li><p>Efficient computation via scipy’s <code class="docutils literal notranslate"><span class="pre">UnivariateSpline</span></code></p></li>
+</ul>
+<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">SplineInterpolator</span></code> class</p>
+<p><strong>Smoothing Parameter</strong>:</p>
+<p>PyDelt uses smoothing splines that minimize:</p>
+<div class="math notranslate nohighlight">
+\[\sum_{i=1}^N (s_i - S(t_i))^2 + \lambda \int (S''(t))^2 dt\]</div>
+<p>where <span class="math notranslate nohighlight">\(\lambda\)</span> is the smoothing parameter (<code class="docutils literal notranslate"><span class="pre">smoothing</span></code> argument).</p>
+</section>
+<section id="local-linear-approximation-lla">
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">Local Linear Approximation (LLA)</a><a class="headerlink" href="#local-linear-approximation-lla" title="Link to this heading"></a></h3>
+<p><strong>Method</strong>: Fit local polynomials in sliding windows</p>
+<p><strong>Mathematical Form</strong>:</p>
+<p>At each point <span class="math notranslate nohighlight">\(t_k\)</span>, fit a polynomial to nearby points:</p>
+<div class="math notranslate nohighlight">
+\[p(t) = a_0 + a_1(t-t_k) + a_2(t-t_k)^2 + \ldots\]</div>
+<p>using points <span class="math notranslate nohighlight">\(\{t_i : |i-k| \leq w\}\)</span> where <span class="math notranslate nohighlight">\(w\)</span> is the window size.</p>
+<p><strong>Derivative Estimation</strong>:</p>
+<p>The derivative at <span class="math notranslate nohighlight">\(t_k\)</span> is the polynomial coefficient:</p>
+<div class="math notranslate nohighlight">
+\[f'(t_k) \approx a_1\]</div>
+<p>For higher orders:</p>
+<div class="math notranslate nohighlight">
+\[f''(t_k) \approx 2a_2, \quad f'''(t_k) \approx 6a_3\]</div>
+<p><strong>Hermite Polynomial Representation</strong>:</p>
+<p>PyDelt uses Hermite polynomials for analytical derivatives:</p>
+<div class="math notranslate nohighlight">
+\[H(t) = f(t_k) + f'(t_k)(t-t_k) + \frac{f''(t_k)}{2}(t-t_k)^2 + \ldots\]</div>
+<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">LlaInterpolator</span></code> class</p>
+<p><strong>Advantages</strong>:</p>
+<ul class="simple">
+<li><p>Adaptive to local data behavior</p></li>
+<li><p>Robust to varying noise levels</p></li>
+<li><p>Analytical derivatives from polynomial coefficients</p></li>
+</ul>
+</section>
+<section id="generalized-lla-glla">
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">Generalized LLA (GLLA)</a><a class="headerlink" href="#generalized-lla-glla" title="Link to this heading"></a></h3>
+<p><strong>Extension</strong>: Uses Takens’ embedding theorem for time series</p>
+<p><strong>Mathematical Form</strong>:</p>
+<p>For a time series, construct delay-coordinate embedding:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{x}_i = [s_i, s_{i+\tau}, s_{i+2\tau}, \ldots, s_{i+(m-1)\tau}]\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(m\)</span> = embedding dimension</p></li>
+<li><p><span class="math notranslate nohighlight">\(\tau\)</span> = time delay</p></li>
+</ul>
+<p>Then apply local polynomial fitting in the embedded space.</p>
+<p><strong>Derivative Computation</strong>:</p>
+<p>Same as LLA but in higher-dimensional space, capturing temporal dependencies.</p>
+<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">GllaInterpolator</span></code> class</p>
+<p><strong>Use Cases</strong>:</p>
+<ul class="simple">
+<li><p>Chaotic time series</p></li>
+<li><p>Nonlinear dynamical systems</p></li>
+<li><p>Data with temporal correlations</p></li>
+</ul>
+</section>
+<section id="lowess-loess-methods">
+<h3><a class="toc-backref" href="#id17" role="doc-backlink">LOWESS/LOESS Methods</a><a class="headerlink" href="#lowess-loess-methods" title="Link to this heading"></a></h3>
+<p><strong>Method</strong>: Locally weighted regression with robust weights</p>
+<p><strong>Mathematical Form</strong>:</p>
+<p>At each point <span class="math notranslate nohighlight">\(t_k\)</span>, minimize weighted least squares:</p>
+<div class="math notranslate nohighlight">
+\[\min_{a,b} \sum_{i=1}^N w_i(t_k) \cdot (s_i - a - b(t_i - t_k))^2\]</div>
+<p>where <span class="math notranslate nohighlight">\(w_i(t_k)\)</span> are tricube weights:</p>
+<div class="math notranslate nohighlight">
+\[w_i(t_k) = \left(1 - \left|\frac{t_i - t_k}{d(t_k)}\right|^3\right)^3\]</div>
+<p>and <span class="math notranslate nohighlight">\(d(t_k)\)</span> is the distance to the <span class="math notranslate nohighlight">\(k\)</span>-th nearest neighbor.</p>
+<p><strong>Derivative Computation</strong>:</p>
+<p>PyDelt uses two approaches:</p>
+<ol class="arabic simple">
+<li><p><strong>Numerical differentiation</strong> of the smoothed curve using central differences</p></li>
+<li><p><strong>Direct estimation</strong> from local regression slope <span class="math notranslate nohighlight">\(b\)</span></p></li>
+</ol>
+<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">LowessInterpolator</span></code> and <code class="docutils literal notranslate"><span class="pre">LoessInterpolator</span></code> classes</p>
+<p><strong>Advantages</strong>:</p>
+<ul class="simple">
+<li><p>Robust to outliers</p></li>
+<li><p>Automatic bandwidth selection</p></li>
+<li><p>No global parametric assumptions</p></li>
+</ul>
+</section>
+<section id="functional-data-analysis-fda">
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">Functional Data Analysis (FDA)</a><a class="headerlink" href="#functional-data-analysis-fda" title="Link to this heading"></a></h3>
+<p><strong>Method</strong>: Represent data as smooth functions using basis expansions</p>
+<p><strong>Mathematical Form</strong>:</p>
+<p>Represent the function as a linear combination of basis functions:</p>
+<div class="math notranslate nohighlight">
+\[f(t) = \sum_{k=1}^K c_k \phi_k(t)\]</div>
+<p>Common bases:</p>
+<ul class="simple">
+<li><p><strong>B-splines</strong>: Piecewise polynomials</p></li>
+<li><p><strong>Fourier</strong>: Trigonometric functions</p></li>
+<li><p><strong>Wavelets</strong>: Localized oscillations</p></li>
+</ul>
+<p><strong>Derivative Computation</strong>:</p>
+<p>Differentiate the basis functions:</p>
+<div class="math notranslate nohighlight">
+\[f'(t) = \sum_{k=1}^K c_k \phi_k'(t)\]</div>
+<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">FdaInterpolator</span></code> class (uses B-spline basis)</p>
+<p><strong>Advantages</strong>:</p>
+<ul class="simple">
+<li><p>Principled statistical framework</p></li>
+<li><p>Optimal smoothing parameter selection</p></li>
+<li><p>Handles functional data naturally</p></li>
+</ul>
+</section>
+</section>
+<section id="neural-network-methods">
+<h2><a class="toc-backref" href="#id19" role="doc-backlink">Neural Network Methods</a><a class="headerlink" href="#neural-network-methods" title="Link to this heading"></a></h2>
+<section id="automatic-differentiation">
+<h3><a class="toc-backref" href="#id20" role="doc-backlink">Automatic Differentiation</a><a class="headerlink" href="#automatic-differentiation" title="Link to this heading"></a></h3>
+<p><strong>Method</strong>: Train neural networks, then use automatic differentiation (autodiff)</p>
+<p><strong>Mathematical Form</strong>:</p>
+<p>Neural network function:</p>
+<div class="math notranslate nohighlight">
+\[\hat{f}(t; \theta) = W_L \sigma(W_{L-1} \sigma(\ldots \sigma(W_1 t + b_1) \ldots) + b_{L-1}) + b_L\]</div>
+<p>where <span class="math notranslate nohighlight">\(\theta = \{W_i, b_i\}\)</span> are learned parameters and <span class="math notranslate nohighlight">\(\sigma\)</span> is an activation function.</p>
+<p><strong>Derivative Computation</strong>:</p>
+<p>Use automatic differentiation (backpropagation):</p>
+<div class="math notranslate nohighlight">
+\[\frac{d\hat{f}}{dt} = \frac{\partial \hat{f}}{\partial t}\bigg|_{\theta=\theta^*}\]</div>
+<p>computed via chain rule through the network.</p>
+<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">NeuralNetworkInterpolator</span></code> class</p>
+<p><strong>Advantages</strong>:</p>
+<ul class="simple">
+<li><p><strong>Exact derivatives</strong> (no numerical approximation)</p></li>
+<li><p>Scales to high dimensions</p></li>
+<li><p>Captures complex nonlinear patterns</p></li>
+<li><p>Automatic higher-order derivatives</p></li>
+</ul>
+<p><strong>Frameworks</strong>: PyTorch and TensorFlow support</p>
+</section>
+</section>
+<section id="multivariate-derivatives">
+<h2><a class="toc-backref" href="#id21" role="doc-backlink">Multivariate Derivatives</a><a class="headerlink" href="#multivariate-derivatives" title="Link to this heading"></a></h2>
+<p>PyDelt provides comprehensive multivariate calculus operations through the <code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives</span></code> class, supporting gradient, Jacobian, Hessian, and Laplacian computations. These operations are <strong>fully implemented and production-ready</strong> with extensive documentation and examples.</p>
+<section id="gradient-scalar-functions">
+<h3><a class="toc-backref" href="#id22" role="doc-backlink">Gradient (Scalar Functions)</a><a class="headerlink" href="#gradient-scalar-functions" title="Link to this heading"></a></h3>
+<p>For <span class="math notranslate nohighlight">\(f: \mathbb{R}^n \to \mathbb{R}\)</span>, the gradient is:</p>
+<div class="math notranslate nohighlight">
+\[\nabla f = \left[\frac{\partial f}{\partial x_1}, \frac{\partial f}{\partial x_2}, \ldots, \frac{\partial f}{\partial x_n}\right]^T\]</div>
+<p><strong>PyDelt Approach</strong>:</p>
+<ol class="arabic simple">
+<li><p>Fit separate 1D interpolators for each partial derivative <span class="math notranslate nohighlight">\(\frac{\partial f}{\partial x_i}\)</span></p></li>
+<li><p>Evaluate at query points to get gradient vector</p></li>
+</ol>
+<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives.gradient()</span></code> ✅ <strong>IMPLEMENTED</strong></p>
+<p><strong>Use Cases</strong>:</p>
+<ul class="simple">
+<li><p><strong>Optimization</strong>: Finding critical points, gradient descent algorithms</p></li>
+<li><p><strong>Physics</strong>: Electric field from potential, temperature gradients</p></li>
+<li><p><strong>Machine Learning</strong>: Loss function gradients, feature importance</p></li>
+</ul>
+</section>
+<section id="jacobian-vector-functions">
+<h3><a class="toc-backref" href="#id23" role="doc-backlink">Jacobian (Vector Functions)</a><a class="headerlink" href="#jacobian-vector-functions" title="Link to this heading"></a></h3>
+<p>For <span class="math notranslate nohighlight">\(\mathbf{f}: \mathbb{R}^n \to \mathbb{R}^m\)</span>, the Jacobian is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}J_{\mathbf{f}} = \begin{bmatrix}
+\frac{\partial f_1}{\partial x_1} &amp; \cdots &amp; \frac{\partial f_1}{\partial x_n} \\
+\vdots &amp; \ddots &amp; \vdots \\
+\frac{\partial f_m}{\partial x_1} &amp; \cdots &amp; \frac{\partial f_m}{\partial x_n}
+\end{bmatrix}\end{split}\]</div>
+<p><strong>PyDelt Approach</strong>:</p>
+<p>Fit interpolators for each output-input pair <span class="math notranslate nohighlight">\(\frac{\partial f_i}{\partial x_j}\)</span></p>
+<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives.jacobian()</span></code> ✅ <strong>IMPLEMENTED</strong></p>
+<p><strong>Use Cases</strong>:</p>
+<ul class="simple">
+<li><p><strong>Fluid Dynamics</strong>: Velocity field analysis, vorticity and divergence computation</p></li>
+<li><p><strong>Robotics</strong>: Kinematic transformations, manipulator Jacobians</p></li>
+<li><p><strong>Dynamical Systems</strong>: Linearization around equilibrium points, stability analysis</p></li>
+</ul>
+</section>
+<section id="hessian-second-derivatives">
+<h3><a class="toc-backref" href="#id24" role="doc-backlink">Hessian (Second Derivatives)</a><a class="headerlink" href="#hessian-second-derivatives" title="Link to this heading"></a></h3>
+<p>For <span class="math notranslate nohighlight">\(f: \mathbb{R}^n \to \mathbb{R}\)</span>, the Hessian is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}H_f = \begin{bmatrix}
+\frac{\partial^2 f}{\partial x_1^2} &amp; \cdots &amp; \frac{\partial^2 f}{\partial x_1 \partial x_n} \\
+\vdots &amp; \ddots &amp; \vdots \\
+\frac{\partial^2 f}{\partial x_n \partial x_1} &amp; \cdots &amp; \frac{\partial^2 f}{\partial x_n^2}
+\end{bmatrix}\end{split}\]</div>
+<p><strong>PyDelt Approach</strong>:</p>
+<ul class="simple">
+<li><p><strong>Diagonal elements</strong>: Second-order differentiation of 1D interpolators</p></li>
+<li><p><strong>Off-diagonal (mixed partials)</strong>: Approximated as zero for traditional methods</p></li>
+</ul>
+<p><strong>Note</strong>: For exact mixed partials, use neural network methods with autodiff.</p>
+<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives.hessian()</span></code> ✅ <strong>IMPLEMENTED</strong></p>
+<p><strong>Use Cases</strong>:</p>
+<ul class="simple">
+<li><p><strong>Optimization</strong>: Newton’s method, trust region algorithms, curvature analysis</p></li>
+<li><p><strong>Statistics</strong>: Fisher information matrix, covariance estimation</p></li>
+<li><p><strong>Physics</strong>: Stability analysis, potential energy surfaces</p></li>
+</ul>
+</section>
+<section id="laplacian-divergence-of-gradient">
+<h3><a class="toc-backref" href="#id25" role="doc-backlink">Laplacian (Divergence of Gradient)</a><a class="headerlink" href="#laplacian-divergence-of-gradient" title="Link to this heading"></a></h3>
+<p>The Laplacian is the trace of the Hessian:</p>
+<div class="math notranslate nohighlight">
+\[\nabla^2 f = \text{tr}(H_f) = \sum_{i=1}^n \frac{\partial^2 f}{\partial x_i^2}\]</div>
+<p><strong>PyDelt Approach</strong>:</p>
+<p>Sum diagonal elements of the Hessian.</p>
+<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives.laplacian()</span></code> ✅ <strong>IMPLEMENTED</strong></p>
+<p><strong>Applications</strong>:</p>
+<ul class="simple">
+<li><p>Heat equation: <span class="math notranslate nohighlight">\(\frac{\partial u}{\partial t} = \alpha \nabla^2 u\)</span></p></li>
+<li><p>Poisson equation: <span class="math notranslate nohighlight">\(\nabla^2 \phi = \rho\)</span></p></li>
+<li><p>Diffusion processes, wave propagation, quantum mechanics</p></li>
+</ul>
+</section>
+</section>
+<section id="tensor-calculus-operations">
+<h2><a class="toc-backref" href="#id26" role="doc-backlink">Tensor Calculus Operations</a><a class="headerlink" href="#tensor-calculus-operations" title="Link to this heading"></a></h2>
+<p>PyDelt provides advanced tensor calculus operations through the <code class="docutils literal notranslate"><span class="pre">TensorDerivatives</span></code> class for continuum mechanics, fluid dynamics, and physics applications.</p>
+<section id="divergence-vector-fields">
+<h3><a class="toc-backref" href="#id27" role="doc-backlink">Divergence (Vector Fields)</a><a class="headerlink" href="#divergence-vector-fields" title="Link to this heading"></a></h3>
+<p>For a vector field <span class="math notranslate nohighlight">\(\mathbf{F}: \mathbb{R}^n \to \mathbb{R}^n\)</span>, the divergence is:</p>
+<div class="math notranslate nohighlight">
+\[\nabla \cdot \mathbf{F} = \sum_{i=1}^n \frac{\partial F_i}{\partial x_i}\]</div>
+<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">TensorDerivatives.divergence()</span></code> ✅ <strong>IMPLEMENTED</strong></p>
+<p><strong>Physical Interpretation</strong>: Measures expansion (positive) or contraction (negative) of the field.</p>
+</section>
+<section id="curl-vector-fields">
+<h3><a class="toc-backref" href="#id28" role="doc-backlink">Curl (Vector Fields)</a><a class="headerlink" href="#curl-vector-fields" title="Link to this heading"></a></h3>
+<p>For 3D vector fields <span class="math notranslate nohighlight">\(\mathbf{F}: \mathbb{R}^3 \to \mathbb{R}^3\)</span>, the curl is:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\nabla \times \mathbf{F} = \begin{bmatrix}
+\frac{\partial F_z}{\partial y} - \frac{\partial F_y}{\partial z} \\
+\frac{\partial F_x}{\partial z} - \frac{\partial F_z}{\partial x} \\
+\frac{\partial F_y}{\partial x} - \frac{\partial F_x}{\partial y}
+\end{bmatrix}\end{split}\]</div>
+<p>For 2D fields, scalar curl: <span class="math notranslate nohighlight">\(\nabla \times \mathbf{F} = \frac{\partial F_y}{\partial x} - \frac{\partial F_x}{\partial y}\)</span></p>
+<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">TensorDerivatives.curl()</span></code> ✅ <strong>IMPLEMENTED</strong></p>
+<p><strong>Physical Interpretation</strong>: Measures rotation or vorticity of the field.</p>
+</section>
+<section id="strain-and-stress-tensors">
+<h3><a class="toc-backref" href="#id29" role="doc-backlink">Strain and Stress Tensors</a><a class="headerlink" href="#strain-and-stress-tensors" title="Link to this heading"></a></h3>
+<p>For displacement fields <span class="math notranslate nohighlight">\(\mathbf{u}\)</span>, the strain tensor is:</p>
+<div class="math notranslate nohighlight">
+\[\epsilon_{ij} = \frac{1}{2}\left(\frac{\partial u_i}{\partial x_j} + \frac{\partial u_j}{\partial x_i}\right)\]</div>
+<p>The stress tensor (linear elasticity):</p>
+<div class="math notranslate nohighlight">
+\[\sigma_{ij} = \lambda \delta_{ij} \epsilon_{kk} + 2\mu \epsilon_{ij}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\lambda, \mu\)</span> are Lamé parameters.</p>
+<p><strong>Implementation</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">TensorDerivatives.strain_tensor()</span></code> ✅ <strong>IMPLEMENTED</strong></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TensorDerivatives.stress_tensor()</span></code> ✅ <strong>IMPLEMENTED</strong></p></li>
+</ul>
+<p><strong>Applications</strong>: Continuum mechanics, structural analysis, material deformation.</p>
+</section>
+<section id="directional-derivatives">
+<h3><a class="toc-backref" href="#id30" role="doc-backlink">Directional Derivatives</a><a class="headerlink" href="#directional-derivatives" title="Link to this heading"></a></h3>
+<p>Derivative along a specific direction <span class="math notranslate nohighlight">\(\mathbf{v}\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[D_{\mathbf{v}}f = \nabla f \cdot \mathbf{v}\]</div>
+<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">TensorDerivatives.directional_derivative()</span></code> ✅ <strong>IMPLEMENTED</strong></p>
+</section>
+</section>
+<section id="stochastic-calculus-extensions">
+<h2><a class="toc-backref" href="#id31" role="doc-backlink">Stochastic Calculus Extensions</a><a class="headerlink" href="#stochastic-calculus-extensions" title="Link to this heading"></a></h2>
+<p>PyDelt supports stochastic derivatives for probabilistic modeling and uncertainty quantification.</p>
+<section id="ito-vs-stratonovich">
+<h3><a class="toc-backref" href="#id32" role="doc-backlink">Itô vs. Stratonovich</a><a class="headerlink" href="#ito-vs-stratonovich" title="Link to this heading"></a></h3>
+<p>For stochastic differential equations (SDEs), derivatives transform differently:</p>
+<p><strong>Itô Calculus</strong>:</p>
+<div class="math notranslate nohighlight">
+\[dY_t = f(X_t)dX_t \implies \frac{dY}{dX} = f'(X_t)\]</div>
+<p><strong>Stratonovich Calculus</strong>:</p>
+<div class="math notranslate nohighlight">
+\[dY_t = f(X_t) \circ dX_t \implies \frac{dY}{dX} = f'(X_t) + \frac{1}{2}f''(X_t)\sigma^2\]</div>
+<p>where <span class="math notranslate nohighlight">\(\sigma^2\)</span> is the diffusion coefficient.</p>
+<p><strong>PyDelt Implementation</strong>: ✅ <strong>IMPLEMENTED</strong></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">set_stochastic_link()</span></code> method applies these corrections automatically.</p>
+</section>
+<section id="stochastic-link-functions">
+<h3><a class="toc-backref" href="#id33" role="doc-backlink">Stochastic Link Functions</a><a class="headerlink" href="#stochastic-link-functions" title="Link to this heading"></a></h3>
+<p>Transform derivatives through probability distributions:</p>
+<div class="math notranslate nohighlight">
+\[\frac{d}{dt}g(f(t)) = g'(f(t)) \cdot f'(t) + \text{correction terms}\]</div>
+<p>For stochastic processes, additional correction terms appear based on the distribution.</p>
+<p><strong>Supported Distributions</strong>: ✅ <strong>IMPLEMENTED</strong></p>
+<ul class="simple">
+<li><p><strong>Normal</strong>: Symmetric, unbounded (interest rates, errors)</p></li>
+<li><p><strong>Lognormal</strong>: Positive, right-skewed (stock prices, volumes)</p></li>
+<li><p><strong>Gamma</strong>: Positive, flexible shape (waiting times, rates)</p></li>
+<li><p><strong>Beta</strong>: Bounded [0,1] (proportions, ratios)</p></li>
+<li><p><strong>Exponential</strong>: Memoryless, decreasing (survival times)</p></li>
+<li><p><strong>Poisson</strong>: Discrete, non-negative (count processes)</p></li>
+</ul>
+<p><strong>Implementation</strong>: <code class="docutils literal notranslate"><span class="pre">interpolator.set_stochastic_link(link_function,</span> <span class="pre">**params)</span></code></p>
+<p><strong>Applications</strong>:</p>
+<ul class="simple">
+<li><p><strong>Finance</strong>: Option Greeks, risk analysis, volatility modeling</p></li>
+<li><p><strong>Physics</strong>: Brownian motion, diffusion processes</p></li>
+<li><p><strong>Biology</strong>: Population dynamics with stochastic effects</p></li>
+</ul>
+</section>
+</section>
+<section id="error-analysis-and-accuracy">
+<h2><a class="toc-backref" href="#id34" role="doc-backlink">Error Analysis and Accuracy</a><a class="headerlink" href="#error-analysis-and-accuracy" title="Link to this heading"></a></h2>
+<section id="sources-of-error">
+<h3><a class="toc-backref" href="#id35" role="doc-backlink">Sources of Error</a><a class="headerlink" href="#sources-of-error" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Truncation Error</strong>: From finite difference approximations (<span class="math notranslate nohighlight">\(O(\Delta t^2)\)</span>)</p></li>
+<li><p><strong>Interpolation Error</strong>: From fitting smooth functions to discrete data</p></li>
+<li><p><strong>Numerical Error</strong>: From floating-point arithmetic</p></li>
+<li><p><strong>Noise Amplification</strong>: Differentiation amplifies measurement noise</p></li>
+</ol>
+</section>
+<section id="error-bounds">
+<h3><a class="toc-backref" href="#id36" role="doc-backlink">Error Bounds</a><a class="headerlink" href="#error-bounds" title="Link to this heading"></a></h3>
+<p><strong>Finite Differences</strong>:</p>
+<p>For central differences with step size <span class="math notranslate nohighlight">\(h\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\text{Error} \approx \frac{h^2}{6}f'''(\xi) + \frac{\epsilon}{h}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\epsilon\)</span> is the noise level. Optimal <span class="math notranslate nohighlight">\(h \approx (\epsilon)^{1/3}\)</span>.</p>
+<p><strong>Spline Interpolation</strong>:</p>
+<p>For smoothing splines with parameter <span class="math notranslate nohighlight">\(\lambda\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\text{Error} \propto \lambda^{-1/2} + \lambda^{1/2}\]</div>
+<p>Optimal <span class="math notranslate nohighlight">\(\lambda\)</span> balances bias and variance.</p>
+</section>
+<section id="method-selection-guidelines">
+<h3><a class="toc-backref" href="#id37" role="doc-backlink">Method Selection Guidelines</a><a class="headerlink" href="#method-selection-guidelines" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Best For</p></th>
+<th class="head"><p>Accuracy</p></th>
+<th class="head"><p>Computational Cost</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Spline</p></td>
+<td><p>Smooth data</p></td>
+<td><p>High</p></td>
+<td><p>Low</p></td>
+</tr>
+<tr class="row-odd"><td><p>LLA/GLLA</p></td>
+<td><p>Noisy data</p></td>
+<td><p>Medium-High</p></td>
+<td><p>Medium</p></td>
+</tr>
+<tr class="row-even"><td><p>LOWESS/LOESS</p></td>
+<td><p>Outliers, varying noise</p></td>
+<td><p>Medium</p></td>
+<td><p>Medium-High</p></td>
+</tr>
+<tr class="row-odd"><td><p>FDA</p></td>
+<td><p>Functional data</p></td>
+<td><p>High</p></td>
+<td><p>Medium</p></td>
+</tr>
+<tr class="row-even"><td><p>Neural Networks</p></td>
+<td colspan="2"><p>Complex patterns, high-dim | Very High</p></td>
+<td><p>High (training)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="theoretical-guarantees">
+<h2><a class="toc-backref" href="#id38" role="doc-backlink">Theoretical Guarantees</a><a class="headerlink" href="#theoretical-guarantees" title="Link to this heading"></a></h2>
+<section id="convergence-properties">
+<h3><a class="toc-backref" href="#id39" role="doc-backlink">Convergence Properties</a><a class="headerlink" href="#convergence-properties" title="Link to this heading"></a></h3>
+<p><strong>Splines</strong>: Converge to true function as <span class="math notranslate nohighlight">\(N \to \infty\)</span> with rate <span class="math notranslate nohighlight">\(O(N^{-2})\)</span></p>
+<p><strong>Local Polynomials</strong>: Converge with rate <span class="math notranslate nohighlight">\(O(h^{p+1})\)</span> for degree <span class="math notranslate nohighlight">\(p\)</span> polynomials</p>
+<p><strong>Neural Networks</strong>: Universal approximation theorem guarantees convergence</p>
+</section>
+<section id="consistency">
+<h3><a class="toc-backref" href="#id40" role="doc-backlink">Consistency</a><a class="headerlink" href="#consistency" title="Link to this heading"></a></h3>
+<p>All PyDelt methods are <strong>consistent estimators</strong>: as sample size increases, estimates converge to true derivatives (under regularity conditions).</p>
+</section>
+<section id="asymptotic-normality">
+<h3><a class="toc-backref" href="#id41" role="doc-backlink">Asymptotic Normality</a><a class="headerlink" href="#asymptotic-normality" title="Link to this heading"></a></h3>
+<p>For smooth functions and sufficient data, derivative estimates are asymptotically normal:</p>
+<div class="math notranslate nohighlight">
+\[\sqrt{N}(\hat{f}'(t) - f'(t)) \xrightarrow{d} \mathcal{N}(0, \sigma^2(t))\]</div>
+<p>This enables confidence intervals and hypothesis testing.</p>
+</section>
+</section>
+<section id="references-and-further-reading">
+<h2><a class="toc-backref" href="#id42" role="doc-backlink">References and Further Reading</a><a class="headerlink" href="#references-and-further-reading" title="Link to this heading"></a></h2>
+<p><strong>Finite Differences</strong>:</p>
+<ul class="simple">
+<li><p>Fornberg, B. (1988). “Generation of finite difference formulas on arbitrarily spaced grids”</p></li>
+<li><p>LeVeque, R. (2007). “Finite Difference Methods for Ordinary and Partial Differential Equations”</p></li>
+</ul>
+<p><strong>Spline Methods</strong>:</p>
+<ul class="simple">
+<li><p>de Boor, C. (2001). “A Practical Guide to Splines”</p></li>
+<li><p>Wahba, G. (1990). “Spline Models for Observational Data”</p></li>
+</ul>
+<p><strong>Local Polynomial Regression</strong>:</p>
+<ul class="simple">
+<li><p>Fan, J. &amp; Gijbels, I. (1996). “Local Polynomial Modelling and Its Applications”</p></li>
+<li><p>Cleveland, W. S. (1979). “Robust locally weighted regression and smoothing scatterplots”</p></li>
+</ul>
+<p><strong>Functional Data Analysis</strong>:</p>
+<ul class="simple">
+<li><p>Ramsay, J. O. &amp; Silverman, B. W. (2005). “Functional Data Analysis”</p></li>
+</ul>
+<p><strong>Neural Networks &amp; Autodiff</strong>:</p>
+<ul class="simple">
+<li><p>Baydin, A. G. et al. (2018). “Automatic differentiation in machine learning: a survey”</p></li>
+<li><p>Raissi, M. et al. (2019). “Physics-informed neural networks”</p></li>
+</ul>
+<p><strong>Stochastic Calculus</strong>:</p>
+<ul class="simple">
+<li><p>Øksendal, B. (2003). “Stochastic Differential Equations”</p></li>
+<li><p>Kloeden, P. E. &amp; Platen, E. (1992). “Numerical Solution of Stochastic Differential Equations”</p></li>
+</ul>
+</section>
+<section id="summary">
+<h2><a class="toc-backref" href="#id43" role="doc-backlink">Summary</a><a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>PyDelt combines classical numerical analysis with modern machine learning to provide:</p>
+<ul class="simple">
+<li><p><strong>Multiple theoretical frameworks</strong>: Finite differences, interpolation, and learning-based methods</p></li>
+<li><p><strong>Rigorous mathematical foundations</strong>: Convergence guarantees and error bounds</p></li>
+<li><p><strong>Practical implementations</strong>: Optimized algorithms with unified API</p></li>
+<li><p><strong>Advanced features</strong>: Multivariate calculus and stochastic extensions</p></li>
+</ul>
+<p>The choice of method depends on your data characteristics, accuracy requirements, and computational constraints. The theory presented here guides that selection.</p>
+</section>
+<section id="implementation-status">
+<h2><a class="toc-backref" href="#id44" role="doc-backlink">Implementation Status</a><a class="headerlink" href="#implementation-status" title="Link to this heading"></a></h2>
+<p>All theoretical methods described in this document are <strong>fully implemented and production-ready</strong>:</p>
+<p><strong>Core Differentiation Methods</strong> ✅:</p>
+<ul class="simple">
+<li><p>Finite differences (central, forward, backward)</p></li>
+<li><p>Spline interpolation (cubic, smoothing)</p></li>
+<li><p>Local Linear Approximation (LLA)</p></li>
+<li><p>Generalized LLA (GLLA) with Takens embedding</p></li>
+<li><p>LOWESS/LOESS robust regression</p></li>
+<li><p>Functional Data Analysis (FDA)</p></li>
+<li><p>Neural networks with automatic differentiation (PyTorch/TensorFlow)</p></li>
+</ul>
+<p><strong>Multivariate Calculus</strong> ✅:</p>
+<ul class="simple">
+<li><p>Gradient computation (<code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives.gradient()</span></code>)</p></li>
+<li><p>Jacobian matrices (<code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives.jacobian()</span></code>)</p></li>
+<li><p>Hessian matrices (<code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives.hessian()</span></code>)</p></li>
+<li><p>Laplacian operator (<code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives.laplacian()</span></code>)</p></li>
+</ul>
+<p><strong>Tensor Operations</strong> ✅:</p>
+<ul class="simple">
+<li><p>Divergence (<code class="docutils literal notranslate"><span class="pre">TensorDerivatives.divergence()</span></code>)</p></li>
+<li><p>Curl (<code class="docutils literal notranslate"><span class="pre">TensorDerivatives.curl()</span></code>)</p></li>
+<li><p>Strain tensor (<code class="docutils literal notranslate"><span class="pre">TensorDerivatives.strain_tensor()</span></code>)</p></li>
+<li><p>Stress tensor (<code class="docutils literal notranslate"><span class="pre">TensorDerivatives.stress_tensor()</span></code>)</p></li>
+<li><p>Directional derivatives (<code class="docutils literal notranslate"><span class="pre">TensorDerivatives.directional_derivative()</span></code>)</p></li>
+</ul>
+<p><strong>Stochastic Calculus</strong> ✅:</p>
+<ul class="simple">
+<li><p>Itô and Stratonovich corrections</p></li>
+<li><p>Six probability distributions (normal, lognormal, gamma, beta, exponential, Poisson)</p></li>
+<li><p>Stochastic link functions (<code class="docutils literal notranslate"><span class="pre">set_stochastic_link()</span></code>)</p></li>
+</ul>
+<p><strong>Universal API</strong>: All methods support the consistent <code class="docutils literal notranslate"><span class="pre">.fit(input_data,</span> <span class="pre">output_data).differentiate(order,</span> <span class="pre">mask)</span></code> interface.</p>
+</section>
+<section id="citing-pydelt">
+<h2><a class="toc-backref" href="#id45" role="doc-backlink">Citing PyDelt</a><a class="headerlink" href="#citing-pydelt" title="Link to this heading"></a></h2>
+<p>If you use PyDelt in your research or applications, please cite it as follows:</p>
+<p><strong>BibTeX Entry</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@software</span><span class="p">{</span><span class="n">pydelt2025</span><span class="p">,</span>
+  <span class="n">title</span> <span class="o">=</span> <span class="p">{</span><span class="n">PyDelt</span><span class="p">:</span> <span class="n">Advanced</span> <span class="n">Numerical</span> <span class="n">Function</span> <span class="n">Interpolation</span> <span class="ow">and</span> <span class="n">Differentiation</span><span class="p">},</span>
+  <span class="n">author</span> <span class="o">=</span> <span class="p">{</span><span class="n">Lee</span><span class="p">,</span> <span class="n">Michael</span><span class="p">},</span>
+  <span class="n">year</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2025</span><span class="p">},</span>
+  <span class="n">url</span> <span class="o">=</span> <span class="p">{</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">MikeHLee</span><span class="o">/</span><span class="n">pydelt</span><span class="p">},</span>
+  <span class="n">version</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.6.1</span><span class="p">},</span>
+  <span class="n">note</span> <span class="o">=</span> <span class="p">{</span><span class="n">Python</span> <span class="n">package</span> <span class="k">for</span> <span class="n">numerical</span> <span class="n">differentiation</span> <span class="k">with</span> <span class="n">multivariate</span> <span class="n">calculus</span><span class="p">,</span>
+          <span class="n">tensor</span> <span class="n">operations</span><span class="p">,</span> <span class="ow">and</span> <span class="n">stochastic</span> <span class="n">computing</span> <span class="n">support</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>APA Style</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Lee</span><span class="p">,</span> <span class="n">M</span><span class="o">.</span> <span class="p">(</span><span class="mi">2025</span><span class="p">)</span><span class="o">.</span> <span class="n">PyDelt</span><span class="p">:</span> <span class="n">Advanced</span> <span class="n">Numerical</span> <span class="n">Function</span> <span class="n">Interpolation</span> <span class="ow">and</span> <span class="n">Differentiation</span>
+<span class="p">(</span><span class="n">Version</span> <span class="mf">0.6.1</span><span class="p">)</span> <span class="p">[</span><span class="n">Computer</span> <span class="n">software</span><span class="p">]</span><span class="o">.</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">MikeHLee</span><span class="o">/</span><span class="n">pydelt</span>
+</pre></div>
+</div>
+<p><strong>IEEE Style</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">M</span><span class="o">.</span> <span class="n">Lee</span><span class="p">,</span> <span class="s2">&quot;PyDelt: Advanced Numerical Function Interpolation and Differentiation,&quot;</span>
+<span class="n">version</span> <span class="mf">0.6.1</span><span class="p">,</span> <span class="mf">2025.</span> <span class="p">[</span><span class="n">Online</span><span class="p">]</span><span class="o">.</span> <span class="n">Available</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">MikeHLee</span><span class="o">/</span><span class="n">pydelt</span>
+</pre></div>
+</div>
+<p><strong>Key Features to Cite</strong>:</p>
+<ul class="simple">
+<li><p><strong>Universal differentiation interface</strong> across multiple interpolation methods</p></li>
+<li><p><strong>Multivariate calculus operations</strong> (gradient, Jacobian, Hessian, Laplacian)</p></li>
+<li><p><strong>Tensor calculus</strong> for continuum mechanics and fluid dynamics</p></li>
+<li><p><strong>Stochastic derivatives</strong> with Itô/Stratonovich corrections</p></li>
+<li><p><strong>Neural network integration</strong> with automatic differentiation</p></li>
+</ul>
+</section>
+<section id="license">
+<h2><a class="toc-backref" href="#id46" role="doc-backlink">License</a><a class="headerlink" href="#license" title="Link to this heading"></a></h2>
+<p>PyDelt is released under the <strong>MIT License</strong>, which permits:</p>
+<ul class="simple">
+<li><p>✅ Commercial use</p></li>
+<li><p>✅ Modification</p></li>
+<li><p>✅ Distribution</p></li>
+<li><p>✅ Private use</p></li>
+</ul>
+<p><strong>Full License Text</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MIT</span> <span class="n">License</span>
+
+<span class="n">Copyright</span> <span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="mi">2025</span>
+
+<span class="n">Permission</span> <span class="ow">is</span> <span class="n">hereby</span> <span class="n">granted</span><span class="p">,</span> <span class="n">free</span> <span class="n">of</span> <span class="n">charge</span><span class="p">,</span> <span class="n">to</span> <span class="nb">any</span> <span class="n">person</span> <span class="n">obtaining</span> <span class="n">a</span> <span class="n">copy</span>
+<span class="n">of</span> <span class="n">this</span> <span class="n">software</span> <span class="ow">and</span> <span class="n">associated</span> <span class="n">documentation</span> <span class="n">files</span> <span class="p">(</span><span class="n">the</span> <span class="s2">&quot;Software&quot;</span><span class="p">),</span> <span class="n">to</span> <span class="n">deal</span>
+<span class="ow">in</span> <span class="n">the</span> <span class="n">Software</span> <span class="n">without</span> <span class="n">restriction</span><span class="p">,</span> <span class="n">including</span> <span class="n">without</span> <span class="n">limitation</span> <span class="n">the</span> <span class="n">rights</span>
+<span class="n">to</span> <span class="n">use</span><span class="p">,</span> <span class="n">copy</span><span class="p">,</span> <span class="n">modify</span><span class="p">,</span> <span class="n">merge</span><span class="p">,</span> <span class="n">publish</span><span class="p">,</span> <span class="n">distribute</span><span class="p">,</span> <span class="n">sublicense</span><span class="p">,</span> <span class="ow">and</span><span class="o">/</span><span class="ow">or</span> <span class="n">sell</span>
+<span class="n">copies</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Software</span><span class="p">,</span> <span class="ow">and</span> <span class="n">to</span> <span class="n">permit</span> <span class="n">persons</span> <span class="n">to</span> <span class="n">whom</span> <span class="n">the</span> <span class="n">Software</span> <span class="ow">is</span>
+<span class="n">furnished</span> <span class="n">to</span> <span class="n">do</span> <span class="n">so</span><span class="p">,</span> <span class="n">subject</span> <span class="n">to</span> <span class="n">the</span> <span class="n">following</span> <span class="n">conditions</span><span class="p">:</span>
+
+<span class="n">The</span> <span class="n">above</span> <span class="n">copyright</span> <span class="n">notice</span> <span class="ow">and</span> <span class="n">this</span> <span class="n">permission</span> <span class="n">notice</span> <span class="n">shall</span> <span class="n">be</span> <span class="n">included</span> <span class="ow">in</span> <span class="nb">all</span>
+<span class="n">copies</span> <span class="ow">or</span> <span class="n">substantial</span> <span class="n">portions</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Software</span><span class="o">.</span>
+
+<span class="n">THE</span> <span class="n">SOFTWARE</span> <span class="n">IS</span> <span class="n">PROVIDED</span> <span class="s2">&quot;AS IS&quot;</span><span class="p">,</span> <span class="n">WITHOUT</span> <span class="n">WARRANTY</span> <span class="n">OF</span> <span class="n">ANY</span> <span class="n">KIND</span><span class="p">,</span> <span class="n">EXPRESS</span> <span class="n">OR</span>
+<span class="n">IMPLIED</span><span class="p">,</span> <span class="n">INCLUDING</span> <span class="n">BUT</span> <span class="n">NOT</span> <span class="n">LIMITED</span> <span class="n">TO</span> <span class="n">THE</span> <span class="n">WARRANTIES</span> <span class="n">OF</span> <span class="n">MERCHANTABILITY</span><span class="p">,</span>
+<span class="n">FITNESS</span> <span class="n">FOR</span> <span class="n">A</span> <span class="n">PARTICULAR</span> <span class="n">PURPOSE</span> <span class="n">AND</span> <span class="n">NONINFRINGEMENT</span><span class="o">.</span> <span class="n">IN</span> <span class="n">NO</span> <span class="n">EVENT</span> <span class="n">SHALL</span> <span class="n">THE</span>
+<span class="n">AUTHORS</span> <span class="n">OR</span> <span class="n">COPYRIGHT</span> <span class="n">HOLDERS</span> <span class="n">BE</span> <span class="n">LIABLE</span> <span class="n">FOR</span> <span class="n">ANY</span> <span class="n">CLAIM</span><span class="p">,</span> <span class="n">DAMAGES</span> <span class="n">OR</span> <span class="n">OTHER</span>
+<span class="n">LIABILITY</span><span class="p">,</span> <span class="n">WHETHER</span> <span class="n">IN</span> <span class="n">AN</span> <span class="n">ACTION</span> <span class="n">OF</span> <span class="n">CONTRACT</span><span class="p">,</span> <span class="n">TORT</span> <span class="n">OR</span> <span class="n">OTHERWISE</span><span class="p">,</span> <span class="n">ARISING</span> <span class="n">FROM</span><span class="p">,</span>
+<span class="n">OUT</span> <span class="n">OF</span> <span class="n">OR</span> <span class="n">IN</span> <span class="n">CONNECTION</span> <span class="n">WITH</span> <span class="n">THE</span> <span class="n">SOFTWARE</span> <span class="n">OR</span> <span class="n">THE</span> <span class="n">USE</span> <span class="n">OR</span> <span class="n">OTHER</span> <span class="n">DEALINGS</span> <span class="n">IN</span> <span class="n">THE</span>
+<span class="n">SOFTWARE</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>For the complete license, see the <a class="reference external" href="https://github.com/MikeHLee/pydelt/blob/main/LICENSE">LICENSE</a> file in the repository.</p>
+</section>
+<section id="contributing">
+<h2><a class="toc-backref" href="#id47" role="doc-backlink">Contributing</a><a class="headerlink" href="#contributing" title="Link to this heading"></a></h2>
+<p>Contributions are welcome! Please see the project repository for contribution guidelines and development setup instructions.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
