@@ -25,7 +25,7 @@
 
 \begin{document}
 
-\title{PyDelt: Advanced Numerical Differentiation for Dynamical Systems and Complex Adaptive Networks}
+\title{PyDelt: Advanced Numerical Function Approximation and Differentiation for Dynamical Systems}
 
 \author{Michael H. Lee}
 
@@ -34,7 +34,7 @@
 \maketitle
 
 \begin{abstract}
-Numerical differentiation from noisy data represents one of the fundamental challenges in computational science---a challenge that has grown increasingly critical as we seek to understand complex systems ranging from classical physics to modern epidemiological networks. This paper presents PyDelt, a comprehensive software library that transforms the ill-posed problem of numerical differentiation into a tractable computational task through advanced interpolation methods, multivariate calculus operations, and noise-resistant algorithms. We trace the development of PyDelt from its theoretical foundations to its practical implementation, demonstrating how it addresses long-standing challenges in derivative estimation. Through rigorous evaluation on both traditional test functions and real-world complex adaptive systems (CAS) applications---including epidemiological monitoring, financial contagion analysis, ecological stability assessment, and control optimization---we show that PyDelt achieves superior performance: GLLA and GOLD methods reduce errors by 40\% for clean data, while LOWESS/LOESS methods show only 2× error increase with 5\% noise (vs. 9-10× for finite differences). This combination of theoretical rigor and practical effectiveness makes PyDelt suitable for both classical dynamics and the inherently noisy, high-dimensional data characteristic of modern complex systems.
+Numerical differentiation from noisy data represents one of the fundamental challenges in computational science---a challenge that has grown increasingly critical as we seek to understand complex systems ranging from classical physics to modern epidemiological networks. This paper presents PyDelt, a comprehensive software library that transforms the poorly conditioned problem of numerical differentiation into a tractable computational task through advanced interpolation methods, multivariate calculus operations, and noise-resistant algorithms. We trace the development of PyDelt from its theoretical foundations to its practical implementation, demonstrating how it addresses long-standing challenges in derivative estimation. Through rigorous evaluation on both traditional test functions and real-world complex adaptive systems (CAS) applications---including epidemiological monitoring, financial contagion analysis, ecological stability assessment, and control optimization---we show that PyDelt achieves superior performance: GLLA and GOLD methods reduce errors by 40\% for clean data, while LOWESS/LOESS methods show only 2× error increase with 5\% noise (vs. 9-10× for finite differences). This combination of theoretical rigor and practical effectiveness makes PyDelt suitable for both classical dynamics and the inherently noisy, high-dimensional data characteristic of modern complex systems.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -73,15 +73,15 @@ In emerging CAS applications---epidemiological networks, financial markets, ecol
 
 Both domains share a common mathematical challenge: extracting reliable derivative information from noisy, potentially high-dimensional observations where $\mathbf{y}_i = \mathbf{f}(\mathbf{x}_i) + \boldsymbol{\epsilon}_i$.
 
-\subsection{The Ill-Posed Nature of Numerical Differentiation}
+\subsection{The Poorly Conditioned Nature of Numerical Differentiation}
 
-The fundamental difficulty stems from the ill-posed nature of differentiation. For a linear operator $L$ mapping functions to their derivatives, the condition number $\kappa$ can be expressed as:
+The fundamental difficulty stems from the poorly conditioned nature of differentiation. For a linear operator $L$ mapping functions to their derivatives, the condition number $\kappa$ can be expressed as:
 
 \begin{equation}
 \kappa(L) = \sup_{f \neq 0} \frac{\|Lf\|}{\|f\|} \cdot \sup_{g \neq 0} \frac{\|L^{-1}g\|}{\|g\|}
 \end{equation}
 
-For differentiation operators, this condition number is unbounded, explaining why small noise in data can lead to arbitrarily large errors in derivative estimates. This affects both traditional and CAS applications, though the challenges manifest differently:
+where $\|\cdot\|$ denotes a suitable function norm, $\sup$ represents the supremum (least upper bound), and $L^{-1}$ is the inverse operator (integration). For differentiation operators, this condition number is unbounded, explaining why small noise in data can lead to arbitrarily large errors in derivative estimates. This affects both traditional and CAS applications, though the challenges manifest differently:
 
 \textbf{Traditional Systems}: Known equations, moderate noise, need for high accuracy\\
 \textbf{Complex Adaptive Systems}: Unknown dynamics, high noise, high dimensionality, critical transitions
@@ -107,7 +107,7 @@ Existing methods for addressing this challenge include:
         \tilde{f}(x) = (f * g)(x) = \int_{-\infty}^{\infty} f(t) \cdot g(x-t) \, dt
     \end{equation}
     
-    where $g(x) = \frac{1}{\sigma_g\sqrt{2\pi}}e^{-\frac{x^2}{2\sigma_g^2}}$. This approach often attenuates important features along with noise \cite{ahnert2007numerical}.
+    where $g(x) = \frac{1}{\sigma_g\sqrt{2\pi}}e^{-\frac{x^2}{2\sigma_g^2}}$ is the Gaussian kernel, $\sigma_g$ controls the smoothing bandwidth, and $*$ denotes the convolution operator. This approach often attenuates important features along with noise \cite{ahnert2007numerical}.
     
     \item \textbf{Polynomial Fitting}: Fitting polynomials locally (e.g., Savitzky-Golay filters) or globally to data before differentiation. For a local polynomial of degree $d$ fit to a window of $2w+1$ points centered at $x_i$, the model is:
     
@@ -115,7 +115,7 @@ Existing methods for addressing this challenge include:
         \hat{f}(x) = \sum_{j=0}^{d} a_j (x - x_i)^j
     \end{equation}
     
-    where coefficients $a_j$ are determined by minimizing $\sum_{k=-w}^{w} \left(f(x_{i+k}) - \hat{f}(x_{i+k})\right)^2$. The derivative is then $\hat{f}'(x) = \sum_{j=1}^{d} j \cdot a_j (x - x_i)^{j-1}$. These methods struggle with the appropriate selection of window size $w$ and polynomial order $d$ \cite{savitzky1964smoothing}.
+    where $a_j$ are polynomial coefficients, $w$ is the window half-width, and the coefficients are determined by minimizing $\sum_{k=-w}^{w} \left(f(x_{i+k}) - \hat{f}(x_{i+k})\right)^2$. The derivative is then $\hat{f}'(x) = \sum_{j=1}^{d} j \cdot a_j (x - x_i)^{j-1}$. These methods struggle with the appropriate selection of window size $w$ and polynomial order $d$ \cite{savitzky1964smoothing}.
     
     \item \textbf{Spline Interpolation}: Using various spline functions to interpolate data before differentiation. A cubic spline $S(x)$ consists of piecewise cubic polynomials with continuous first and second derivatives:
     
@@ -128,7 +128,7 @@ Existing methods for addressing this challenge include:
         \end{cases}
     \end{equation}
     
-    where each $S_i(x) = a_i + b_i(x-x_i) + c_i(x-x_i)^2 + d_i(x-x_i)^3$. While more robust than simple differences, traditional spline methods still require careful parameter tuning \cite{ramsay2005functional}.
+    where each $S_i(x) = a_i + b_i(x-x_i) + c_i(x-x_i)^2 + d_i(x-x_i)^3$ is a cubic polynomial on interval $[x_i, x_{i+1}]$, and $a_i, b_i, c_i, d_i$ are coefficients determined by continuity constraints. While more robust than simple differences, traditional spline methods still require careful parameter tuning \cite{ramsay2005functional}.
     
     \item \textbf{Regularization Approaches}: Methods like Total Variation Regularization that formulate differentiation as an optimization problem with smoothness constraints. These approaches minimize functionals of the form:
     
@@ -136,7 +136,7 @@ Existing methods for addressing this challenge include:
         J[f] = \sum_{i=1}^{n} \left(f(x_i) - y_i\right)^2 + \lambda \int \left|f''(x)\right|^p \, dx
     \end{equation}
     
-    where $\lambda$ controls the trade-off between data fidelity and smoothness, and $p$ determines the type of regularization ($p=2$ for Tikhonov, $p=1$ for total variation). These approaches often involve complex parameter selection \cite{chartrand2011numerical}.
+    where $J[f]$ is the objective functional, $\lambda > 0$ is the regularization parameter controlling the trade-off between data fidelity (first term) and smoothness (second term), and $p$ determines the type of regularization ($p=2$ for Tikhonov, $p=1$ for total variation). These approaches often involve complex parameter selection \cite{chartrand2011numerical}.
 \end{enumerate}
 
 All these methods face a fundamental trade-off between faithfulness to the data and smoothness of the derivative estimate. This trade-off can be formalized through the bias-variance decomposition of the mean squared error (MSE):
@@ -145,7 +145,7 @@ All these methods face a fundamental trade-off between faithfulness to the data 
     \text{MSE}[\hat{f}'] = \text{Bias}[\hat{f}']^2 + \text{Var}[\hat{f}']
 \end{equation}
 
-As smoothing increases, bias typically increases (the estimate deviates more from the true derivative) while variance decreases (the estimate becomes less sensitive to noise). As highlighted in mathematical literature, this trade-off creates an ill-posed problem where no single parameter choice minimizes both noise sensitivity and bias \cite{knowles1995variational}.
+where $\text{Bias}[\hat{f}']$ represents the systematic error (deviation from the true derivative) and $\text{Var}[\hat{f}']$ represents the variance (sensitivity to noise). As smoothing increases, bias typically increases (the estimate deviates more from the true derivative) while variance decreases (the estimate becomes less sensitive to noise). As highlighted in mathematical literature, this trade-off creates a poorly conditioned problem where no single parameter choice minimizes both noise sensitivity and bias \cite{knowles1995variational}.
 
 \subsection{The PyDelt Solution: From Theory to Practice}
 
@@ -166,7 +166,7 @@ The library implements a comprehensive suite of methods, each designed to excel 
         E[S] = \sum_{i=1}^{n} \left(y_i - S(x_i)\right)^2 + \lambda \int_{x_1}^{x_n} \left|S''(t)\right|^2 dt
     \end{equation}
     
-    where $\lambda$ is automatically selected based on data characteristics using generalized cross-validation.
+    where $E[S]$ is the energy functional, $y_i$ are observed data values, $S(x_i)$ are spline values at data points, $\lambda \geq 0$ is the smoothing parameter (automatically selected using generalized cross-validation), and the integral penalizes curvature.
     
     \item \textbf{Local Linear Approximation (LLA)}: Robust sliding-window approach for noisy data. For each point $x_i$, LLA fits a local model:
     
@@ -174,7 +174,7 @@ The library implements a comprehensive suite of methods, each designed to excel 
         f(x) \approx a_i + b_i(x - x_i)
     \end{equation}
     
-    using a weighted least squares approach within a window of size $w$. The derivative estimate is then $f'(x_i) = b_i$.
+    where $a_i$ is the local intercept and $b_i$ is the local slope, determined using weighted least squares within a window of size $w$. The derivative estimate is then $f'(x_i) = b_i$.
     
     \item \textbf{Generalized Local Linear Approximation (GLLA)}: Higher-order local approximations using an embedding dimension $m$ and derivative order $n$. GLLA fits local models of the form:
     
@@ -182,7 +182,7 @@ The library implements a comprehensive suite of methods, each designed to excel 
         f(x) \approx \sum_{j=0}^{m} a_{i,j}(x - x_i)^j
     \end{equation}
     
-    and computes derivatives as $f^{(n)}(x_i) = n! \cdot a_{i,n}$.
+    where $m$ is the polynomial degree (embedding dimension), $a_{i,j}$ are local polynomial coefficients, and derivatives are computed as $f^{(n)}(x_i) = n! \cdot a_{i,n}$ where $n!$ is the factorial.
     
     \item \textbf{Generalized Orthogonal Local Derivative (GOLD)}: Orthogonalization-based approach for improved numerical stability. GOLD uses Hermite polynomials $H_j(x)$ for the local basis:
     
@@ -190,7 +190,7 @@ The library implements a comprehensive suite of methods, each designed to excel 
         f(x) \approx \sum_{j=0}^{m} c_{i,j}H_j\left(\frac{x - x_i}{h}\right)
     \end{equation}
     
-    where $h$ is a scale parameter and the orthogonality of Hermite polynomials improves numerical stability.
+    where $H_j$ are Hermite polynomials of order $j$, $c_{i,j}$ are expansion coefficients, $h > 0$ is a scale parameter, and the orthogonality of Hermite polynomials improves numerical stability.
     
     \item \textbf{Locally Weighted Scatterplot Smoothing (LOWESS)}: Non-parametric methods resistant to outliers. LOWESS assigns weights to points based on their distance from the evaluation point:
     
@@ -198,7 +198,7 @@ The library implements a comprehensive suite of methods, each designed to excel 
         w_j(x) = W\left(\frac{|x_j - x|}{d(x)}\right)
     \end{equation}
     
-    where $W$ is a weight function (typically tri-cubic) and $d(x)$ is the distance to the $q$-th nearest neighbor of $x$, with $q = \lfloor f \cdot n \rfloor$ and $f$ being the smoothing parameter.
+    where $w_j(x)$ is the weight for point $x_j$ when evaluating at $x$, $W$ is a weight function (typically tri-cubic), $d(x)$ is the distance to the $q$-th nearest neighbor of $x$, with $q = \lfloor f \cdot n \rfloor$ where $f \in (0,1]$ is the smoothing parameter (fraction of points used) and $\lfloor \cdot \rfloor$ is the floor function.
     
     \item \textbf{Local Regression (LOESS)}: Adaptive local polynomial fitting with robust weight functions that reduce the influence of outliers:
     
@@ -206,7 +206,7 @@ The library implements a comprehensive suite of methods, each designed to excel 
         \hat{f}(x) = \arg\min_{g \in \mathcal{P}_d} \sum_{i=1}^{n} w_i(x) \rho\left(y_i - g(x_i)\right)
     \end{equation}
     
-    where $\mathcal{P}_d$ is the space of polynomials of degree $d$, $w_i(x)$ are distance-based weights, and $\rho$ is a robust loss function.
+    where $\hat{f}(x)$ is the estimated function value, $\arg\min$ denotes the minimizing argument, $\mathcal{P}_d$ is the space of polynomials of degree $d$, $w_i(x)$ are distance-based weights, and $\rho$ is a robust loss function (e.g., bisquare).
     
     \item \textbf{Functional Data Analysis (FDA)}: Sophisticated smoothing with optimal parameter selection using basis function expansions:
     
@@ -214,7 +214,7 @@ The library implements a comprehensive suite of methods, each designed to excel 
         f(x) \approx \sum_{k=1}^{K} c_k \phi_k(x)
     \end{equation}
     
-    where $\phi_k(x)$ are basis functions (typically B-splines) and coefficients $c_k$ are determined by penalized least squares.
+    where $K$ is the number of basis functions, $\phi_k(x)$ are basis functions (typically B-splines), and coefficients $c_k$ are determined by penalized least squares.
     
     \item \textbf{Neural network-based methods}: Deep learning with automatic differentiation for complex patterns. A neural network model $f_{\theta}(x)$ is trained to minimize:
     
@@ -222,7 +222,7 @@ The library implements a comprehensive suite of methods, each designed to excel 
         L(\theta) = \sum_{i=1}^{n} \left(f_{\theta}(x_i) - y_i\right)^2 + \lambda R(\theta)
     \end{equation}
     
-    where $R(\theta)$ is a regularization term. Derivatives are then computed using automatic differentiation: $f'_{\theta}(x) = \frac{\partial f_{\theta}(x)}{\partial x}$.
+    where $L(\theta)$ is the loss function, $\theta$ represents network parameters (weights and biases), $f_{\theta}(x_i)$ is the network output at $x_i$, $\lambda \geq 0$ is the regularization strength, and $R(\theta)$ is a regularization term (e.g., $L_2$ norm). Derivatives are then computed using automatic differentiation: $f'_{\theta}(x) = \frac{\partial f_{\theta}(x)}{\partial x}$.
 \end{itemize}
 
 \subsection{Development Journey: Building a Unified Framework}
@@ -253,7 +253,7 @@ PyDelt builds upon the multi-objective optimization framework of van Breugel et 
 
 \subsubsection{Interpolation-Based Differentiation Framework}
 
-The central insight driving PyDelt's design is deceptively simple yet profoundly powerful: transform the ill-posed problem of numerical differentiation into a well-posed interpolation problem. This paradigm shift can be understood through a two-step process:
+The central insight driving PyDelt's design is deceptively simple yet profoundly powerful: transform the poorly conditioned problem of numerical differentiation into a well-conditioned interpolation problem. This paradigm shift can be understood through a two-step process:
 
 \begin{enumerate}
     \item \textbf{Reconstruction}: Given noisy data points $(x_i, y_i)$ where $y_i = f(x_i) + \epsilon_i$, construct an interpolant $\hat{f}$ that approximates the underlying function $f$ while filtering noise.
@@ -340,13 +340,13 @@ PyDelt implements a consistent mathematical framework across all interpolation m
     D^n[I](x) = \frac{d^n I(x)}{dx^n}
 \end{equation}
 
-This operation is implemented through the `.differentiate(order=n)` method, which returns a callable function that can be evaluated at arbitrary points. For multivariate functions, partial derivatives with respect to specific input dimensions can be computed using a mask parameter:
+where $D^n[I]$ denotes the $n$-th order derivative operator applied to interpolator $I$, and $n \in \mathbb{N}$ is the derivative order. This operation is implemented through the `.differentiate(order=n)` method, which returns a callable function that can be evaluated at arbitrary points. For multivariate functions, partial derivatives with respect to specific input dimensions can be computed using a mask parameter:
 
 \begin{equation}
     D^n_{\mathbf{m}}[I](\mathbf{x}) = \frac{\partial^n I(\mathbf{x})}{\partial x_{m_1} \partial x_{m_2} \cdots \partial x_{m_n}}
 \end{equation}
 
-where $\mathbf{m} = [m_1, m_2, \ldots, m_n]$ specifies the input dimensions for differentiation.
+where $\mathbf{m} = [m_1, m_2, \ldots, m_n]$ specifies the input dimensions for differentiation, and $\mathbf{x} \in \mathbb{R}^d$ is the evaluation point in $d$-dimensional space.
 
 \subsection{CAS-Inspired Test Cases}
 
@@ -409,7 +409,7 @@ We assessed the performance using a comprehensive set of metrics designed to eva
         R(\alpha) = \frac{\text{MAE}_{\text{with noise } \alpha}}{\text{MAE}_{\text{without noise}}}
     \end{equation}
     
-    Lower values of $R(\alpha)$ indicate better noise robustness.
+    where $R(\alpha)$ is the error amplification factor at noise level $\alpha$, and MAE denotes mean absolute error. Lower values of $R(\alpha)$ indicate better noise robustness.
     
     \item \textbf{Computational Efficiency}: We measured both fitting time $T_{\text{fit}}$ and evaluation time $T_{\text{eval}}$ separately, as well as the total computation time $T_{\text{total}} = T_{\text{fit}} + T_{\text{eval}}$. For real-time applications, $T_{\text{eval}}$ is often more critical, while for batch processing, $T_{\text{total}}$ is the relevant metric.
     
@@ -419,11 +419,13 @@ We assessed the performance using a comprehensive set of metrics designed to eva
         E_{\nabla f}(\mathbf{x}) = \|\hat{\nabla}f(\mathbf{x}) - \nabla f(\mathbf{x})\|_2
     \end{equation}
     
-    and Jacobian accuracy using the Frobenius norm error:
+    where $E_{\nabla f}$ is the gradient error, $\hat{\nabla}f$ is the estimated gradient, $\nabla f$ is the true gradient, and $\|\cdot\|_2$ denotes the Euclidean (L2) norm. We also evaluated Jacobian accuracy using the Frobenius norm error:
     
     \begin{equation}
         E_{J_f}(\mathbf{x}) = \|\hat{J}_f(\mathbf{x}) - J_f(\mathbf{x})\|_F = \sqrt{\sum_{i,j}|\hat{J}_{ij}(\mathbf{x}) - J_{ij}(\mathbf{x})|^2}
     \end{equation}
+    
+    where $E_{J_f}$ is the Jacobian error, $\hat{J}_f$ is the estimated Jacobian matrix, $J_f$ is the true Jacobian, $\|\cdot\|_F$ denotes the Frobenius norm, and the sum is over all matrix elements $i,j$.
     
     We also assessed the ability to compute higher-order derivatives by comparing the Hessian matrices using a similar Frobenius norm metric.
 \end{enumerate}
@@ -446,7 +448,7 @@ For the GLLA method, the error behavior can be characterized by the following bo
     |f'(x) - \hat{f}'(x)| \leq C \cdot h^m + K \cdot \frac{\sigma}{\sqrt{n}}
 \end{equation}
 
-where $h$ is the effective window size, $m$ is the embedding dimension, $\sigma$ is the noise standard deviation, $n$ is the number of points in the local window, and $C, K$ are constants depending on the function's smoothness properties. This bound illustrates the trade-off between approximation error (first term) and noise amplification (second term).
+where $f'(x)$ is the true derivative, $\hat{f}'(x)$ is the estimated derivative, $C^{m+1}[a,b]$ denotes the space of $(m+1)$-times continuously differentiable functions on interval $[a,b]$, $h > 0$ is the effective window size, $m \geq 1$ is the embedding dimension (polynomial degree), $\sigma \geq 0$ is the noise standard deviation, $n$ is the number of points in the local window, and $C, K > 0$ are constants depending on the function's smoothness properties. This bound illustrates the trade-off between approximation error (first term) and noise amplification (second term).
 
 The GOLD method, which uses orthogonalization techniques based on Hermite polynomials, shows particularly good stability for higher-order derivatives. Its error behavior benefits from the orthogonality properties of the basis functions, which reduce numerical instabilities in the coefficient estimation process.
 
@@ -460,7 +462,7 @@ LOWESS and LOESS interpolators demonstrate exceptional robustness to noise, with
     \hat{f}(x) = \arg\min_{g \in \mathcal{P}_d} \sum_{i=1}^{n} w_i(x) \rho\left(\frac{y_i - g(x_i)}{s}\right)
 \end{equation}
 
-where $\rho$ is a robust loss function (typically bisquare: $\rho(u) = (1-u^2)^2$ for $|u| < 1$ and 0 otherwise), $s$ is a scale parameter estimated from the data, and $w_i(x)$ are distance-based weights. This formulation effectively downweights outliers, making the derivative estimates more stable in the presence of noise.
+where $\hat{f}(x)$ is the estimated function value at $x$, $\arg\min$ denotes the minimizing argument, $\mathcal{P}_d$ is the space of polynomials of degree $d$, $w_i(x)$ are distance-based weights, $\rho$ is a robust loss function (typically bisquare: $\rho(u) = (1-u^2)^2$ for $|u| < 1$ and 0 otherwise), $s > 0$ is a scale parameter estimated from the data, and $y_i$ are observed values. This formulation effectively downweights outliers, making the derivative estimates more stable in the presence of noise.
 
 Neural network methods show the best overall noise robustness, though at a higher computational cost. Their robustness can be attributed to the regularization techniques employed during training, which implicitly enforce smoothness constraints. For a neural network model $f_{\theta}(x)$ trained with $L_2$ regularization, the optimization problem becomes:
 
@@ -468,7 +470,7 @@ Neural network methods show the best overall noise robustness, though at a highe
     \min_{\theta} \sum_{i=1}^{n} \left(f_{\theta}(x_i) - y_i\right)^2 + \lambda \|\theta\|_2^2
 \end{equation}
 
-This regularization effectively constrains the complexity of the learned function, leading to smoother derivatives even when the training data contains noise.
+where $\min_{\theta}$ denotes minimization over network parameters $\theta$, the first term is the data fidelity (mean squared error), $\lambda \geq 0$ is the regularization strength, and $\|\theta\|_2^2 = \sum_j \theta_j^2$ is the squared L2 norm of parameters. This regularization effectively constrains the complexity of the learned function, leading to smoother derivatives even when the training data contains noise.
 
 \subsubsection{Theoretical Error Decomposition}
 
@@ -478,7 +480,7 @@ To better understand the performance differences between methods, we can decompo
     \text{MSE}[\hat{f}'] = \text{Bias}[\hat{f}']^2 + \text{Var}[\hat{f}']
 \end{equation}
 
-For methods with high smoothing (e.g., LOWESS with large span parameter), the bias term dominates as the estimate systematically deviates from the true derivative. For methods with minimal smoothing (e.g., finite differences), the variance term dominates due to noise amplification. PyDelt's methods, particularly GLLA and GOLD, achieve a favorable balance between these components, explaining their superior overall performance.
+where $\text{MSE}[\hat{f}'] = \mathbb{E}[(\hat{f}' - f')^2]$ is the expected squared error, $\text{Bias}[\hat{f}'] = \mathbb{E}[\hat{f}'] - f'$ is the systematic error, $\text{Var}[\hat{f}'] = \mathbb{E}[(\hat{f}' - \mathbb{E}[\hat{f}'])^2]$ is the variance, and $\mathbb{E}[\cdot]$ denotes expectation. For methods with high smoothing (e.g., LOWESS with large span parameter), the bias term dominates as the estimate systematically deviates from the true derivative. For methods with minimal smoothing (e.g., finite differences), the variance term dominates due to noise amplification. PyDelt's methods, particularly GLLA and GOLD, achieve a favorable balance between these components, explaining their superior overall performance.
 
 \begin{table}[!t]
 \caption{Mean Absolute Error for First-Order Derivatives (No Noise)}
@@ -540,6 +542,8 @@ For a scalar function $f: \mathbb{R}^n \rightarrow \mathbb{R}$, PyDelt computes 
     \nabla f(\mathbf{x}) = \left[ \frac{\partial f}{\partial x_1}(\mathbf{x}), \frac{\partial f}{\partial x_2}(\mathbf{x}), \ldots, \frac{\partial f}{\partial x_n}(\mathbf{x}) \right]^T
 \end{equation}
 
+where $\nabla f(\mathbf{x}) \in \mathbb{R}^n$ is the gradient vector, $\frac{\partial f}{\partial x_j}$ denotes the partial derivative with respect to the $j$-th input dimension, and $[\cdot]^T$ denotes the transpose operation.
+
 where each partial derivative $\frac{\partial f}{\partial x_j}(\mathbf{x})$ is computed using the corresponding univariate interpolator $I_j$.
 
 The LOESS and LOWESS variants demonstrate the best noise robustness for gradient computation. This can be understood through the lens of influence functions from robust statistics. For a point $\mathbf{x}$ and a perturbation $\delta$ in the data, the influence function $IF(\mathbf{x}, \delta)$ measures the effect of this perturbation on the gradient estimate. For LOESS and LOWESS methods with robust weighting, this influence function is bounded:
@@ -548,7 +552,7 @@ The LOESS and LOWESS variants demonstrate the best noise robustness for gradient
     \|IF(\mathbf{x}, \delta)\|_2 \leq M
 \end{equation}
 
-for some constant $M$, regardless of the magnitude of $\delta$. This bounded influence property ensures that outliers or noise in the data have limited effect on the gradient estimates.
+where $IF(\mathbf{x}, \delta)$ is the influence function measuring sensitivity to data perturbations, $\delta$ represents a data perturbation (e.g., outlier), $M > 0$ is a finite constant, and $\|\cdot\|_2$ denotes the Euclidean norm. This bound holds for some constant $M$, regardless of the magnitude of $\delta$. This bounded influence property ensures that outliers or noise in the data have limited effect on the gradient estimates.
 
 \subsubsection{Jacobian and Higher-Order Tensor Derivatives}
 
@@ -563,13 +567,15 @@ For vector-valued functions $\mathbf{f}: \mathbb{R}^n \rightarrow \mathbb{R}^m$,
     \end{bmatrix}
 \end{equation}
 
+where $\mathbf{J}_f(\mathbf{x}) \in \mathbb{R}^{m \times n}$ is the Jacobian matrix, $f_i$ denotes the $i$-th output component of $\mathbf{f}$, and $\frac{\partial f_i}{\partial x_j}$ is the partial derivative of the $i$-th output with respect to the $j$-th input.
+
 PyDelt's Jacobian computation shows good accuracy compared to analytical solutions, with GLLA and LOESS methods providing the best balance of accuracy and noise robustness. The error in the Jacobian estimate can be bounded as:
 
 \begin{equation}
     \|\mathbf{J}_f(\mathbf{x}) - \hat{\mathbf{J}}_f(\mathbf{x})\|_F \leq \sqrt{\sum_{i=1}^{m}\sum_{j=1}^{n} \left|\frac{\partial f_i}{\partial x_j}(\mathbf{x}) - \hat{\frac{\partial f_i}{\partial x_j}}(\mathbf{x})\right|^2}
 \end{equation}
 
-where the error in each partial derivative is bounded by the corresponding univariate error bound.
+where $\mathbf{J}_f(\mathbf{x})$ is the true Jacobian, $\hat{\mathbf{J}}_f(\mathbf{x})$ is the estimated Jacobian, $\|\cdot\|_F$ denotes the Frobenius norm, and the error in each partial derivative $\hat{\frac{\partial f_i}{\partial x_j}}$ is bounded by the corresponding univariate error bound.
 
 \subsubsection{Mixed Partial Derivatives and Limitations}
 
@@ -580,6 +586,8 @@ This limitation is addressed in PyDelt's neural network-based approach, which us
 \begin{equation}
     \frac{\partial^2 f_{\theta}(\mathbf{x})}{\partial x_i \partial x_j} = \frac{\partial}{\partial x_i}\left(\frac{\partial f_{\theta}(\mathbf{x})}{\partial x_j}\right)
 \end{equation}
+
+where $\frac{\partial^2 f_{\theta}}{\partial x_i \partial x_j}$ is the mixed second-order partial derivative with respect to inputs $x_i$ and $x_j$ (where $i \neq j$), and the computation is performed using the chain rule of automatic differentiation.
 
 This exact computation of mixed partials makes neural network methods particularly valuable for applications where cross-dimensional interactions are important, such as in fluid dynamics or elasticity theory.
 
@@ -683,7 +691,7 @@ The optimal method $M^*$ can be expressed as:
     M^* = \arg\max_{M \in \mathcal{M}} \left[ w_A \cdot \mathcal{A}(f, M) + w_R \cdot \mathcal{R}(f, M, \sigma) - w_C \cdot \mathcal{C}(f, M, n) \right]
 \end{equation}
 
-where $\mathcal{M}$ is the set of available methods, and $w_A$, $w_R$, and $w_C$ are weights reflecting the relative importance of each criterion for the specific application.
+where $M^*$ is the optimal method, $\arg\max$ denotes the maximizing argument, $\mathcal{M}$ is the set of available methods, $\mathcal{A}(f, M) \in [0,1]$ is a normalized accuracy metric, $\mathcal{R}(f, M, \sigma) \in [0,1]$ is a normalized robustness metric, $\mathcal{C}(f, M, n) \geq 0$ is the computational cost, and $w_A, w_R, w_C \geq 0$ are weights (with $w_A + w_R + w_C = 1$) reflecting the relative importance of each criterion for the specific application.
 
 Based on our comprehensive analysis and this theoretical framework, we recommend:
 
@@ -714,7 +722,7 @@ The performance of each method depends critically on its parameters. We provide 
         m_{\text{optimal}} = \arg\min_m \left[ C_1 h^{m+1-n} + C_2 \frac{\sigma}{\sqrt{n}} \binom{m}{n} \right]
     \end{equation}
     
-    This typically yields $m = 3$ to $5$ for first derivatives and $m = 4$ to $6$ for second derivatives, depending on noise level $\sigma$.
+    where $m_{\text{optimal}}$ is the optimal embedding dimension, $\arg\min_m$ denotes minimization over $m$, $C_1, C_2 > 0$ are constants depending on the function, $h > 0$ is the effective window size, $\sigma \geq 0$ is the noise level, $n$ is the number of local points, and $\binom{m}{n}$ is the binomial coefficient. This typically yields $m = 3$ to $5$ for first derivatives and $m = 4$ to $6$ for second derivatives, depending on noise level $\sigma$.
     
     \item \textbf{PyDelt GOLD}: The window size $w$ and normalization method affect both accuracy and stability. The optimal window size balances bias and variance:
     
@@ -722,7 +730,7 @@ The performance of each method depends critically on its parameters. We provide 
         w_{\text{optimal}} \approx \left( \frac{C_3 \sigma^2}{C_4 |f^{(m+1)}|^2} \right)^{\frac{1}{2m+1}}
     \end{equation}
     
-    where $f^{(m+1)}$ is the $(m+1)$-th derivative of the function. This typically yields $w = 3$ to $7$ points.
+    where $w_{\text{optimal}}$ is the optimal window size (number of points), $C_3, C_4 > 0$ are method-specific constants, $\sigma^2$ is the noise variance, $f^{(m+1)}$ is the $(m+1)$-th derivative of the function (measuring smoothness), and $m$ is the polynomial degree. This typically yields $w = 3$ to $7$ points.
     
     \item \textbf{PyDelt LOESS/LOWESS}: The span parameter $\alpha$ (or \texttt{frac}) controls the proportion of points used in local fitting. The optimal value minimizes the asymptotic mean squared error:
     
@@ -730,7 +738,7 @@ The performance of each method depends critically on its parameters. We provide 
         \alpha_{\text{optimal}} \approx \left( \frac{C_5 \sigma^2}{n \cdot C_6 |f^{(p+1)}|^2} \right)^{\frac{1}{2p+1}}
     \end{equation}
     
-    where $p$ is the degree of the local polynomial. For noisy data, this typically yields $\alpha = 0.2$ to $0.5$.
+    where $\alpha_{\text{optimal}} \in (0,1]$ is the optimal span parameter (fraction of points used), $C_5, C_6 > 0$ are constants, $\sigma^2$ is the noise variance, $n$ is the total number of data points, $f^{(p+1)}$ is the $(p+1)$-th derivative (measuring curvature), and $p \geq 1$ is the degree of the local polynomial. For noisy data, this typically yields $\alpha = 0.2$ to $0.5$.
     
     \item \textbf{PyDelt Spline}: The smoothing parameter $s$ in smoothing splines controls the trade-off between fidelity to data and smoothness of the derivative. The optimal value from generalized cross-validation is:
     
@@ -738,7 +746,7 @@ The performance of each method depends critically on its parameters. We provide 
         s_{\text{optimal}} = \frac{n \cdot \sigma^2}{\text{trace}(I - A(s))^2}
     \end{equation}
     
-    where $A(s)$ is the influence matrix of the spline. PyDelt implements automatic selection of this parameter using generalized cross-validation.
+    where $s_{\text{optimal}} \geq 0$ is the optimal smoothing parameter, $n$ is the number of data points, $\sigma^2$ is the noise variance, $\text{trace}(\cdot)$ denotes the matrix trace, $I$ is the identity matrix, and $A(s) \in \mathbb{R}^{n \times n}$ is the influence (hat) matrix of the spline that maps observed values to fitted values. PyDelt implements automatic selection of this parameter using generalized cross-validation.
     
     \item \textbf{PyDelt Neural Network}: The network architecture and regularization parameter $\lambda$ affect both accuracy and generalization. For derivative estimation, deeper networks (more layers) generally perform better than wider networks (more neurons per layer) due to their ability to capture higher-order derivatives more effectively.
 \end{itemize}
@@ -758,6 +766,7 @@ PyDelt provides comprehensive tensor calculus operations through the \texttt{Ten
         \nabla \cdot \mathbf{F} = \sum_{i=1}^{n} \frac{\partial F_i}{\partial x_i}
     \end{equation}
     
+    where $\nabla \cdot \mathbf{F}$ is the divergence (a scalar field), $\mathbf{F} = [F_1, F_2, \ldots, F_n]^T$ is the vector field, $F_i$ is the $i$-th component of $\mathbf{F}$, and $\frac{\partial F_i}{\partial x_i}$ is the partial derivative of the $i$-th component with respect to the $i$-th coordinate.
     
     \textit{Implementation}: \texttt{TensorDerivatives.divergence()}
     
@@ -771,7 +780,7 @@ PyDelt provides comprehensive tensor calculus operations through the \texttt{Ten
         \end{bmatrix}
     \end{equation}
     
-    For 2D fields, scalar curl: $\nabla \times \mathbf{F} = \frac{\partial F_y}{\partial x} - \frac{\partial F_x}{\partial y}$
+    where $\nabla \times \mathbf{F}$ is the curl (a vector field), $\mathbf{F} = [F_1, F_2, F_3]^T$ is the 3D vector field with components $(F_1, F_2, F_3)$ corresponding to coordinates $(x_1, x_2, x_3)$. For 2D fields, scalar curl: $\nabla \times \mathbf{F} = \frac{\partial F_y}{\partial x} - \frac{\partial F_x}{\partial y}$ where $F_x, F_y$ are the $x$ and $y$ components.
     
     
     \textit{Implementation}: \texttt{TensorDerivatives.curl()}
@@ -782,13 +791,13 @@ PyDelt provides comprehensive tensor calculus operations through the \texttt{Ten
         \epsilon_{ij} = \frac{1}{2}\left(\frac{\partial u_i}{\partial x_j} + \frac{\partial u_j}{\partial x_i}\right)
     \end{equation}
     
-    The stress tensor (linear elasticity) is:
+    where $\epsilon_{ij}$ is the $(i,j)$ component of the strain tensor, $\mathbf{u} = [u_1, u_2, \ldots, u_n]^T$ is the displacement field, and the symmetrization ensures $\epsilon_{ij} = \epsilon_{ji}$. The stress tensor (linear elasticity) is:
     
     \begin{equation}
         \sigma_{ij} = \lambda \delta_{ij} \epsilon_{kk} + 2\mu \epsilon_{ij}
     \end{equation}
     
-    where $\lambda, \mu$ are Lamé parameters.
+    where $\sigma_{ij}$ is the $(i,j)$ component of the stress tensor, $\lambda, \mu$ are Lamé parameters (material properties), $\delta_{ij}$ is the Kronecker delta ($\delta_{ij} = 1$ if $i=j$, else $0$), and $\epsilon_{kk} = \sum_k \epsilon_{kk}$ is the trace of the strain tensor (Einstein summation convention).
     
     
     \textit{Implementation}: \texttt{TensorDerivatives.strain\_tensor()}, \texttt{TensorDerivatives.stress\_tensor()}
@@ -798,6 +807,8 @@ PyDelt provides comprehensive tensor calculus operations through the \texttt{Ten
     \begin{equation}
         D_{\mathbf{v}}f = \nabla f \cdot \mathbf{v}
     \end{equation}
+    
+    where $D_{\mathbf{v}}f$ is the directional derivative of scalar function $f$ in direction $\mathbf{v}$, $\nabla f$ is the gradient vector, $\mathbf{v} \in \mathbb{R}^n$ is the direction vector (typically normalized: $\|\mathbf{v}\|_2 = 1$), and $\cdot$ denotes the dot product.
     
     
     \textit{Implementation}: \texttt{TensorDerivatives.directional\_derivative()}
@@ -813,6 +824,8 @@ PyDelt supports stochastic derivatives for probabilistic modeling and uncertaint
     \textbf{Itô}: $dY_t = f(X_t)dX_t \implies \frac{dY}{dX} = f'(X_t)$
     
     \textbf{Stratonovich}: $dY_t = f(X_t) \circ dX_t \implies \frac{dY}{dX} = f'(X_t) + \frac{1}{2}f''(X_t)\sigma^2$
+    
+    where $Y_t$ and $X_t$ are stochastic processes, $dY_t$ and $dX_t$ are stochastic differentials, $f'(X_t)$ is the derivative of transformation function $f$, $\circ$ denotes the Stratonovich product, $f''(X_t)$ is the second derivative, and $\sigma^2$ is the diffusion coefficient (variance rate).
     
     
     \textit{Implementation}: \texttt{set\_stochastic\_link(method='ito')} or \texttt{method='stratonovich'}
@@ -841,6 +854,8 @@ While traditional interpolation methods approximate mixed partial derivatives as
 \begin{equation}
     \frac{\partial^2 f_{\theta}(\mathbf{x})}{\partial x_i \partial x_j} = \frac{\partial}{\partial x_i}\left(\frac{\partial f_{\theta}(\mathbf{x})}{\partial x_j}\right)
 \end{equation}
+
+where the mixed partial derivative is computed exactly using the chain rule of automatic differentiation, with $i \neq j$ denoting different input dimensions.
 
 \textit{Implementation}: \texttt{NeuralNetworkMultivariateDerivatives} with PyTorch/TensorFlow
 

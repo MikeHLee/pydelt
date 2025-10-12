@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.3] - 2025-10-11
+
+### Added
+- **Window Function Support**: Added comprehensive window function support for segmented time series data
+  - New `window_func` parameter in all interpolator `fit()` methods
+  - Support for custom window generators based on time gaps and value drops
+  - Compatible with standard NumPy windows (hanning, hamming, blackman, bartlett)
+  - `normalize_by_observations` parameter in `differentiate()` for derivative scaling
+  - Stores `window_weights` and `n_observations` for downstream processing
+- **Integration Support**: Enhanced integral functions with denormalization options
+  - Added `n_observations` and `denormalize` parameters to `integrate_derivative()`
+  - Added `n_observations` and `denormalize` parameters to `integrate_derivative_with_error()`
+- **Comprehensive Test Suite**: Added 13 new tests for window function functionality
+  - Tests for standard window functions (Hanning, Hamming, etc.)
+  - Tests for custom window generators with time gap and value drop detection
+  - Tests for realistic sensor data scenarios with 30-minute gaps and 10-value drops
+  - Tests for derivative normalization and integration denormalization
+  - Tests for multivariate signal support with windows
+- **Documentation**: Added Example 7 demonstrating window functions for segmented data
+  - Shows how to handle sensor data with measurement gaps
+  - Demonstrates custom window generator creation
+  - Explains normalization and denormalization workflows
+
+### Use Cases
+- **Sensor Data**: Handle measurement sessions separated by time gaps
+- **Financial Data**: Process trading sessions with natural boundaries
+- **Segmented Time Series**: Reduce artifacts at data boundaries
+- **Edge Effect Reduction**: Apply tapering at session boundaries
+
+### Technical Details
+- Window functions are applied to the signal before interpolation
+- Custom window generators can detect boundaries based on configurable thresholds
+- Normalization scales derivatives by 1/N when window functions are used
+- All interpolators (Spline, LOWESS, LOESS, FDA, LLA, GLLA) support window functions
+
 ## [0.6.2] - 2025-09-23
 
 ### Added

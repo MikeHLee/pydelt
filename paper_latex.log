@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.9.23)  4 OCT 2025 20:58
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.9.23)  5 OCT 2025 11:45
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -510,7 +510,7 @@ File: l3backend-pdftex.def 2024-02-20 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count318
 \l__pdf_internal_box=\box59
 )
-No file paper_latex.aux.
+(./paper_latex.aux)
 \openout1 = `paper_latex.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 26.
@@ -531,6 +531,7 @@ LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 26.
 LaTeX Font Info:    ... okay on input line 26.
 LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 26.
 LaTeX Font Info:    ... okay on input line 26.
+
 -- Lines per column: 61 (exact).
 (/usr/local/texlive/2024/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
@@ -555,6 +556,8 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 Package hyperref Info: Link coloring ON on input line 26.
+
+(./paper_latex.out) (./paper_latex.out)
 \@outlinefile=\write3
 \openout3 = `paper_latex.out'.
 
@@ -587,25 +590,26 @@ LaTeX Font Info:    Trying to load font information for U+pzd on input line 35.
 (/usr/local/texlive/2024/texmf-dist/tex/latex/psnfss/upzd.fd
 File: upzd.fd 2001/06/04 font definitions for U/pzd.
 )
+LaTeX Font Info:    Trying to load font information for TS1+phv on input line 3
+7.
+
+(/usr/local/texlive/2024/texmf-dist/tex/latex/psnfss/ts1phv.fd
+File: ts1phv.fd 2020/03/25 scalable font definitions for TS1/phv.
+)
 LaTeX Font Info:    Calculating math sizes for size <9.53561> on input line 48.
 
+LaTeX Font Info:    Font shape `OT1/phv/m/it' in size <9.53561> not available
+(Font)              Font shape `OT1/phv/m/sl' tried instead on input line 54.
+
+Underfull \hbox (badness 2293) in paragraph at lines 58--59
+[]\OT1/ppl/b/n/9.53561 Experimental Val-i-da-tion\OT1/ppl/m/n/9.53561 : Com-par
+-ing the-o-ret-i-cal
+ []
 
 
-LaTeX Warning: Citation `van2021numerical' on page 1 undefined on input line 60
-.
-
-
-LaTeX Warning: Citation `kaw2021numerical' on page 1 undefined on input line 73
-.
-
-
-LaTeX Warning: Citation `ahnert2007numerical' on page 1 undefined on input line
- 81.
-
-
-Underfull \hbox (badness 1430) in paragraph at lines 83--84
-[]\OT1/ppl/b/n/9.53561 Polynomial Fit-ting\OT1/ppl/m/n/9.53561 : Fit-ting poly-
-no-mi-als lo-cally
+Underfull \hbox (badness 10000) in paragraph at lines 69--70
+[]\OT1/ppl/b/n/9.53561 Influence Net-works\OT1/ppl/m/n/9.53561 : Iden-ti-fy-ing
+ in-ter-ac-tion
  []
 
 [1{/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/l
@@ -613,72 +617,103 @@ ocal/texlive/2024/texmf-dist/fonts/enc/dvips/base/8r.enc}
 
 
 ]
+Underfull \hbox (badness 1430) in paragraph at lines 112--113
+[]\OT1/ppl/b/n/9.53561 Polynomial Fit-ting\OT1/ppl/m/n/9.53561 : Fit-ting poly-
+no-mi-als lo-cally
+ []
 
-LaTeX Warning: Citation `savitzky1964smoothing' on page 2 undefined on input li
-ne 89.
-
-
-LaTeX Warning: Citation `ramsay2005functional' on page 2 undefined on input lin
-e 102.
-
-
-LaTeX Warning: Citation `chartrand2011numerical' on page 2 undefined on input l
-ine 110.
-
-
-LaTeX Warning: Citation `knowles1995variational' on page 2 undefined on input l
-ine 119.
+[2]
+Underfull \hbox (badness 1838) in paragraph at lines 154--155
+[]\OT1/ppl/b/n/9.53561 1. The-o-ret-i-cal Rigor\OT1/ppl/m/n/9.53561 : Ev-ery me
+thod in Py-Delt is
+ []
 
 
-Underfull \hbox (badness 4096) in paragraph at lines 126--127
+Underfull \hbox (badness 4096) in paragraph at lines 163--164
 []\OT1/ppl/b/n/9.53561 Spline in-ter-po-la-tion\OT1/ppl/m/n/9.53561 : En-hanced
  with adap-tive
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 158--159
+Underfull \hbox (badness 10000) in paragraph at lines 195--196
 []\OT1/ppl/b/n/9.53561 Locally Weighted Scat-ter-plot Smooth-ing
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 158--159
+Underfull \hbox (badness 10000) in paragraph at lines 195--196
 \OT1/ppl/b/n/9.53561 (LOWESS)\OT1/ppl/m/n/9.53561 : Non-parametric meth-ods re-
 sis-tant
  []
 
 
-Underfull \hbox (badness 1629) in paragraph at lines 174--175
+Underfull \hbox (badness 1629) in paragraph at lines 211--212
 []\OT1/ppl/b/n/9.53561 Functional Data Anal-y-sis (FDA)\OT1/ppl/m/n/9.53561 : S
 o-phis-ti-cated
  []
 
-[2]
+[3]
+LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 2
+37.
+ (/usr/local/texlive/2024/texmf-dist/tex/latex/psnfss/ot1pcr.fd
+File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
+)
+Underfull \hbox (badness 10000) in paragraph at lines 237--238
+[]\OT1/ppl/b/n/9.53561 Universal In-ter-face\OT1/ppl/m/n/9.53561 : The
+ []
 
-LaTeX Warning: Citation `van2021numerical' on page 3 undefined on input line 19
-3.
 
-LaTeX Font Info:    Font shape `OT1/phv/m/it' in size <9.53561> not available
-(Font)              Font shape `OT1/phv/m/sl' tried instead on input line 205.
+Underfull \hbox (badness 3977) in paragraph at lines 237--238
+\OT1/ppl/m/n/9.53561 con-sis-tency across all meth-ods, en-abling fair
+ []
 
-Underfull \hbox (badness 10000) in paragraph at lines 245--246
+
+Underfull \hbox (badness 1424) in paragraph at lines 239--240
+[]\OT1/ppl/b/n/9.53561 Multivariate Ex-ten-sions\OT1/ppl/m/n/9.53561 : We ex-te
+nded uni-vari-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 243--244
+[]\OT1/ppl/b/n/9.53561 Rigorous Val-i-da-tion\OT1/ppl/m/n/9.53561 : Com-pre-hen
+-sive test-ing
+ []
+
+LaTeX Font Info:    Trying to load font information for TS1+ppl on input line 2
+46.
+(/usr/local/texlive/2024/texmf-dist/tex/latex/psnfss/ts1ppl.fd
+File: ts1ppl.fd 2001/06/04 font definitions for TS1/ppl.
+)
+Underfull \hbox (badness 10000) in paragraph at lines 261--262
+[]\OT1/ppl/b/n/9.53561 Differentiation\OT1/ppl/m/n/9.53561 : An-a-lyt-i-cally d
+if-fer-en-ti-ate the
+ []
+
+
+Underfull \hbox (badness 6428) in paragraph at lines 261--262
+\OT1/ppl/m/n/9.53561 smooth in-ter-polant to ob-tain the deriva-tive
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 284--285
 []\OT1/ppl/m/n/9.53561 Multivariate vec-tor func-tion: $\OML/cmm/m/it/10 f\OT1/
 cmr/m/n/10 (\OML/cmm/m/it/10 x; y\OT1/cmr/m/n/10 ) =
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 245--246
+Underfull \hbox (badness 10000) in paragraph at lines 284--285
 \OT1/cmr/m/n/10 [[](\OML/cmm/m/it/10 x\OT1/cmr/m/n/10 ) [](\OML/cmm/m/it/10 y\O
 T1/cmr/m/n/10 )\OML/cmm/m/it/10 ; x[] \OT1/cmr/m/n/10 + \OML/cmm/m/it/10 y[]\OT
 1/cmr/m/n/10 ]$ \OT1/ppl/m/n/9.53561 with Ja-co-bian
  []
 
 
-Underfull \hbox (badness 2564) in paragraph at lines 248--249
-[]\OT1/ppl/m/n/9.53561 These func-tions were se-lected to rep-re-sent a di-
+Underfull \hbox (badness 1852) in paragraph at lines 298--299
+[]\OT1/ppl/b/n/9.53561 Temporal Deriva-tive\OT1/ppl/m/n/9.53561 : $[]$ tracks a
+c-cel-er-a-tion of
  []
 
-[3]
-Overfull \hbox (11.76344pt too wide) detected at line 285
+[4] [5]
+Overfull \hbox (11.76344pt too wide) detected at line 426
 [][][]\OML/cmm/m/it/10 E[]\OT1/cmr/m/n/10 (\OT1/cmr/bx/n/10 x\OT1/cmr/m/n/10 ) 
 = \OMS/cmsy/m/n/10 k[]\OT1/cmr/m/n/10 (\OT1/cmr/bx/n/10 x\OT1/cmr/m/n/10 ) \OMS
 /cmsy/m/n/10 ^^@ \OML/cmm/m/it/10 J[]\OT1/cmr/m/n/10 (\OT1/cmr/bx/n/10 x\OT1/cm
@@ -686,158 +721,213 @@ r/m/n/10 )\OMS/cmsy/m/n/10 k[] \OT1/cmr/m/n/10 = []
  []
 
 
-Underfull \hbox (badness 1655) in paragraph at lines 290--291
+Underfull \hbox (badness 1655) in paragraph at lines 433--434
 []\OT1/ppl/m/n/9.53561 These met-rics pro-vide a com-pre-hen-sive eval-u-a-tion
 
  []
 
 
-Underfull \hbox (badness 3250) in paragraph at lines 298--299
+Underfull \hbox (badness 3250) in paragraph at lines 443--444
 \OT1/ppl/m/n/9.53561 PyDelt's GLLA and GOLD in-ter-po-la-tors con-sis-tently
  []
 
-LaTeX Font Info:    Calculating math sizes for size <8.03> on input line 344.
+[6]
+LaTeX Font Info:    Calculating math sizes for size <8.03> on input line 489.
 
-Overfull \hbox (4.62384pt too wide) in paragraph at lines 344--361
+Overfull \hbox (4.62384pt too wide) in paragraph at lines 489--506
  [][] 
  []
 
-[4] [5]
-Overfull \hbox (10.1524pt too wide) in paragraph at lines 506--525
+[7]
+Overfull \hbox (10.1524pt too wide) in paragraph at lines 659--678
  [][] 
  []
 
-
-Overfull \hbox (36.72684pt too wide) detected at line 537
+[8]
+Overfull \hbox (36.72684pt too wide) detected at line 692
 [][][]\OML/cmm/m/it/10 M[] \OT1/cmr/m/n/10 = [] [] []
  []
 
 
-Underfull \hbox (badness 1430) in paragraph at lines 548--549
+Underfull \hbox (badness 1430) in paragraph at lines 703--704
 \OT1/ppl/m/n/9.53561 plex-ity for gra-di-ent com-pu-ta-tion, com-pared to
  []
 
-[6]
-Underfull \hbox (badness 1688) in paragraph at lines 556--557
+
+Underfull \hbox (badness 1688) in paragraph at lines 711--712
 []\OT1/ppl/b/n/9.53561 For higher-order deriva-tives (>2)\OT1/ppl/m/n/9.53561 :
  Use Py-Delt
  []
 
 
-Underfull \hbox (badness 2401) in paragraph at lines 559--559
+Underfull \hbox (badness 2401) in paragraph at lines 714--714
  \OT1/phv/b/n/9.53561 4.2 Pa-ram-e-ter Tun-ing Guide-lines: Math-e-mat-i-cal In
 -
  []
 
-LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 5
-80.
-(/usr/local/texlive/2024/texmf-dist/tex/latex/psnfss/ot1pcr.fd
-File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
-)
-Underfull \hbox (badness 1609) in paragraph at lines 588--589
+
+Underfull \hbox (badness 1609) in paragraph at lines 743--744
 []\OT1/ppl/b/n/9.53561 PyDelt Spline\OT1/ppl/m/n/9.53561 : The smooth-ing pa-ra
 m-e-ter $\OML/cmm/m/it/10 s$ \OT1/ppl/m/n/9.53561 in
  []
 
-
-Underfull \hbox (badness 3701) in paragraph at lines 599--599
- \OT1/phv/b/sc/11.04124 5 Ad-vanced Fea-tures: Ten-sor Cal-cu-lus
- []
-
-
-! LaTeX Error: Unicode character ✓ (U+2713)
-               not set up for use with LaTeX.
-
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.612 ...exttt{TensorDerivatives.divergence()} ✓
-                                                  
-? 
-! Interruption.
-\GenericError  ...                                
-                                                  \endgroup 
-l.612 ...exttt{TensorDerivatives.divergence()} ✓
-                                                  
-? 
-
-Overfull \hbox (17.69357pt too wide) in paragraph at lines 612--613
+[9]
+Overfull \hbox (17.69357pt too wide) in paragraph at lines 771--772
 []\OT1/ppl/m/it/9.53561 Implementation\OT1/ppl/m/n/9.53561 : \OT1/pcr/m/n/9.535
-61 TensorDerivatives.divergence()
+61 TensorDerivatives.divergence() 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 612--613
-
+Overfull \hbox (37.24155pt too wide) in paragraph at lines 803--804
+[]\OT1/ppl/m/it/9.53561 Implementation\OT1/ppl/m/n/9.53561 : \OT1/pcr/m/n/9.535
+61 TensorDerivatives.strain_tensor()\OT1/ppl/m/n/9.53561 ,
  []
 
 
-! LaTeX Error: Unicode character ✓ (U+2713)
-               not set up for use with LaTeX.
+Overfull \hbox (86.34988pt too wide) in paragraph at lines 814--815
+[]\OT1/ppl/m/it/9.53561 Implementation\OT1/ppl/m/n/9.53561 : \OT1/pcr/m/n/9.535
+61 TensorDerivatives.directional_derivative() 
+ []
 
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.626 ...n}: \texttt{TensorDerivatives.curl()} ✓
-                                                  
-? 
 
-! LaTeX Error: Unicode character ✓ (U+2713)
-               not set up for use with LaTeX.
+Overfull \hbox (34.85765pt too wide) in paragraph at lines 831--832
+[]\OT1/ppl/m/it/9.53561 Implementation\OT1/ppl/m/n/9.53561 : \OT1/pcr/m/n/9.535
+61 set_stochastic_link(method='ito')
+ []
 
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.642 ...t{TensorDerivatives.stress\_tensor()} ✓
-                                                  
-? :q
-Type <return> to proceed, S to scroll future error messages,
-R to run without stopping, Q to run quietly,
-I to insert something, E to edit your file,
-1 or ... or 9 to ignore the next 1 to 9 tokens of input,
-H for help, X to quit.
-? :q
-Type <return> to proceed, S to scroll future error messages,
-R to run without stopping, Q to run quietly,
-I to insert something, E to edit your file,
-1 or ... or 9 to ignore the next 1 to 9 tokens of input,
-H for help, X to quit.
-? X
- 
+
+Underfull \hbox (badness 3302) in paragraph at lines 836--837
+[]\OT1/ppl/b/n/9.53561 Normal\OT1/ppl/m/n/9.53561 : Sym-met-ric, un-bounded (in
+-ter-est
+ []
+
+
+Underfull \hbox (badness 3557) in paragraph at lines 837--838
+[]\OT1/ppl/b/n/9.53561 Lognormal\OT1/ppl/m/n/9.53561 : Pos-i-tive, right-skewed
+ (stock
+ []
+
+
+Underfull \hbox (badness 1728) in paragraph at lines 838--839
+[]\OT1/ppl/b/n/9.53561 Gamma\OT1/ppl/m/n/9.53561 : Pos-i-tive, flex-i-ble shape
+ (wait-ing
+ []
+
+
+Overfull \hbox (57.74309pt too wide) in paragraph at lines 845--846
+[]\OT1/ppl/m/it/9.53561 Implementation\OT1/ppl/m/n/9.53561 : \OT1/pcr/m/n/9.535
+61 interpolator.set_stochastic_link(...) 
+ []
+
+[10]
+Overfull \hbox (32.6359pt too wide) in paragraph at lines 860--861
+[]\OT1/ppl/m/it/9.53561 Implementation\OT1/ppl/m/n/9.53561 : \OT1/pcr/m/n/9.535
+61 NeuralNetworkMultivariateDerivatives
+ []
+
+
+Underfull \hbox (badness 2343) in paragraph at lines 870--871
+[]\OT1/ppl/m/it/9.53561 Why Nu-mer-i-cal\OT1/ppl/m/n/9.53561 : Au-to-matic dif-
+fer-en-ti-a-tion,
+ []
+
+
+Underfull \hbox (badness 1540) in paragraph at lines 878--879
+[]\OT1/ppl/m/it/9.53561 Best Meth-ods\OT1/ppl/m/n/9.53561 : LOWESS/LOESS (ro-bu
+st to
+ []
+
+
+Underfull \hbox (badness 1609) in paragraph at lines 900--900
+ \OT1/phv/b/sc/11.04124 6 Con-clu-sion: Im-pact and Fu-ture Di-rec-
+ []
+
+
+Underfull \hbox (badness 1371) in paragraph at lines 929--930
+[]\OT1/ppl/b/n/9.53561 Advanced Ten-sor Op-er-a-tions\OT1/ppl/m/n/9.53561 : Di-
+ver-gence, curl,
+ []
+
+[11]
+Underfull \hbox (badness 10000) in paragraph at lines 933--934
+[]\OT1/ppl/b/n/9.53561 Universal API\OT1/ppl/m/n/9.53561 : The con-sis-tent
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 933--934
+\OT1/pcr/m/n/9.53561 .fit().differentiate() \OT1/ppl/m/n/9.53561 pat-tern acros
+s
+ []
+
+
+Underfull \hbox (badness 1874) in paragraph at lines 933--934
+\OT1/ppl/m/n/9.53561 all meth-ods fa-cil-i-tates method com-par-i-son and
+ []
+
+
+Underfull \hbox (badness 3118) in paragraph at lines 965--966
+[]\OT1/ppl/m/n/8.03 J. Brad-bury et al., ``JAX: Com-pos-able Trans-for-ma-tions
+ of
+ []
+
+
+Overfull \hbox (10.23753pt too wide) in paragraph at lines 998--998
+[]  \OT1/pcr/m/n/9.53561 title = {PyDelt: Advanced Numerical Function[] 
+ []
+
+
+Overfull \hbox (10.23753pt too wide) in paragraph at lines 998--998
+[]           \OT1/pcr/m/n/9.53561 Interpolation and Differentiation},[] 
+ []
+
+
+Overfull \hbox (4.51617pt too wide) in paragraph at lines 998--998
+[]  \OT1/pcr/m/n/9.53561 url = {https://github.com/MikeHLee/pydelt},[] 
+ []
+
+[12] (./paper_latex.aux)
+ ***********
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-02-20>
+ ***********
+Package rerunfilecheck Info: File `paper_latex.out' has not changed.
+(rerunfilecheck)             Checksum: 33AD2806190EE9695EC9015D49A5C58A;13148.
+ ) 
 Here is how much of TeX's memory you used:
- 14597 strings out of 474116
- 231351 string characters out of 5743682
- 1965187 words of memory out of 5000000
- 36688 multiletter control sequences out of 15000+600000
- 606278 words of font info for 147 fonts, out of 8000000 for 9000
+ 14848 strings out of 474116
+ 234994 string characters out of 5743682
+ 1963187 words of memory out of 5000000
+ 36826 multiletter control sequences out of 15000+600000
+ 609930 words of font info for 158 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,10n,79p,539b,552s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><
-/usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb></u
-sr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></us
-r/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr
-/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/l
-ocal/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/loc
-al/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local
-/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/local/te
-xlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texli
-ve/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texliv
+ 75i,10n,79p,1522b,545s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
+></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb><
+/usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></
+usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></u
+sr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr
+/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/l
+ocal/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/l
+ocal/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/loc
+al/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/local/
+texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/tex
+live/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texl
+ive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texliv
 e/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/
 2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/20
 24/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texliv
-e/2024/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2024/
-texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2024/texmf-d
-ist/fonts/type1/urw/helvetic/uhvro8a.pfb></usr/local/texlive/2024/texmf-dist/fo
-nts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/typ
-e1/urw/palatino/uplr8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/
-zapfding/uzdr.pfb>
-Output written on paper_latex.pdf (6 pages, 256499 bytes).
+e/2024/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/local/texlive/2024/t
+exmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2024/texmf-di
+st/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2024/texmf-dist/font
+s/type1/urw/helvetic/uhvro8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/type
+1/urw/palatino/uplb8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/p
+alatino/uplr8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/palatino
+/uplri8a.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/urw/zapfding/uzdr.
+pfb>
+Output written on paper_latex.pdf (12 pages, 359001 bytes).
 PDF statistics:
- 227 PDF objects out of 1000 (max. 8388607)
- 179 compressed objects within 2 object streams
- 86 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 541 PDF objects out of 1000 (max. 8388607)
+ 476 compressed objects within 5 object streams
+ 175 named destinations out of 1000 (max. 500000)
+ 417 words of extra memory for PDF output out of 10000 (max. 10000000)
 

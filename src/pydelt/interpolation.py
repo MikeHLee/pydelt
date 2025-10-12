@@ -14,14 +14,26 @@ from .stochastic import StochasticLinkFunction, StochasticDerivativeTransform, c
 
 class BaseInterpolator:
     """
-    Abstract base class for all interpolators with stochastic derivative support.
+    Abstract base class for all interpolators with stochastic derivative support and window functions.
     """
     
     def __init__(self):
         self.stochastic_link = None
         self.stochastic_method = "ito"
+        self.window_func = None
+        self.window_weights = None
+        self.n_observations = None
     
-    def fit(self, time, signal):
+    def fit(self, time, signal, window_func: Optional[Callable[[int], np.ndarray]] = None):
+        """
+        Fit the interpolator to the data with optional window function.
+        
+        Args:
+            time: Time points
+            signal: Signal values
+            window_func: Optional callable that takes length N and returns window weights of shape (N,)
+                        Common examples: np.hanning, np.hamming, np.blackman, np.bartlett
+        """
         raise NotImplementedError("fit() must be implemented in subclasses.")
     
     def predict(self, new_time):
@@ -47,7 +59,8 @@ class BaseInterpolator:
             raise ValueError("Method must be 'ito' or 'stratonovich'")
         self.stochastic_method = method
     
-    def differentiate(self, order: int = 1, mask: Optional[Union[np.ndarray, List[bool], List[int]]] = None) -> Callable:
+    def differentiate(self, order: int = 1, mask: Optional[Union[np.ndarray, List[bool], List[int]]] = None, 
+                     normalize_by_observations: bool = False) -> Callable:
         """
         Return a callable function that computes derivatives of the interpolated function.
         
@@ -55,11 +68,44 @@ class BaseInterpolator:
             order: Order of derivative (1 for first derivative, 2 for second, etc.)
             mask: Optional mask for partial derivatives (boolean array or indices)
                  If provided, only compute derivatives for selected points
+            normalize_by_observations: If True and window function was used, normalize derivatives by number of observations
         
         Returns:
             Callable function that takes input points and returns derivative values
         """
         raise NotImplementedError("differentiate() must be implemented in subclasses.")
+    
+    def _apply_window_function(self, time: np.ndarray, signal: np.ndarray, 
+                              window_func: Optional[Callable[[int], np.ndarray]]) -> Tuple[np.ndarray, np.ndarray, Optional[np.ndarray]]:
+        """
+        Apply window function to the signal if provided.
+        
+        Args:
+            time: Time points
+            signal: Signal values
+            window_func: Optional window function
+        
+        Returns:
+            Tuple of (time, windowed_signal, window_weights)
+        """
+        if window_func is None:
+            return time, signal, None
+        
+        # Generate window weights
+        n = len(time)
+        weights = window_func(n)
+        
+        if len(weights) != n:
+            raise ValueError(f"Window function returned {len(weights)} weights but expected {n}")
+        
+        # Apply window to signal
+        if signal.ndim == 1:
+            windowed_signal = signal * weights
+        else:
+            # For multivariate signals, apply window to each dimension
+            windowed_signal = signal * weights[:, np.newaxis]
+        
+        return time, windowed_signal, weights
     
     def _apply_stochastic_transform(self, x: np.ndarray, derivatives: Dict[int, np.ndarray]) -> Dict[int, np.ndarray]:
         """
@@ -85,12 +131,21 @@ class SplineInterpolator(BaseInterpolator):
         self.k = k
         self.splines = None  # List of splines if vector output
 
-    def fit(self, time: Union[List[float], np.ndarray], signal: Union[List[float], np.ndarray]):
+    def fit(self, time: Union[List[float], np.ndarray], signal: Union[List[float], np.ndarray],
+            window_func: Optional[Callable[[int], np.ndarray]] = None):
         t = np.asarray(time)
         s = np.asarray(signal)
         sort_idx = np.argsort(t)
         t = t[sort_idx]
         s = s[sort_idx]
+        
+        # Store original number of observations
+        self.n_observations = len(t)
+        
+        # Apply window function if provided
+        t, s, self.window_weights = self._apply_window_function(t, s, window_func)
+        self.window_func = window_func
+        
         if s.ndim == 1:
             s = s[:, None]
         self.splines = []
@@ -124,7 +179,8 @@ class SplineInterpolator(BaseInterpolator):
         else:
             return result[0] if scalar_input else result
     
-    def differentiate(self, order: int = 1, mask: Optional[Union[np.ndarray, List[bool], List[int]]] = None) -> Callable:
+    def differentiate(self, order: int = 1, mask: Optional[Union[np.ndarray, List[bool], List[int]]] = None,
+                     normalize_by_observations: bool = False) -> Callable:
         """
         Return a callable function that computes derivatives of the spline interpolation.
         
@@ -132,6 +188,7 @@ class SplineInterpolator(BaseInterpolator):
             order: Order of derivative (1 for first derivative, 2 for second, etc.)
             mask: Optional mask for partial derivatives (boolean array or indices)
                  If provided, only compute derivatives for selected points
+            normalize_by_observations: If True and window function was used, normalize derivatives by number of observations
         
         Returns:
             Callable function that takes input points and returns derivative values
@@ -166,6 +223,10 @@ class SplineInterpolator(BaseInterpolator):
             # Compute derivatives for each spline
             derivs = [spline.derivative(n=order)(eval_points) for spline in self.splines]
             result = np.stack(derivs, axis=-1)
+            
+            # Apply normalization if requested
+            if normalize_by_observations and self.window_func is not None and self.n_observations is not None:
+                result = result / self.n_observations
             
             # Apply stochastic transformation if link function is set
             if self.stochastic_link is not None:
@@ -219,12 +280,21 @@ class LowessInterpolator(BaseInterpolator):
         self.it = it
         self.interp_funcs = None  # List of interp1d for each output dim
 
-    def fit(self, time: Union[List[float], np.ndarray], signal: Union[List[float], np.ndarray]):
+    def fit(self, time: Union[List[float], np.ndarray], signal: Union[List[float], np.ndarray],
+            window_func: Optional[Callable[[int], np.ndarray]] = None):
         t = np.asarray(time)
         s = np.asarray(signal)
         sort_idx = np.argsort(t)
         t = t[sort_idx]
         s = s[sort_idx]
+        
+        # Store original number of observations
+        self.n_observations = len(t)
+        
+        # Apply window function if provided
+        t, s, self.window_weights = self._apply_window_function(t, s, window_func)
+        self.window_func = window_func
+        
         if s.ndim == 1:
             s = s[:, None]
         self.interp_funcs = []
@@ -258,7 +328,8 @@ class LowessInterpolator(BaseInterpolator):
         else:
             return result[0] if scalar_input else result
     
-    def differentiate(self, order: int = 1, mask: Optional[Union[np.ndarray, List[bool], List[int]]] = None) -> Callable:
+    def differentiate(self, order: int = 1, mask: Optional[Union[np.ndarray, List[bool], List[int]]] = None,
+                     normalize_by_observations: bool = False) -> Callable:
         """
         Return a callable function that computes derivatives of the LOWESS interpolation using numerical differentiation.
         
@@ -266,6 +337,7 @@ class LowessInterpolator(BaseInterpolator):
             order: Order of derivative (1 for first derivative, 2 for second, etc.)
             mask: Optional mask for partial derivatives (boolean array or indices)
                  If provided, only compute derivatives for selected points
+            normalize_by_observations: If True and window function was used, normalize derivatives by number of observations
         
         Returns:
             Callable function that takes input points and returns derivative values
@@ -327,6 +399,10 @@ class LowessInterpolator(BaseInterpolator):
                 derivs.append(deriv)
             
             result = np.stack(derivs, axis=-1)
+            
+            # Apply normalization if requested
+            if normalize_by_observations and self.window_func is not None and self.n_observations is not None:
+                result = result / self.n_observations
             
             # Handle different result dimensions
             if len(self.interp_funcs) == 1:

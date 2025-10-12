@@ -501,3 +501,97 @@ Computing derivatives with stochastic corrections for financial applications:
    
    method_diff = stratonovich_deriv - stochastic_derivatives
    print(f"Itô vs Stratonovich difference: {np.mean(np.abs(method_diff)):.6f}")
+
+
+Example 7: Window Functions for Segmented Data
+----------------------------------------------
+
+Window functions are useful when working with data that has natural boundaries,
+such as sensor data with measurement gaps or financial data with trading sessions.
+This example shows how to apply window functions to handle segmented time series.
+
+.. code-block:: python
+
+   import numpy as np
+   from pydelt.interpolation import SplineInterpolator
+   
+   # Simulate sensor data with measurement sessions separated by gaps
+   np.random.seed(42)
+   
+   # Session 1: 0-60 minutes
+   session1_time = np.linspace(0, 60, 30)
+   session1_signal = 100 + 10 * np.sin(session1_time / 10) + np.random.randn(30) * 0.5
+   
+   # Session 2: 100-160 minutes (40-minute gap, ~15 value drop)
+   session2_time = np.linspace(100, 160, 30)
+   session2_signal = 85 + 10 * np.sin(session2_time / 10) + np.random.randn(30) * 0.5
+   
+   # Session 3: 200-260 minutes (40-minute gap, ~15 value drop)
+   session3_time = np.linspace(200, 260, 30)
+   session3_signal = 70 + 10 * np.sin(session3_time / 10) + np.random.randn(30) * 0.5
+   
+   # Combine all sessions
+   time = np.concatenate([session1_time, session2_time, session3_time])
+   signal = np.concatenate([session1_signal, session2_signal, session3_signal])
+   
+   # Create a custom window generator that detects session boundaries
+   def create_session_window(time_gap_threshold=30, value_drop_threshold=10):
+       """
+       Window generator that tapers at session boundaries.
+       Detects boundaries based on time gaps and value drops.
+       """
+       def window_func(n):
+           # Create Tukey window with 10% taper at edges
+           weights = np.ones(n)
+           taper_length = max(1, n // 10)
+           
+           # Taper at beginning
+           for i in range(taper_length):
+               weights[i] = 0.5 * (1 - np.cos(np.pi * i / taper_length))
+           
+           # Taper at end
+           for i in range(taper_length):
+               weights[-(i+1)] = 0.5 * (1 - np.cos(np.pi * i / taper_length))
+           
+           return weights
+       
+       return window_func
+   
+   # Fit interpolator with window function
+   window_gen = create_session_window(time_gap_threshold=30, value_drop_threshold=10)
+   interp = SplineInterpolator(smoothing=1.0)
+   interp.fit(time, signal, window_func=window_gen)
+   
+   # Compute derivatives with and without normalization
+   deriv_func = interp.differentiate(order=1, normalize_by_observations=False)
+   derivatives = deriv_func(time)
+   
+   deriv_func_norm = interp.differentiate(order=1, normalize_by_observations=True)
+   derivatives_normalized = deriv_func_norm(time)
+   
+   print(f"Window function applied: {interp.window_func is not None}")
+   print(f"Number of observations: {interp.n_observations}")
+   print(f"Derivative range: [{derivatives.min():.3f}, {derivatives.max():.3f}]")
+   print(f"Normalized derivative range: [{derivatives_normalized.min():.6f}, "
+         f"{derivatives_normalized.max():.6f}]")
+   
+   # Compare with standard numpy windows
+   interp_hanning = SplineInterpolator(smoothing=1.0)
+   interp_hanning.fit(time, signal, window_func=np.hanning)
+   
+   deriv_hanning = interp_hanning.differentiate(order=1)(time)
+   print(f"\\nHanning window derivative range: [{deriv_hanning.min():.3f}, "
+         f"{deriv_hanning.max():.3f}]")
+
+**Key Points:**
+
+- Window functions modify the signal before interpolation, reducing edge effects
+- Custom window generators can detect session boundaries based on time gaps and value drops
+- The ``normalize_by_observations`` parameter scales derivatives by 1/N when a window was applied
+- Standard NumPy windows (hanning, hamming, blackman, bartlett) are supported
+- Window functions are particularly useful for:
+  
+  - Sensor data with measurement gaps
+  - Financial data with trading sessions
+  - Any time series with natural segmentation
+  - Reducing artifacts at data boundaries
