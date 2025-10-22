@@ -45,7 +45,6 @@ def lla(input_data: Union[List[float], np.ndarray], output_data: Union[List[floa
     '''
     # Handle backward compatibility
     if time_data is not None and signal_data is not None:
-        import warnings
         warnings.warn("time_data and signal_data parameters are deprecated. Use input_data and output_data instead.", 
                      DeprecationWarning, stacklevel=2)
         input_data = time_data
@@ -105,7 +104,6 @@ def lla(input_data: Union[List[float], np.ndarray], output_data: Union[List[floa
                 mask = np.array(r_squared) >= r2_threshold
                 valid_indices = np.where(mask)[0]
                 if resample_method and len(valid_indices) > 0:
-                    from pydelt.interpolation import get_best_interpolation, local_segmented_linear, spline_interpolation, lowess_interpolation, loess_interpolation
                     methods = {
                         'best': get_best_interpolation,
                         'linear': local_segmented_linear,
@@ -315,7 +313,6 @@ def glla(input_data: np.ndarray, output_data: np.ndarray, embedding: int = 3, n:
     # Validate input dimensions
     # Handle backward compatibility
     if signal is not None and time is not None:
-        import warnings
         warnings.warn("signal and time parameters are deprecated. Use input_data and output_data instead.", 
                      DeprecationWarning, stacklevel=2)
         input_data = time
@@ -491,15 +488,14 @@ def fda(input_data: np.ndarray, output_data: np.ndarray, spar: Optional[float] =
         # Apply R² threshold filtering if requested
         if r2_threshold is not None and r_squared_global < r2_threshold:
             if resample_method:
+                methods = {
+                    'best': get_best_interpolation,
+                    'linear': local_segmented_linear,
+                    'spline': spline_interpolation,
+                    'lowess': lowess_interpolation,
+                    'loess': loess_interpolation
+                }
                 for k in range(3):
-                    from pydelt.interpolation import get_best_interpolation, local_segmented_linear, spline_interpolation, lowess_interpolation, loess_interpolation
-                    methods = {
-                        'best': get_best_interpolation,
-                        'linear': local_segmented_linear,
-                        'spline': spline_interpolation,
-                        'lowess': lowess_interpolation,
-                        'loess': loess_interpolation
-                    }
                     interp_func = methods.get(resample_method, spline_interpolation)(input_data, deriv_mat[:, k])
                     deriv_mat[:, k] = interp_func(input_data)
         derivatives[-1] = deriv_mat

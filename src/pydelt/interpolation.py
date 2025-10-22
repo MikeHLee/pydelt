@@ -8,8 +8,6 @@ from scipy.interpolate import UnivariateSpline, interp1d
 from scipy.stats import linregress
 from statsmodels.nonparametric.smoothers_lowess import lowess
 from typing import List, Tuple, Dict, Union, Optional, Callable, Any
-from scipy.interpolate import UnivariateSpline
-import numpy as np
 from .stochastic import StochasticLinkFunction, StochasticDerivativeTransform, create_link_function
 
 class BaseInterpolator:
@@ -298,8 +296,6 @@ class LowessInterpolator(BaseInterpolator):
         if s.ndim == 1:
             s = s[:, None]
         self.interp_funcs = []
-        from statsmodels.nonparametric.smoothers_lowess import lowess
-        from scipy.interpolate import interp1d
         for j in range(s.shape[1]):
             smoothed = lowess(s[:, j], t, frac=self.frac, it=self.it, return_sorted=True)
             interp_func = interp1d(
@@ -431,8 +427,6 @@ class LoessInterpolator(BaseInterpolator):
         if s.ndim == 1:
             s = s[:, None]
         self.interp_funcs = []
-        from statsmodels.nonparametric.smoothers_lowess import lowess
-        from scipy.interpolate import interp1d
         kind = 'cubic' if len(t) > 3 else 'linear'
         for j in range(s.shape[1]):
             smoothed = lowess(s[:, j], t, frac=self.frac, it=self.it, return_sorted=True)
@@ -583,8 +577,6 @@ class LoessInterpolator(BaseInterpolator):
         if s.ndim == 1:
             s = s[:, None]
         self.interp_funcs = []
-        from statsmodels.nonparametric.smoothers_lowess import lowess
-        from scipy.interpolate import interp1d
         for j in range(s.shape[1]):
             smoothed = lowess(s[:, j], t, frac=self.frac, it=self.it, return_sorted=True)
             interp_func = interp1d(
@@ -732,7 +724,6 @@ class FdaInterpolator(BaseInterpolator):
             range_y = np.ptp(s)
             noise_estimate = np.std(np.diff(s)) / np.sqrt(2)
             smoothing = n * (0.005 * range_y + 0.1 * noise_estimate) ** 2
-        from scipy.interpolate import UnivariateSpline
         self.splines = UnivariateSpline(t, s, s=smoothing, k=self.k)
         return self
 

@@ -75,7 +75,6 @@ def neural_network_derivative(
                 - Callable function that calculates derivatives
                 - Trained neural network model
     """
-    import numpy as np
     time = np.asarray(time)
     signal = np.asarray(signal)
     if np.isnan(time).any() or np.isnan(signal).any():
@@ -91,9 +90,21 @@ def neural_network_derivative(
     else:
         raise ValueError(f"Unknown framework: {framework}")
 
-    import numpy as np
-    if np.isnan(time).any() or np.isnan(signal).any():
-        raise ValueError("Input time and signal must not contain NaN values")
+
+def _pytorch_derivative_legacy(
+    time: Union[List[float], np.ndarray],
+    signal: Union[List[float], np.ndarray],
+    hidden_layers: List[int] = [128, 96, 64, 48, 32],
+    epochs: int = 1000,
+    holdout_fraction: float = 0.0,
+    return_model: bool = False,
+    order: int = 1,
+    dropout: float = 0.1,
+    learning_rate: float = 0.001,
+    batch_size: int = 32,
+    early_stopping: bool = True,
+    patience: int = 50,
+) -> Union[Callable[[Union[float, np.ndarray]], np.ndarray], Tuple[Callable[[Union[float, np.ndarray]], np.ndarray], Any]]:
     """
     Calculate derivatives using automatic differentiation with a neural network.
     
@@ -153,8 +164,6 @@ def _pytorch_derivative(
     from pydelt.interpolation import PyTorchMLP
     import torch.optim as optim
     from torch.utils.data import DataLoader, TensorDataset
-    import torch
-    import numpy as np
 
     X = np.asarray(X)
     Y = np.asarray(Y)
@@ -452,8 +461,6 @@ def _tensorflow_derivative(
     Calculate derivatives using automatic differentiation with TensorFlow for vector-valued input/output.
     """
     from pydelt.interpolation import TensorFlowModel
-    import tensorflow as tf
-    import numpy as np
 
     X = np.asarray(X)
     Y = np.asarray(Y)
