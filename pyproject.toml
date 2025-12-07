@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pydelt"
-version = "0.7.2"
+version = "0.8.0"
 description = "Advanced numerical function interpolation and differentiation with universal API, multivariate calculus, window functions, and stochastic extensions"
 authors = [
   { name="Michael Harrison Lee", email="leemichael289@gmail.com" },

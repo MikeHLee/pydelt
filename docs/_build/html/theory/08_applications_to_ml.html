@@ -1,0 +1,763 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 8: Applications to Machine Learning &mdash; pydelt 0.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Bibliography" href="bibliography.html" />
+    <link rel="prev" title="Chapter 7: Complex Analysis" href="07_complex_analysis.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start Here:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematical Foundations:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../theory_index.html">Theory: Calculus for ML</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../theory_index.html#chapters">Chapters</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="00_why_calculus.html">Why Calculus? A Guide for ML Practitioners</a></li>
+<li class="toctree-l3"><a class="reference internal" href="01_functions_and_limits.html">Chapter 1: Functions and Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="02_derivatives_intuition.html">Chapter 2: Derivatives Intuition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="03_differentiation_rules.html">Chapter 3: Differentiation Rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="04_integration_intuition.html">Chapter 4: Integration Intuition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="05_approximation_theory.html">Chapter 5: Approximation Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="06_multivariate_calculus.html">Chapter 6: Multivariate Calculus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="07_complex_analysis.html">Chapter 7: Complex Analysis</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Chapter 8: Applications to Machine Learning</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#putting-it-all-together">Putting It All Together</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#backpropagation-the-chain-rule-at-scale">Backpropagation: The Chain Rule at Scale</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gradient-descent-optimization-via-derivatives">Gradient Descent: Optimization via Derivatives</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#physics-informed-neural-networks-pinns">Physics-Informed Neural Networks (PINNs)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neural-odes-continuous-depth-networks">Neural ODEs: Continuous-Depth Networks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sensitivity-analysis">Sensitivity Analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#taylor-expansion-in-deep-learning">Taylor Expansion in Deep Learning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#normalizing-flows-and-the-jacobian">Normalizing Flows and the Jacobian</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#stochastic-calculus-in-finance">Stochastic Calculus in Finance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#practical-tips">Practical Tips</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#summary-the-calculus-of-machine-learning">Summary: The Calculus of Machine Learning</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#key-takeaways">Key Takeaways</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#final-exercises">Final Exercises</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#conclusion">Conclusion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#further-reading">Further Reading</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#quick-reference">Quick Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#learning-paths">Learning Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#who-this-is-for">Who This Is For</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Mathematical Theory</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference &amp; Help:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visual_examples.html">Visual Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feature_comparison.html">Feature Comparison Matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../theory_index.html">Theory: Calculus for ML</a></li>
+      <li class="breadcrumb-item active">Chapter 8: Applications to Machine Learning</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/theory/08_applications_to_ml.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-8-applications-to-machine-learning">
+<h1>Chapter 8: Applications to Machine Learning<a class="headerlink" href="#chapter-8-applications-to-machine-learning" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p><em>“Backpropagation is just the chain rule. Optimization is gradient descent. Physics-informed networks use differential equations as loss functions.”</em></p>
+</div></blockquote>
+<section id="putting-it-all-together">
+<h2>Putting It All Together<a class="headerlink" href="#putting-it-all-together" title="Link to this heading"></a></h2>
+<p>This final chapter connects everything we’ve learned to practical machine learning. Every concept from the previous chapters appears here in action.</p>
+</section>
+<section id="backpropagation-the-chain-rule-at-scale">
+<h2>Backpropagation: The Chain Rule at Scale<a class="headerlink" href="#backpropagation-the-chain-rule-at-scale" title="Link to this heading"></a></h2>
+<section id="what-backpropagation-really-is">
+<h3>What Backpropagation Really Is<a class="headerlink" href="#what-backpropagation-really-is" title="Link to this heading"></a></h3>
+<p>Backpropagation is simply the <strong>chain rule</strong> applied systematically through a computational graph.</p>
+<p>For a network with layers h₁, h₂, …, hₙ and loss L:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial L}{\partial \theta_1} = \frac{\partial L}{\partial h_n} \cdot \frac{\partial h_n}{\partial h_{n-1}} \cdot ... \cdot \frac{\partial h_2}{\partial h_1} \cdot \frac{\partial h_1}{\partial \theta_1}\]</div>
+</section>
+<section id="the-forward-pass">
+<h3>The Forward Pass<a class="headerlink" href="#the-forward-pass" title="Link to this heading"></a></h3>
+<p>Compute outputs layer by layer:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">activations</span> <span class="o">=</span> <span class="p">[</span><span class="n">h</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">W</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">weights</span><span class="p">:</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">relu</span><span class="p">(</span><span class="n">W</span> <span class="o">@</span> <span class="n">h</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+        <span class="n">activations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">activations</span>
+</pre></div>
+</div>
+</section>
+<section id="the-backward-pass">
+<h3>The Backward Pass<a class="headerlink" href="#the-backward-pass" title="Link to this heading"></a></h3>
+<p>Propagate gradients in reverse:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">backward</span><span class="p">(</span><span class="n">activations</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">grad_output</span><span class="p">):</span>
+    <span class="n">gradients</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">grad</span> <span class="o">=</span> <span class="n">grad_output</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">weights</span><span class="p">))):</span>
+        <span class="n">W</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">h_prev</span> <span class="o">=</span> <span class="n">activations</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        
+        <span class="c1"># Gradient through ReLU</span>
+        <span class="n">grad</span> <span class="o">=</span> <span class="n">grad</span> <span class="o">*</span> <span class="p">(</span><span class="n">activations</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># ReLU derivative</span>
+        
+        <span class="c1"># Gradients for this layer</span>
+        <span class="n">grad_W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">grad</span><span class="p">,</span> <span class="n">h_prev</span><span class="p">)</span>
+        <span class="n">grad_b</span> <span class="o">=</span> <span class="n">grad</span>
+        <span class="n">gradients</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">grad_W</span><span class="p">,</span> <span class="n">grad_b</span><span class="p">))</span>
+        
+        <span class="c1"># Propagate to previous layer</span>
+        <span class="n">grad</span> <span class="o">=</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">grad</span>
+    
+    <span class="k">return</span> <span class="n">gradients</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="why-understanding-this-matters">
+<h3>Why Understanding This Matters<a class="headerlink" href="#why-understanding-this-matters" title="Link to this heading"></a></h3>
+<p>When you understand backprop as the chain rule:</p>
+<ul class="simple">
+<li><p><strong>Vanishing gradients</strong>: Product of many small numbers → 0</p></li>
+<li><p><strong>Exploding gradients</strong>: Product of many large numbers → ∞</p></li>
+<li><p><strong>Skip connections</strong>: Add identity, so gradient flows directly</p></li>
+<li><p><strong>Normalization</strong>: Keeps intermediate values (and gradients) in good range</p></li>
+</ul>
+</section>
+</section>
+<section id="gradient-descent-optimization-via-derivatives">
+<h2>Gradient Descent: Optimization via Derivatives<a class="headerlink" href="#gradient-descent-optimization-via-derivatives" title="Link to this heading"></a></h2>
+<section id="the-basic-algorithm">
+<h3>The Basic Algorithm<a class="headerlink" href="#the-basic-algorithm" title="Link to this heading"></a></h3>
+<p>To minimize L(θ):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">gradient_descent</span><span class="p">(</span><span class="n">loss_fn</span><span class="p">,</span> <span class="n">grad_fn</span><span class="p">,</span> <span class="n">theta_init</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">theta_init</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">history</span> <span class="o">=</span> <span class="p">[</span><span class="n">theta</span><span class="o">.</span><span class="n">copy</span><span class="p">()]</span>
+    
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">):</span>
+        <span class="n">grad</span> <span class="o">=</span> <span class="n">grad_fn</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">-</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">grad</span>
+        <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">theta</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+    
+    <span class="k">return</span> <span class="n">theta</span><span class="p">,</span> <span class="n">history</span>
+</pre></div>
+</div>
+</section>
+<section id="variants-and-their-calculus">
+<h3>Variants and Their Calculus<a class="headerlink" href="#variants-and-their-calculus" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Algorithm</p></th>
+<th class="head"><p>Update Rule</p></th>
+<th class="head"><p>Calculus Insight</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>SGD</p></td>
+<td><p>θ -= lr × ∇L</p></td>
+<td><p>First-order (gradient only)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Momentum</p></td>
+<td><p>v = βv + ∇L; θ -= lr × v</p></td>
+<td><p>Accumulates gradient (integration!)</p></td>
+</tr>
+<tr class="row-even"><td><p>Adam</p></td>
+<td><p>Uses first and second moments</p></td>
+<td><p>Adaptive learning rate per parameter</p></td>
+</tr>
+<tr class="row-odd"><td><p>Newton</p></td>
+<td><p>θ -= H⁻¹∇L</p></td>
+<td><p>Second-order (uses Hessian)</p></td>
+</tr>
+<tr class="row-even"><td><p>L-BFGS</p></td>
+<td><p>Approximates H⁻¹</p></td>
+<td><p>Quasi-Newton method</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="the-loss-landscape">
+<h3>The Loss Landscape<a class="headerlink" href="#the-loss-landscape" title="Link to this heading"></a></h3>
+<p>Understanding the loss landscape requires multivariate calculus:</p>
+<ul class="simple">
+<li><p><strong>Gradient</strong> ∇L: Direction of steepest ascent</p></li>
+<li><p><strong>Hessian</strong> H: Curvature information</p></li>
+<li><p><strong>Eigenvalues of H</strong>: Determine if we’re at min, max, or saddle</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.multivariate</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultivariateDerivatives</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Visualize a loss landscape</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">loss_fn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">10</span><span class="o">*</span><span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>  <span class="c1"># Rosenbrock function</span>
+
+<span class="c1"># Generate data</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+
+<span class="c1"># Compute gradients</span>
+<span class="n">input_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span>
+<span class="n">output_data</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+<span class="n">mv</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span><span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">mv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">output_data</span><span class="p">)</span>
+<span class="n">gradient_func</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">gradient</span><span class="p">()</span>
+
+<span class="c1"># Gradient at a point</span>
+<span class="n">point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
+<span class="n">grad</span> <span class="o">=</span> <span class="n">gradient_func</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gradient at (0,0): </span><span class="si">{</span><span class="n">grad</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Points toward minimum</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="physics-informed-neural-networks-pinns">
+<h2>Physics-Informed Neural Networks (PINNs)<a class="headerlink" href="#physics-informed-neural-networks-pinns" title="Link to this heading"></a></h2>
+<section id="the-idea">
+<h3>The Idea<a class="headerlink" href="#the-idea" title="Link to this heading"></a></h3>
+<p>Instead of just fitting data, enforce physical laws (differential equations) in the loss function.</p>
+</section>
+<section id="example-learning-a-differential-equation">
+<h3>Example: Learning a Differential Equation<a class="headerlink" href="#example-learning-a-differential-equation" title="Link to this heading"></a></h3>
+<p>Suppose we know the system follows:</p>
+<div class="math notranslate nohighlight">
+\[\frac{du}{dt} = -ku\]</div>
+<p>(exponential decay). We can train a network to satisfy this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PINN</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Tanh</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">physics_loss</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    
+    <span class="c1"># Compute du/dt using autodiff</span>
+    <span class="n">du_dt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span>
+        <span class="n">u</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> 
+        <span class="n">grad_outputs</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">u</span><span class="p">),</span>
+        <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="c1"># Physics residual: du/dt + ku should be 0</span>
+    <span class="n">residual</span> <span class="o">=</span> <span class="n">du_dt</span> <span class="o">+</span> <span class="n">k</span> <span class="o">*</span> <span class="n">u</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">residual</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">data_loss</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">t_data</span><span class="p">,</span> <span class="n">u_data</span><span class="p">):</span>
+    <span class="n">u_pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">t_data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">u_pred</span> <span class="o">-</span> <span class="n">u_data</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># Training combines both losses</span>
+<span class="c1"># total_loss = data_loss + lambda * physics_loss</span>
+</pre></div>
+</div>
+</section>
+<section id="why-this-works">
+<h3>Why This Works<a class="headerlink" href="#why-this-works" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Data loss</strong>: Fit observed measurements</p></li>
+<li><p><strong>Physics loss</strong>: Enforce known physical laws</p></li>
+<li><p><strong>Regularization</strong>: Physics constraints prevent overfitting</p></li>
+</ul>
+</section>
+<section id="pydelt-connection">
+<h3>PyDelt Connection<a class="headerlink" href="#pydelt-connection" title="Link to this heading"></a></h3>
+<p>PyDelt can compute derivatives from data, which you can use to:</p>
+<ol class="arabic simple">
+<li><p>Discover governing equations from data</p></li>
+<li><p>Validate physics-informed predictions</p></li>
+<li><p>Compute residuals for physics losses</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Observed data (noisy measurements)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">u_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">t</span><span class="p">)</span>  <span class="c1"># True solution to du/dt = -u</span>
+<span class="n">u_noisy</span> <span class="o">=</span> <span class="n">u_true</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># Compute derivative from data</span>
+<span class="n">interp</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">interp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">u_noisy</span><span class="p">)</span>
+<span class="n">du_dt</span> <span class="o">=</span> <span class="n">interp</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Check if du/dt ≈ -u (discovering the equation!)</span>
+<span class="n">u_smooth</span> <span class="o">=</span> <span class="n">interp</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="n">residual</span> <span class="o">=</span> <span class="n">du_dt</span> <span class="o">+</span> <span class="n">u_smooth</span>  <span class="c1"># Should be ≈ 0</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean residual: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">residual</span><span class="p">))</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="neural-odes-continuous-depth-networks">
+<h2>Neural ODEs: Continuous-Depth Networks<a class="headerlink" href="#neural-odes-continuous-depth-networks" title="Link to this heading"></a></h2>
+<section id="id1">
+<h3>The Idea<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>Instead of discrete layers, define the network as a differential equation:</p>
+<div class="math notranslate nohighlight">
+\[\frac{dh}{dt} = f(h, t, \theta)\]</div>
+<p>The output is h(T) where T is the “final time.”</p>
+</section>
+<section id="why-it-matters">
+<h3>Why It Matters<a class="headerlink" href="#why-it-matters" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Memory efficient</strong>: Don’t store intermediate activations</p></li>
+<li><p><strong>Adaptive computation</strong>: Solve ODE to desired accuracy</p></li>
+<li><p><strong>Continuous normalizing flows</strong>: Exact likelihood computation</p></li>
+</ul>
+</section>
+<section id="connection-to-calculus">
+<h3>Connection to Calculus<a class="headerlink" href="#connection-to-calculus" title="Link to this heading"></a></h3>
+<p>Neural ODEs are literally solving differential equations:</p>
+<ul class="simple">
+<li><p>Forward pass: Integrate ODE from t=0 to t=T</p></li>
+<li><p>Backward pass: Solve adjoint ODE (another differential equation!)</p></li>
+</ul>
+</section>
+</section>
+<section id="sensitivity-analysis">
+<h2>Sensitivity Analysis<a class="headerlink" href="#sensitivity-analysis" title="Link to this heading"></a></h2>
+<section id="what-it-is">
+<h3>What It Is<a class="headerlink" href="#what-it-is" title="Link to this heading"></a></h3>
+<p>How sensitive is the model’s output to changes in inputs or parameters?</p>
+<div class="math notranslate nohighlight">
+\[\text{Sensitivity} = \frac{\partial \text{output}}{\partial \text{input}}\]</div>
+</section>
+<section id="applications">
+<h3>Applications<a class="headerlink" href="#applications" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Feature importance</strong>: Which inputs matter most?</p></li>
+<li><p><strong>Robustness</strong>: How stable is the model to perturbations?</p></li>
+<li><p><strong>Adversarial examples</strong>: Find inputs that maximize output change</p></li>
+</ol>
+</section>
+<section id="computing-sensitivity-with-pydelt">
+<h3>Computing Sensitivity with PyDelt<a class="headerlink" href="#computing-sensitivity-with-pydelt" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.multivariate</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultivariateDerivatives</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Suppose we have model predictions as a function of features</span>
+<span class="c1"># features: (n_samples, n_features)</span>
+<span class="c1"># predictions: (n_samples,)</span>
+
+<span class="c1"># For demonstration, create synthetic data</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">n_samples</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="c1"># True model: y = 2*x1 + 0.5*x2 - x3 + noise</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">features</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">features</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">features</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">predictions</span> <span class="o">+=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
+
+<span class="c1"># Compute gradient (sensitivity) at each point</span>
+<span class="n">mv</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span><span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">mv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">predictions</span><span class="p">)</span>
+<span class="n">gradient_func</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">gradient</span><span class="p">()</span>
+
+<span class="c1"># Sensitivity at a test point</span>
+<span class="n">test_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]])</span>
+<span class="n">sensitivity</span> <span class="o">=</span> <span class="n">gradient_func</span><span class="p">(</span><span class="n">test_point</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sensitivity: </span><span class="si">{</span><span class="n">sensitivity</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># Should be approximately [2, 0.5, -1]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="taylor-expansion-in-deep-learning">
+<h2>Taylor Expansion in Deep Learning<a class="headerlink" href="#taylor-expansion-in-deep-learning" title="Link to this heading"></a></h2>
+<section id="local-linear-models">
+<h3>Local Linear Models<a class="headerlink" href="#local-linear-models" title="Link to this heading"></a></h3>
+<p>Near any point, a neural network is approximately linear:</p>
+<div class="math notranslate nohighlight">
+\[f(x + \delta) \approx f(x) + \nabla f(x)^T \delta\]</div>
+<p>This is the first-order Taylor expansion.</p>
+</section>
+<section id="id2">
+<h3>Applications<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Adversarial examples</strong>: Find δ that maximizes change in output</p></li>
+<li><p><strong>Interpretability</strong>: Linear approximation shows local feature importance</p></li>
+<li><p><strong>Optimization</strong>: Gradient descent uses this approximation</p></li>
+</ol>
+</section>
+<section id="second-order-approximation">
+<h3>Second-Order Approximation<a class="headerlink" href="#second-order-approximation" title="Link to this heading"></a></h3>
+<div class="math notranslate nohighlight">
+\[f(x + \delta) \approx f(x) + \nabla f(x)^T \delta + \frac{1}{2}\delta^T H \delta\]</div>
+<p>The Hessian H tells you about curvature:</p>
+<ul class="simple">
+<li><p><strong>Positive definite H</strong>: Local minimum</p></li>
+<li><p><strong>Negative definite H</strong>: Local maximum</p></li>
+<li><p><strong>Indefinite H</strong>: Saddle point</p></li>
+</ul>
+</section>
+</section>
+<section id="normalizing-flows-and-the-jacobian">
+<h2>Normalizing Flows and the Jacobian<a class="headerlink" href="#normalizing-flows-and-the-jacobian" title="Link to this heading"></a></h2>
+<section id="change-of-variables">
+<h3>Change of Variables<a class="headerlink" href="#change-of-variables" title="Link to this heading"></a></h3>
+<p>When you transform a random variable, the probability density changes:</p>
+<div class="math notranslate nohighlight">
+\[p_Y(y) = p_X(f^{-1}(y)) \cdot \left|\det\left(\frac{\partial f^{-1}}{\partial y}\right)\right|\]</div>
+<p>The Jacobian determinant accounts for how the transformation stretches or compresses space.</p>
+</section>
+<section id="normalizing-flows">
+<h3>Normalizing Flows<a class="headerlink" href="#normalizing-flows" title="Link to this heading"></a></h3>
+<p>Stack invertible transformations to create complex distributions:</p>
+<div class="math notranslate nohighlight">
+\[z_K = f_K \circ f_{K-1} \circ ... \circ f_1(z_0)\]</div>
+<p>The log-likelihood involves summing log-Jacobian-determinants:</p>
+<div class="math notranslate nohighlight">
+\[\log p(x) = \log p(z_0) - \sum_{k=1}^{K} \log\left|\det\left(\frac{\partial f_k}{\partial z_{k-1}}\right)\right|\]</div>
+</section>
+</section>
+<section id="stochastic-calculus-in-finance">
+<h2>Stochastic Calculus in Finance<a class="headerlink" href="#stochastic-calculus-in-finance" title="Link to this heading"></a></h2>
+<section id="the-black-scholes-equation">
+<h3>The Black-Scholes Equation<a class="headerlink" href="#the-black-scholes-equation" title="Link to this heading"></a></h3>
+<p>Option pricing uses stochastic differential equations:</p>
+<div class="math notranslate nohighlight">
+\[dS = \mu S dt + \sigma S dW\]</div>
+<p>where W is a Wiener process (Brownian motion).</p>
+</section>
+<section id="greeks-derivatives-of-option-prices">
+<h3>Greeks: Derivatives of Option Prices<a class="headerlink" href="#greeks-derivatives-of-option-prices" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Greek</p></th>
+<th class="head"><p>Definition</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Delta (Δ)</p></td>
+<td><p>∂V/∂S</p></td>
+<td><p>Sensitivity to stock price</p></td>
+</tr>
+<tr class="row-odd"><td><p>Gamma (Γ)</p></td>
+<td><p>∂²V/∂S²</p></td>
+<td><p>Sensitivity of delta</p></td>
+</tr>
+<tr class="row-even"><td><p>Theta (Θ)</p></td>
+<td><p>∂V/∂t</p></td>
+<td><p>Time decay</p></td>
+</tr>
+<tr class="row-odd"><td><p>Vega (ν)</p></td>
+<td><p>∂V/∂σ</p></td>
+<td><p>Sensitivity to volatility</p></td>
+</tr>
+<tr class="row-even"><td><p>Rho (ρ)</p></td>
+<td><p>∂V/∂r</p></td>
+<td><p>Sensitivity to interest rate</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="pydelt-for-financial-derivatives">
+<h3>PyDelt for Financial Derivatives<a class="headerlink" href="#pydelt-for-financial-derivatives" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Option prices as function of stock price (from market data or model)</span>
+<span class="n">stock_prices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">option_prices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">stock_prices</span> <span class="o">-</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">5</span>  <span class="c1"># Simplified call option</span>
+
+<span class="c1"># Compute Delta (first derivative)</span>
+<span class="n">interp</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">interp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">stock_prices</span><span class="p">,</span> <span class="n">option_prices</span><span class="p">)</span>
+<span class="n">delta</span> <span class="o">=</span> <span class="n">interp</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">stock_prices</span><span class="p">)</span>
+
+<span class="c1"># Compute Gamma (second derivative)</span>
+<span class="n">gamma</span> <span class="o">=</span> <span class="n">interp</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">stock_prices</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Delta at S=100: </span><span class="si">{</span><span class="n">delta</span><span class="p">[</span><span class="mi">25</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gamma at S=100: </span><span class="si">{</span><span class="n">gamma</span><span class="p">[</span><span class="mi">25</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="practical-tips">
+<h2>Practical Tips<a class="headerlink" href="#practical-tips" title="Link to this heading"></a></h2>
+<section id="numerical-stability">
+<h3>1. Numerical Stability<a class="headerlink" href="#numerical-stability" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Use log-space for products: log(ab) = log(a) + log(b)</p></li>
+<li><p>Normalize inputs and outputs</p></li>
+<li><p>Clip gradients to prevent explosion</p></li>
+<li><p>Use stable implementations (log-sum-exp, etc.)</p></li>
+</ul>
+</section>
+<section id="choosing-differentiation-methods">
+<h3>2. Choosing Differentiation Methods<a class="headerlink" href="#choosing-differentiation-methods" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Situation</p></th>
+<th class="head"><p>Recommended Method</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Analytical formula available</p></td>
+<td><p>Symbolic differentiation</p></td>
+</tr>
+<tr class="row-odd"><td><p>Training neural networks</p></td>
+<td><p>Automatic differentiation</p></td>
+</tr>
+<tr class="row-even"><td><p>Discrete data, low noise</p></td>
+<td><p>Spline interpolation</p></td>
+</tr>
+<tr class="row-odd"><td><p>Discrete data, high noise</p></td>
+<td><p>LOWESS or LLA</p></td>
+</tr>
+<tr class="row-even"><td><p>High-dimensional</p></td>
+<td><p>Neural network interpolation</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="debugging-gradients">
+<h3>3. Debugging Gradients<a class="headerlink" href="#debugging-gradients" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">check_gradient</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">grad_f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Numerical gradient check.&quot;&quot;&quot;</span>
+    <span class="n">numerical_grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)):</span>
+        <span class="n">x_plus</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">x_plus</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">eps</span>
+        <span class="n">x_minus</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">x_minus</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-=</span> <span class="n">eps</span>
+        <span class="n">numerical_grad</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x_plus</span><span class="p">)</span> <span class="o">-</span> <span class="n">f</span><span class="p">(</span><span class="n">x_minus</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">eps</span><span class="p">)</span>
+    
+    <span class="n">analytical_grad</span> <span class="o">=</span> <span class="n">grad_f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">numerical_grad</span> <span class="o">-</span> <span class="n">analytical_grad</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max gradient error: </span><span class="si">{</span><span class="n">error</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">error</span> <span class="o">&lt;</span> <span class="mf">1e-4</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="summary-the-calculus-of-machine-learning">
+<h2>Summary: The Calculus of Machine Learning<a class="headerlink" href="#summary-the-calculus-of-machine-learning" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>ML Concept</p></th>
+<th class="head"><p>Calculus Foundation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Backpropagation</p></td>
+<td><p>Chain rule</p></td>
+</tr>
+<tr class="row-odd"><td><p>Gradient descent</p></td>
+<td><p>First derivative</p></td>
+</tr>
+<tr class="row-even"><td><p>Newton’s method</p></td>
+<td><p>Second derivative (Hessian)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Batch normalization</p></td>
+<td><p>Jacobian transformation</p></td>
+</tr>
+<tr class="row-even"><td><p>Normalizing flows</p></td>
+<td><p>Change of variables, Jacobian</p></td>
+</tr>
+<tr class="row-odd"><td><p>Neural ODEs</p></td>
+<td><p>Differential equations</p></td>
+</tr>
+<tr class="row-even"><td><p>PINNs</p></td>
+<td><p>Differential equations as constraints</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sensitivity analysis</p></td>
+<td><p>Partial derivatives</p></td>
+</tr>
+<tr class="row-even"><td><p>Adversarial examples</p></td>
+<td><p>Gradient-based optimization</p></td>
+</tr>
+<tr class="row-odd"><td><p>Option Greeks</p></td>
+<td><p>Partial derivatives</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="key-takeaways">
+<h2>Key Takeaways<a class="headerlink" href="#key-takeaways" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Backpropagation = Chain rule</strong> applied through computational graphs</p></li>
+<li><p><strong>Optimization = Gradient descent</strong> using first (and sometimes second) derivatives</p></li>
+<li><p><strong>PINNs</strong> embed differential equations in loss functions</p></li>
+<li><p><strong>Neural ODEs</strong> treat depth as continuous time</p></li>
+<li><p><strong>Jacobians</strong> appear in normalizing flows and change of variables</p></li>
+<li><p><strong>PyDelt</strong> bridges discrete data and continuous calculus</p></li>
+</ol>
+</section>
+<section id="final-exercises">
+<h2>Final Exercises<a class="headerlink" href="#final-exercises" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Implement backprop</strong>: Write forward and backward passes for a 2-layer network from scratch.</p></li>
+<li><p><strong>Gradient descent visualization</strong>: Use PyDelt to compute gradients of a 2D loss function and visualize gradient descent trajectories.</p></li>
+<li><p><strong>Discover an ODE</strong>: Given data from an unknown dynamical system, use PyDelt to estimate derivatives and discover the governing equation.</p></li>
+<li><p><strong>Sensitivity analysis</strong>: For a trained model (or synthetic function), compute and visualize feature sensitivities across the input space.</p></li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading"></a></h2>
+<p>Calculus is the mathematical language of change, and machine learning is fundamentally about learning from and predicting change. Every gradient update, every backpropagation step, every optimization algorithm is calculus in action.</p>
+<p>With PyDelt, you can:</p>
+<ul class="simple">
+<li><p>Compute derivatives from discrete data</p></li>
+<li><p>Bridge the gap between measurements and mathematical analysis</p></li>
+<li><p>Apply calculus concepts even when you don’t have analytical formulas</p></li>
+</ul>
+<p>The journey from “what is a derivative?” to “how does backpropagation work?” is shorter than it seems. We hope this theory section has helped you see the connections.</p>
+<hr class="docutils" />
+<p><em>Previous: <a class="reference internal" href="07_complex_analysis.html"><span class="std std-doc">← Complex Analysis</span></a> | Back to: <a class="reference internal" href="00_why_calculus.html"><span class="std std-doc">Why Calculus?</span></a></em></p>
+</section>
+<hr class="docutils" />
+<section id="further-reading">
+<h2>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading"></a></h2>
+<section id="textbooks">
+<h3>Textbooks<a class="headerlink" href="#textbooks" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Strang, G.</strong> <em>Calculus</em>. MIT OpenCourseWare. Free and excellent for intuition.</p></li>
+<li><p><strong>Spivak, M.</strong> <em>Calculus</em>. Rigorous but readable.</p></li>
+<li><p><strong>Goodfellow, I., Bengio, Y., &amp; Courville, A.</strong> <em>Deep Learning</em>. Chapter 4 covers numerical computation.</p></li>
+</ol>
+</section>
+<section id="papers">
+<h3>Papers<a class="headerlink" href="#papers" title="Link to this heading"></a></h3>
+<ol class="arabic simple" start="4">
+<li><p><strong>Baydin, A. G. et al.</strong> “Automatic Differentiation in Machine Learning: A Survey.” JMLR 2018.</p></li>
+<li><p><strong>Raissi, M. et al.</strong> “Physics-Informed Neural Networks.” Journal of Computational Physics 2019.</p></li>
+<li><p><strong>Chen, R. T. Q. et al.</strong> “Neural Ordinary Differential Equations.” NeurIPS 2018.</p></li>
+</ol>
+</section>
+<section id="online-resources">
+<h3>Online Resources<a class="headerlink" href="#online-resources" title="Link to this heading"></a></h3>
+<ol class="arabic simple" start="7">
+<li><p><strong>3Blue1Brown</strong> - “Essence of Calculus” YouTube series</p></li>
+<li><p><strong>MIT OpenCourseWare</strong> - 18.01 Single Variable Calculus</p></li>
+<li><p><strong>Stanford CS231n</strong> - Backpropagation lecture notes</p></li>
+</ol>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="07_complex_analysis.html" class="btn btn-neutral float-left" title="Chapter 7: Complex Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="bibliography.html" class="btn btn-neutral float-right" title="Bibliography" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

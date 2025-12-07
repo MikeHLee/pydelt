@@ -1,0 +1,478 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 1: Numerical Differentiation &mdash; pydelt 0.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chapter 2: Noise and Smoothing" href="02_noise_and_smoothing.html" />
+    <link rel="prev" title="Introduction: The Approximation Paradigm" href="00_introduction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start Here:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematical Foundations:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../theory_index.html">Theory: Numerical Calculus for Real Systems</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#the-central-thesis">The Central Thesis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../theory_index.html#chapters">Chapters</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="00_introduction.html">Introduction: The Approximation Paradigm</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Chapter 1: Numerical Differentiation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#connection-to-the-central-thesis">Connection to the Central Thesis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-fundamental-problem">The Fundamental Problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#finite-difference-formulas">Finite Difference Formulas</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-two-sources-of-error">The Two Sources of Error</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-noise-amplification-problem">The Noise Amplification Problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#irregular-grids">Irregular Grids</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt-s-finite-difference-methods">PyDelt’s Finite Difference Methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#when-finite-differences-fail">When Finite Differences Fail</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#key-takeaways">Key Takeaways</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exercises">Exercises</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="02_noise_and_smoothing.html">Chapter 2: Noise and Smoothing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="03_interpolation_methods.html">Chapter 3: Interpolation Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="04_multivariate_derivatives.html">Chapter 4: Multivariate Derivatives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="05_approximation_theory.html">Chapter 5: Approximation Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="06_differential_equations.html">Chapter 6: Differential Equations from Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="07_stochastic_calculus.html">Chapter 7: Stochastic Calculus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="08_applications.html">Chapter 8: Applications Under Error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#quick-reference">Quick Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#who-this-is-for">Who This Is For</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Mathematical Theory</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference &amp; Help:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visual_examples.html">Visual Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feature_comparison.html">Feature Comparison Matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../theory_index.html">Theory: Numerical Calculus for Real Systems</a></li>
+      <li class="breadcrumb-item active">Chapter 1: Numerical Differentiation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/theory/01_numerical_differentiation.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-1-numerical-differentiation">
+<h1>Chapter 1: Numerical Differentiation<a class="headerlink" href="#chapter-1-numerical-differentiation" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p><em>“The derivative is a limit. In practice, we can’t take limits—we can only approximate them.”</em></p>
+</div></blockquote>
+<section id="connection-to-the-central-thesis">
+<h2>Connection to the Central Thesis<a class="headerlink" href="#connection-to-the-central-thesis" title="Link to this heading"></a></h2>
+<p>Recall our core problem: we observe a system governed by unknown dynamics dx/dt = f(x,t), but we only have discrete, noisy samples. <strong>We cannot compute the exact derivative</strong>—we can only approximate it.</p>
+<p>Finite differences are the simplest approximation. They work directly on the data without fitting a surrogate. This makes them fast and assumption-free, but also fragile: they amplify noise and require careful step size selection.</p>
+<p>Understanding finite differences is essential because:</p>
+<ol class="arabic simple">
+<li><p>They reveal <strong>why differentiation is hard</strong> (ill-posed inverse problem)</p></li>
+<li><p>They establish <strong>error analysis</strong> techniques used throughout</p></li>
+<li><p>They motivate <strong>why we need smoothing and interpolation</strong></p></li>
+</ol>
+</section>
+<section id="the-fundamental-problem">
+<h2>The Fundamental Problem<a class="headerlink" href="#the-fundamental-problem" title="Link to this heading"></a></h2>
+<p>You have discrete samples (tᵢ, yᵢ) and want to estimate dy/dt. The textbook definition:</p>
+<div class="math notranslate nohighlight">
+\[f'(x) = \lim_{h \to 0} \frac{f(x+h) - f(x)}{h}\]</div>
+<p>is useless because:</p>
+<ol class="arabic simple">
+<li><p>You can’t take h → 0 with finite precision arithmetic</p></li>
+<li><p>Your data has gaps—you can’t evaluate f at arbitrary points</p></li>
+<li><p>Your measurements have noise</p></li>
+</ol>
+<p>This chapter covers the classical approaches and their limitations.</p>
+</section>
+<section id="finite-difference-formulas">
+<h2>Finite Difference Formulas<a class="headerlink" href="#finite-difference-formulas" title="Link to this heading"></a></h2>
+<section id="forward-backward-and-central-differences">
+<h3>Forward, Backward, and Central Differences<a class="headerlink" href="#forward-backward-and-central-differences" title="Link to this heading"></a></h3>
+<p>Given evenly-spaced data with step h:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Formula</p></th>
+<th class="head"><p>Expression</p></th>
+<th class="head"><p>Error Order</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Forward</p></td>
+<td><p>(f(x+h) - f(x)) / h</p></td>
+<td><p>O(h)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Backward</p></td>
+<td><p>(f(x) - f(x-h)) / h</p></td>
+<td><p>O(h)</p></td>
+</tr>
+<tr class="row-even"><td><p>Central</p></td>
+<td><p>(f(x+h) - f(x-h)) / 2h</p></td>
+<td><p>O(h²)</p></td>
+</tr>
+</tbody>
+</table>
+<p>The central difference is more accurate because errors cancel symmetrically.</p>
+</section>
+<section id="derivation-via-taylor-series">
+<h3>Derivation via Taylor Series<a class="headerlink" href="#derivation-via-taylor-series" title="Link to this heading"></a></h3>
+<p>Expand f(x+h) and f(x-h) around x:</p>
+<div class="math notranslate nohighlight">
+\[f(x+h) = f(x) + hf'(x) + \frac{h^2}{2}f''(x) + \frac{h^3}{6}f'''(x) + O(h^4)\]</div>
+<div class="math notranslate nohighlight">
+\[f(x-h) = f(x) - hf'(x) + \frac{h^2}{2}f''(x) - \frac{h^3}{6}f'''(x) + O(h^4)\]</div>
+<p>Subtracting:</p>
+<div class="math notranslate nohighlight">
+\[f(x+h) - f(x-h) = 2hf'(x) + \frac{h^3}{3}f'''(x) + O(h^5)\]</div>
+<p>So:</p>
+<div class="math notranslate nohighlight">
+\[\frac{f(x+h) - f(x-h)}{2h} = f'(x) + \frac{h^2}{6}f'''(x) + O(h^4)\]</div>
+<p>The error is O(h²), not O(h).</p>
+</section>
+<section id="higher-order-formulas">
+<h3>Higher-Order Formulas<a class="headerlink" href="#higher-order-formulas" title="Link to this heading"></a></h3>
+<p>More points = higher accuracy:</p>
+<p><strong>Five-point stencil for f’(x):</strong>
+$<span class="math notranslate nohighlight">\(f'(x) \approx \frac{-f(x+2h) + 8f(x+h) - 8f(x-h) + f(x-2h)}{12h} + O(h^4)\)</span>$</p>
+<p><strong>Second derivative (central):</strong>
+$<span class="math notranslate nohighlight">\(f''(x) \approx \frac{f(x+h) - 2f(x) + f(x-h)}{h^2} + O(h^2)\)</span>$</p>
+</section>
+<section id="implementation">
+<h3>Implementation<a class="headerlink" href="#implementation" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">finite_diff_derivative</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">accuracy</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute derivative using finite differences.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters:</span>
+<span class="sd">        y: array of function values</span>
+<span class="sd">        h: step size (assumed uniform)</span>
+<span class="sd">        order: derivative order (1 or 2)</span>
+<span class="sd">        accuracy: 2 or 4 (determines stencil width)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">accuracy</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="c1"># Central difference O(h²)</span>
+        <span class="n">dy</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">h</span><span class="p">)</span>
+        <span class="n">dy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">h</span>  <span class="c1"># Forward at boundary</span>
+        <span class="n">dy</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="n">h</span>  <span class="c1"># Backward at boundary</span>
+        
+    <span class="k">elif</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">accuracy</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+        <span class="c1"># Five-point stencil O(h⁴)</span>
+        <span class="n">dy</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">y</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span> <span class="o">+</span> <span class="mi">8</span><span class="o">*</span><span class="n">y</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">8</span><span class="o">*</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="mi">12</span><span class="o">*</span><span class="n">h</span><span class="p">)</span>
+        <span class="c1"># Fall back to lower order at boundaries</span>
+        <span class="n">dy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">h</span>
+        <span class="n">dy</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">h</span><span class="p">)</span>
+        <span class="n">dy</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">h</span><span class="p">)</span>
+        <span class="n">dy</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="n">h</span>
+        
+    <span class="k">elif</span> <span class="n">order</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">accuracy</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="c1"># Second derivative O(h²)</span>
+        <span class="n">dy</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="n">h</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">dy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">dy</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Extrapolate at boundaries</span>
+        <span class="n">dy</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">dy</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        
+    <span class="k">return</span> <span class="n">dy</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="the-two-sources-of-error">
+<h2>The Two Sources of Error<a class="headerlink" href="#the-two-sources-of-error" title="Link to this heading"></a></h2>
+<section id="truncation-error">
+<h3>Truncation Error<a class="headerlink" href="#truncation-error" title="Link to this heading"></a></h3>
+<p>From dropping higher-order Taylor terms. For central difference:</p>
+<div class="math notranslate nohighlight">
+\[\epsilon_{\text{trunc}} \approx \frac{h^2}{6} |f'''(x)|\]</div>
+<p><strong>Decreases</strong> as h → 0.</p>
+</section>
+<section id="rounding-error">
+<h3>Rounding Error<a class="headerlink" href="#rounding-error" title="Link to this heading"></a></h3>
+<p>From finite precision arithmetic. When subtracting nearly-equal numbers:</p>
+<div class="math notranslate nohighlight">
+\[\epsilon_{\text{round}} \approx \frac{\epsilon_{\text{machine}} |f(x)|}{h}\]</div>
+<p>where ε_machine ≈ 10⁻¹⁶ for float64.</p>
+<p><strong>Increases</strong> as h → 0.</p>
+</section>
+<section id="the-optimal-step-size">
+<h3>The Optimal Step Size<a class="headerlink" href="#the-optimal-step-size" title="Link to this heading"></a></h3>
+<p>Total error ≈ truncation + rounding:</p>
+<div class="math notranslate nohighlight">
+\[\epsilon_{\text{total}} \approx \frac{h^2}{6}|f'''| + \frac{\epsilon_{\text{machine}}|f|}{h}\]</div>
+<p>Minimize by taking derivative with respect to h and setting to zero:</p>
+<div class="math notranslate nohighlight">
+\[h_{\text{opt}} \approx \left(\frac{3\epsilon_{\text{machine}}|f|}{|f'''|}\right)^{1/3}\]</div>
+<p>For typical functions and float64: <strong>h_opt ≈ 10⁻⁵ to 10⁻⁶</strong>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_optimal_h</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Demonstrate optimal step size.&quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span>
+    <span class="n">f_prime</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mf">1.0</span>
+    
+    <span class="n">h_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="o">-</span><span class="mi">15</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">h_values</span><span class="p">:</span>
+        <span class="n">approx</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">h</span><span class="p">)</span> <span class="o">-</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">h</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+        <span class="n">true</span> <span class="o">=</span> <span class="n">f_prime</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">approx</span> <span class="o">-</span> <span class="n">true</span><span class="p">))</span>
+    
+    <span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">h_values</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Step size h&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Absolute error&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Finite Difference Error vs Step Size&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mf">1e-5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Optimal h ≈ 10⁻⁵&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    
+    <span class="c1"># Find optimal</span>
+    <span class="n">opt_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Optimal h: </span><span class="si">{</span><span class="n">h_values</span><span class="p">[</span><span class="n">opt_idx</span><span class="p">]</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">, Error: </span><span class="si">{</span><span class="n">errors</span><span class="p">[</span><span class="n">opt_idx</span><span class="p">]</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="the-noise-amplification-problem">
+<h2>The Noise Amplification Problem<a class="headerlink" href="#the-noise-amplification-problem" title="Link to this heading"></a></h2>
+<p>With noisy data y = f(x) + ε where ε ~ N(0, σ²):</p>
+<div class="math notranslate nohighlight">
+\[\frac{y(x+h) - y(x-h)}{2h} = f'(x) + \frac{\epsilon(x+h) - \epsilon(x-h)}{2h}\]</div>
+<p>The noise term has variance:</p>
+<div class="math notranslate nohighlight">
+\[\text{Var}\left(\frac{\epsilon(x+h) - \epsilon(x-h)}{2h}\right) = \frac{2\sigma^2}{4h^2} = \frac{\sigma^2}{2h^2}\]</div>
+<p><strong>Noise in derivative scales as σ/h</strong>. Smaller h = more noise amplification.</p>
+<section id="demonstration">
+<h3>Demonstration<a class="headerlink" href="#demonstration" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+
+<span class="c1"># True function and derivative</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="n">dy_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Add noise</span>
+<span class="n">noise_level</span> <span class="o">=</span> <span class="mf">0.02</span>
+<span class="n">y_noisy</span> <span class="o">=</span> <span class="n">y_true</span> <span class="o">+</span> <span class="n">noise_level</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+
+<span class="c1"># Finite difference (naive)</span>
+<span class="n">h</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">dy_fd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">y_noisy</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+
+<span class="c1"># Compare noise levels</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Signal noise std: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">y_noisy</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">y_true</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Derivative noise std: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">dy_fd</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">dy_true</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Amplification factor: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">dy_fd</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">dy_true</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">y_noisy</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">y_true</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="irregular-grids">
+<h2>Irregular Grids<a class="headerlink" href="#irregular-grids" title="Link to this heading"></a></h2>
+<p>Real data often has non-uniform spacing. The formulas change:</p>
+<section id="two-point-non-uniform">
+<h3>Two-Point (Non-uniform)<a class="headerlink" href="#two-point-non-uniform" title="Link to this heading"></a></h3>
+<div class="math notranslate nohighlight">
+\[f'(x_i) \approx \frac{f(x_{i+1}) - f(x_{i-1})}{x_{i+1} - x_{i-1}}\]</div>
+</section>
+<section id="three-point-non-uniform">
+<h3>Three-Point (Non-uniform)<a class="headerlink" href="#three-point-non-uniform" title="Link to this heading"></a></h3>
+<p>For points x₀, x₁, x₂ with spacings h₁ = x₁ - x₀ and h₂ = x₂ - x₁:</p>
+<div class="math notranslate nohighlight">
+\[f'(x_1) \approx \frac{h_1^2 f(x_2) - h_2^2 f(x_0) + (h_2^2 - h_1^2) f(x_1)}{h_1 h_2 (h_1 + h_2)}\]</div>
+</section>
+<section id="fornberg-s-algorithm">
+<h3>Fornberg’s Algorithm<a class="headerlink" href="#fornberg-s-algorithm" title="Link to this heading"></a></h3>
+<p>For arbitrary stencils, use Fornberg’s algorithm to compute optimal weights:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">fornberg_weights</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute finite difference weights for derivative of order m</span>
+<span class="sd">    at point z using function values at points x.</span>
+<span class="sd">    </span>
+<span class="sd">    Based on Fornberg (1988).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">m</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">c1</span> <span class="o">=</span> <span class="mi">1</span>
+    
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">mn</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+        <span class="n">c2</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+            <span class="n">c3</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">c2</span> <span class="o">*=</span> <span class="n">c3</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">m</span><span class="p">:</span>
+                <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mn</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">c1</span> <span class="o">*</span> <span class="p">(</span><span class="n">k</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">])</span> <span class="o">/</span> <span class="n">c2</span>
+                <span class="n">c</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="n">k</span> <span class="o">*</span> <span class="n">c</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">c3</span>
+        <span class="n">c1</span> <span class="o">=</span> <span class="n">c2</span>
+    
+    <span class="k">return</span> <span class="n">c</span><span class="p">[:,</span> <span class="n">m</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="pydelt-s-finite-difference-methods">
+<h2>PyDelt’s Finite Difference Methods<a class="headerlink" href="#pydelt-s-finite-difference-methods" title="Link to this heading"></a></h2>
+<p>PyDelt provides robust finite difference implementations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt</span><span class="w"> </span><span class="kn">import</span> <span class="n">finite_difference</span>
+
+<span class="c1"># Basic usage</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># First derivative</span>
+<span class="n">dy</span> <span class="o">=</span> <span class="n">finite_difference</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Second derivative</span>
+<span class="n">d2y</span> <span class="o">=</span> <span class="n">finite_difference</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># With specified accuracy</span>
+<span class="n">dy_high</span> <span class="o">=</span> <span class="n">finite_difference</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">accuracy</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="when-finite-differences-fail">
+<h2>When Finite Differences Fail<a class="headerlink" href="#when-finite-differences-fail" title="Link to this heading"></a></h2>
+<p>Finite differences are inadequate when:</p>
+<ol class="arabic simple">
+<li><p><strong>Noise level is significant</strong> (σ/h becomes large)</p></li>
+<li><p><strong>Data is sparse</strong> (can’t use higher-order stencils)</p></li>
+<li><p><strong>Function has sharp features</strong> (truncation error dominates)</p></li>
+<li><p><strong>You need derivatives at non-sample points</strong></p></li>
+</ol>
+<p>The solution: <strong>smoothing</strong> and <strong>interpolation</strong>, covered in the next chapters.</p>
+</section>
+<section id="key-takeaways">
+<h2>Key Takeaways<a class="headerlink" href="#key-takeaways" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Central differences</strong> are O(h²), better than forward/backward O(h)</p></li>
+<li><p><strong>Optimal h</strong> balances truncation and rounding error (~10⁻⁵ for float64)</p></li>
+<li><p><strong>Noise amplifies</strong> as 1/h—smaller steps = more noise</p></li>
+<li><p><strong>Irregular grids</strong> require modified formulas (Fornberg’s algorithm)</p></li>
+<li><p><strong>Finite differences alone</strong> are insufficient for noisy data</p></li>
+</ol>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Optimal step size</strong>: For f(x) = exp(x) at x = 0, find the step size that minimizes total error. Compare to the theoretical prediction.</p></li>
+<li><p><strong>Noise amplification</strong>: Generate sin(x) with Gaussian noise σ = 0.01. Plot derivative error vs. step size h. At what h does noise dominate?</p></li>
+<li><p><strong>Higher-order stencils</strong>: Implement the 5-point stencil for f’(x). Compare accuracy to 3-point for f(x) = x⁵ at x = 1.</p></li>
+<li><p><strong>Non-uniform grid</strong>: Generate data on a random grid. Implement the 3-point non-uniform formula and compare to linear interpolation + uniform finite difference.</p></li>
+</ol>
+<hr class="docutils" />
+<p><em>Previous: <a class="reference internal" href="#00_why_calculus.md"><span class="xref myst">← The Numerical Calculus Problem</span></a> | Next: <a class="reference internal" href="02_noise_and_smoothing.html"><span class="std std-doc">Noise and Smoothing →</span></a></em></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="00_introduction.html" class="btn btn-neutral float-left" title="Introduction: The Approximation Paradigm" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="02_noise_and_smoothing.html" class="btn btn-neutral float-right" title="Chapter 2: Noise and Smoothing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

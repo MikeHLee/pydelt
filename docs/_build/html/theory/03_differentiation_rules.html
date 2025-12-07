@@ -1,0 +1,510 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 3: Differentiation Rules &mdash; pydelt 0.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chapter 4: Integration Intuition" href="04_integration_intuition.html" />
+    <link rel="prev" title="Chapter 2: Derivatives Intuition" href="02_derivatives_intuition.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start Here:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematical Foundations:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../theory_index.html">Theory: Calculus for ML</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../theory_index.html#chapters">Chapters</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="00_why_calculus.html">Why Calculus? A Guide for ML Practitioners</a></li>
+<li class="toctree-l3"><a class="reference internal" href="01_functions_and_limits.html">Chapter 1: Functions and Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="02_derivatives_intuition.html">Chapter 2: Derivatives Intuition</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Chapter 3: Differentiation Rules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#why-rules-matter">Why Rules Matter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-basic-rules">The Basic Rules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-product-rule">The Product Rule</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-quotient-rule">The Quotient Rule</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-chain-rule-the-most-important-rule">The Chain Rule (The Most Important Rule)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#derivatives-of-special-functions">Derivatives of Special Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#putting-it-all-together-a-complex-example">Putting It All Together: A Complex Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#implicit-differentiation">Implicit Differentiation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#automatic-differentiation-in-practice">Automatic Differentiation in Practice</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#common-mistakes-to-avoid">Common Mistakes to Avoid</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#key-takeaways">Key Takeaways</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exercises">Exercises</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="04_integration_intuition.html">Chapter 4: Integration Intuition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="05_approximation_theory.html">Chapter 5: Approximation Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="06_multivariate_calculus.html">Chapter 6: Multivariate Calculus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="07_complex_analysis.html">Chapter 7: Complex Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="08_applications_to_ml.html">Chapter 8: Applications to Machine Learning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#quick-reference">Quick Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#learning-paths">Learning Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#who-this-is-for">Who This Is For</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Mathematical Theory</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference &amp; Help:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visual_examples.html">Visual Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feature_comparison.html">Feature Comparison Matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../theory_index.html">Theory: Calculus for ML</a></li>
+      <li class="breadcrumb-item active">Chapter 3: Differentiation Rules</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/theory/03_differentiation_rules.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-3-differentiation-rules">
+<h1>Chapter 3: Differentiation Rules<a class="headerlink" href="#chapter-3-differentiation-rules" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p><em>“We don’t compute derivatives from scratch. We use rules that let us differentiate complex functions by breaking them into simple parts.”</em></p>
+</div></blockquote>
+<section id="why-rules-matter">
+<h2>Why Rules Matter<a class="headerlink" href="#why-rules-matter" title="Link to this heading"></a></h2>
+<p>Computing derivatives from the limit definition every time would be tedious and error-prone. Instead, we use a small set of rules that let us differentiate almost any function by breaking it into pieces.</p>
+<p><strong>This is exactly what automatic differentiation does</strong>—it applies these rules systematically through your computational graph.</p>
+</section>
+<section id="the-basic-rules">
+<h2>The Basic Rules<a class="headerlink" href="#the-basic-rules" title="Link to this heading"></a></h2>
+<section id="rule-1-constant-rule">
+<h3>Rule 1: Constant Rule<a class="headerlink" href="#rule-1-constant-rule" title="Link to this heading"></a></h3>
+<p>If f(x) = c (a constant), then f’(x) = 0.</p>
+<p><em>Intuition</em>: A constant doesn’t change, so its rate of change is zero.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># f(x) = 5</span>
+<span class="c1"># f&#39;(x) = 0</span>
+</pre></div>
+</div>
+</section>
+<section id="rule-2-power-rule">
+<h3>Rule 2: Power Rule<a class="headerlink" href="#rule-2-power-rule" title="Link to this heading"></a></h3>
+<p>If f(x) = xⁿ, then f’(x) = n·xⁿ⁻¹.</p>
+<p><em>Intuition</em>: Bring down the exponent, reduce it by one.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># f(x) = x³</span>
+<span class="c1"># f&#39;(x) = 3x²</span>
+
+<span class="c1"># f(x) = x^(-1) = 1/x</span>
+<span class="c1"># f&#39;(x) = -1·x^(-2) = -1/x²</span>
+
+<span class="c1"># f(x) = √x = x^(1/2)</span>
+<span class="c1"># f&#39;(x) = (1/2)·x^(-1/2) = 1/(2√x)</span>
+</pre></div>
+</div>
+</section>
+<section id="rule-3-constant-multiple-rule">
+<h3>Rule 3: Constant Multiple Rule<a class="headerlink" href="#rule-3-constant-multiple-rule" title="Link to this heading"></a></h3>
+<p>If f(x) = c·g(x), then f’(x) = c·g’(x).</p>
+<p><em>Intuition</em>: Constants factor out of derivatives.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># f(x) = 5x²</span>
+<span class="c1"># f&#39;(x) = 5·(2x) = 10x</span>
+</pre></div>
+</div>
+</section>
+<section id="rule-4-sum-rule">
+<h3>Rule 4: Sum Rule<a class="headerlink" href="#rule-4-sum-rule" title="Link to this heading"></a></h3>
+<p>If f(x) = g(x) + h(x), then f’(x) = g’(x) + h’(x).</p>
+<p><em>Intuition</em>: Differentiate term by term.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># f(x) = x² + sin(x)</span>
+<span class="c1"># f&#39;(x) = 2x + cos(x)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="the-product-rule">
+<h2>The Product Rule<a class="headerlink" href="#the-product-rule" title="Link to this heading"></a></h2>
+<p>If f(x) = g(x)·h(x), then:</p>
+<div class="math notranslate nohighlight">
+\[f'(x) = g'(x)·h(x) + g(x)·h'(x)\]</div>
+<p><em>Mnemonic</em>: “First times derivative of second, plus second times derivative of first.”</p>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># f(x) = x²·sin(x)</span>
+<span class="c1"># g(x) = x²,     g&#39;(x) = 2x</span>
+<span class="c1"># h(x) = sin(x), h&#39;(x) = cos(x)</span>
+
+<span class="c1"># f&#39;(x) = 2x·sin(x) + x²·cos(x)</span>
+</pre></div>
+</div>
+</section>
+<section id="ml-connection">
+<h3>ML Connection<a class="headerlink" href="#ml-connection" title="Link to this heading"></a></h3>
+<p>The product rule appears when you have:</p>
+<ul class="simple">
+<li><p>Attention mechanisms (query × key)</p></li>
+<li><p>Gating mechanisms (gate × value)</p></li>
+<li><p>Any multiplicative interaction between learned features</p></li>
+</ul>
+</section>
+</section>
+<section id="the-quotient-rule">
+<h2>The Quotient Rule<a class="headerlink" href="#the-quotient-rule" title="Link to this heading"></a></h2>
+<p>If f(x) = g(x)/h(x), then:</p>
+<div class="math notranslate nohighlight">
+\[f'(x) = \frac{g'(x)·h(x) - g(x)·h'(x)}{[h(x)]²}\]</div>
+<p><em>Mnemonic</em>: “Low d-high minus high d-low, over low squared.”</p>
+<section id="id1">
+<h3>Example<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># f(x) = sin(x)/x</span>
+<span class="c1"># g(x) = sin(x), g&#39;(x) = cos(x)</span>
+<span class="c1"># h(x) = x,      h&#39;(x) = 1</span>
+
+<span class="c1"># f&#39;(x) = (cos(x)·x - sin(x)·1) / x²</span>
+<span class="c1">#       = (x·cos(x) - sin(x)) / x²</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="the-chain-rule-the-most-important-rule">
+<h2>The Chain Rule (The Most Important Rule)<a class="headerlink" href="#the-chain-rule-the-most-important-rule" title="Link to this heading"></a></h2>
+<p>If f(x) = g(h(x))—a composition of functions—then:</p>
+<div class="math notranslate nohighlight">
+\[f'(x) = g'(h(x)) · h'(x)\]</div>
+<p><em>Intuition</em>: Multiply the derivatives along the chain.</p>
+<section id="id2">
+<h3>Example<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># f(x) = sin(x²)</span>
+<span class="c1"># Outer function: g(u) = sin(u), g&#39;(u) = cos(u)</span>
+<span class="c1"># Inner function: h(x) = x²,     h&#39;(x) = 2x</span>
+
+<span class="c1"># f&#39;(x) = cos(x²) · 2x = 2x·cos(x²)</span>
+</pre></div>
+</div>
+</section>
+<section id="the-chain-rule-is-backpropagation">
+<h3>The Chain Rule IS Backpropagation<a class="headerlink" href="#the-chain-rule-is-backpropagation" title="Link to this heading"></a></h3>
+<p>When you call <code class="docutils literal notranslate"><span class="pre">loss.backward()</span></code> in PyTorch, you’re applying the chain rule through your entire network:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Input → Layer1 → Layer2 → ... → LayerN → Loss
+  x       h₁       h₂              hₙ      L
+
+∂L/∂x = ∂L/∂hₙ · ∂hₙ/∂hₙ₋₁ · ... · ∂h₂/∂h₁ · ∂h₁/∂x
+</pre></div>
+</div>
+<p>Each layer computes its local derivative, and they’re all multiplied together.</p>
+</section>
+<section id="why-deep-networks-have-gradient-problems">
+<h3>Why Deep Networks Have Gradient Problems<a class="headerlink" href="#why-deep-networks-have-gradient-problems" title="Link to this heading"></a></h3>
+<p>The chain rule multiplies many terms together:</p>
+<ul class="simple">
+<li><p>If each term is &lt; 1: gradients <strong>vanish</strong> (exponential decay)</p></li>
+<li><p>If each term is &gt; 1: gradients <strong>explode</strong> (exponential growth)</p></li>
+</ul>
+<p>This is why:</p>
+<ul class="simple">
+<li><p><strong>ReLU</strong> is popular (derivative is exactly 1 for positive inputs)</p></li>
+<li><p><strong>Residual connections</strong> help (add identity, so gradient flows directly)</p></li>
+<li><p><strong>Normalization</strong> helps (keeps activations in reasonable range)</p></li>
+</ul>
+</section>
+</section>
+<section id="derivatives-of-special-functions">
+<h2>Derivatives of Special Functions<a class="headerlink" href="#derivatives-of-special-functions" title="Link to this heading"></a></h2>
+<section id="exponential-and-logarithm">
+<h3>Exponential and Logarithm<a class="headerlink" href="#exponential-and-logarithm" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Derivative</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>eˣ</p></td>
+<td><p>eˣ</p></td>
+<td><p>Only function equal to its own derivative!</p></td>
+</tr>
+<tr class="row-odd"><td><p>aˣ</p></td>
+<td><p>aˣ·ln(a)</p></td>
+<td><p>General exponential</p></td>
+</tr>
+<tr class="row-even"><td><p>ln(x)</p></td>
+<td><p>1/x</p></td>
+<td><p>Natural log</p></td>
+</tr>
+<tr class="row-odd"><td><p>log_a(x)</p></td>
+<td><p>1/(x·ln(a))</p></td>
+<td><p>General log</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="trigonometric-functions">
+<h3>Trigonometric Functions<a class="headerlink" href="#trigonometric-functions" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Derivative</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>sin(x)</p></td>
+<td><p>cos(x)</p></td>
+</tr>
+<tr class="row-odd"><td><p>cos(x)</p></td>
+<td><p>-sin(x)</p></td>
+</tr>
+<tr class="row-even"><td><p>tan(x)</p></td>
+<td><p>sec²(x) = 1/cos²(x)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="activation-functions">
+<h3>Activation Functions<a class="headerlink" href="#activation-functions" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Formula</p></th>
+<th class="head"><p>Derivative</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Sigmoid</p></td>
+<td><p>σ(x) = 1/(1+e⁻ˣ)</p></td>
+<td><p>σ(x)(1-σ(x))</p></td>
+</tr>
+<tr class="row-odd"><td><p>Tanh</p></td>
+<td><p>tanh(x)</p></td>
+<td><p>1 - tanh²(x)</p></td>
+</tr>
+<tr class="row-even"><td><p>ReLU</p></td>
+<td><p>max(0,x)</p></td>
+<td><p>1 if x&gt;0, 0 if x&lt;0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Leaky ReLU</p></td>
+<td><p>max(αx,x)</p></td>
+<td><p>1 if x&gt;0, α if x&lt;0</p></td>
+</tr>
+<tr class="row-even"><td><p>Softplus</p></td>
+<td><p>ln(1+eˣ)</p></td>
+<td><p>σ(x)</p></td>
+</tr>
+<tr class="row-odd"><td><p>GELU</p></td>
+<td><p>x·Φ(x)</p></td>
+<td><p>Complex (see PyTorch docs)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="putting-it-all-together-a-complex-example">
+<h2>Putting It All Together: A Complex Example<a class="headerlink" href="#putting-it-all-together-a-complex-example" title="Link to this heading"></a></h2>
+<p>Let’s differentiate a function that might appear in a neural network:</p>
+<div class="math notranslate nohighlight">
+\[f(x) = \sigma(w_2 \cdot \text{ReLU}(w_1 x + b_1) + b_2)\]</div>
+<p>where σ is the sigmoid function.</p>
+<section id="step-by-step">
+<h3>Step by Step<a class="headerlink" href="#step-by-step" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Innermost</strong>: h₁(x) = w₁x + b₁, so h₁’(x) = w₁</p></li>
+<li><p><strong>ReLU</strong>: h₂ = ReLU(h₁), so h₂’ = 1 if h₁ &gt; 0, else 0</p></li>
+<li><p><strong>Linear</strong>: h₃ = w₂h₂ + b₂, so ∂h₃/∂h₂ = w₂</p></li>
+<li><p><strong>Sigmoid</strong>: f = σ(h₃), so ∂f/∂h₃ = σ(h₃)(1-σ(h₃))</p></li>
+</ol>
+</section>
+<section id="chain-rule-application">
+<h3>Chain Rule Application<a class="headerlink" href="#chain-rule-application" title="Link to this heading"></a></h3>
+<div class="math notranslate nohighlight">
+\[\frac{df}{dx} = \sigma(h_3)(1-\sigma(h_3)) \cdot w_2 \cdot \mathbb{1}_{h_1 &gt; 0} \cdot w_1\]</div>
+<p>This is exactly what PyTorch computes when you call <code class="docutils literal notranslate"><span class="pre">.backward()</span></code>!</p>
+</section>
+</section>
+<section id="implicit-differentiation">
+<h2>Implicit Differentiation<a class="headerlink" href="#implicit-differentiation" title="Link to this heading"></a></h2>
+<p>Sometimes y is defined implicitly by an equation like:</p>
+<div class="math notranslate nohighlight">
+\[x^2 + y^2 = 1\]</div>
+<p>To find dy/dx, differentiate both sides with respect to x, treating y as a function of x:</p>
+<div class="math notranslate nohighlight">
+\[2x + 2y \frac{dy}{dx} = 0\]</div>
+<div class="math notranslate nohighlight">
+\[\frac{dy}{dx} = -\frac{x}{y}\]</div>
+<section id="id3">
+<h3>ML Connection<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>Implicit differentiation is used in:</p>
+<ul class="simple">
+<li><p><strong>Implicit layers</strong> (DEQ, Neural ODEs)</p></li>
+<li><p><strong>Constrained optimization</strong> (Lagrange multipliers)</p></li>
+<li><p><strong>Physics-informed networks</strong> (enforcing constraints)</p></li>
+</ul>
+</section>
+</section>
+<section id="automatic-differentiation-in-practice">
+<h2>Automatic Differentiation in Practice<a class="headerlink" href="#automatic-differentiation-in-practice" title="Link to this heading"></a></h2>
+<p>PyDelt’s neural network interpolator uses autodiff:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">NeuralNetworkInterpolator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Data</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># Neural network learns the function</span>
+<span class="n">nn_interp</span> <span class="o">=</span> <span class="n">NeuralNetworkInterpolator</span><span class="p">(</span>
+    <span class="n">hidden_layers</span><span class="o">=</span><span class="p">[</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">],</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">1000</span>
+<span class="p">)</span>
+<span class="n">nn_interp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="c1"># Autodiff computes exact derivatives</span>
+<span class="n">derivative_func</span> <span class="o">=</span> <span class="n">nn_interp</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">derivatives</span> <span class="o">=</span> <span class="n">derivative_func</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># Compare to analytical</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max error: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">derivatives</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="common-mistakes-to-avoid">
+<h2>Common Mistakes to Avoid<a class="headerlink" href="#common-mistakes-to-avoid" title="Link to this heading"></a></h2>
+<section id="mistake-1-forgetting-the-chain-rule">
+<h3>Mistake 1: Forgetting the Chain Rule<a class="headerlink" href="#mistake-1-forgetting-the-chain-rule" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># WRONG: d/dx[sin(x²)] = cos(x²)</span>
+<span class="c1"># RIGHT: d/dx[sin(x²)] = cos(x²) · 2x = 2x·cos(x²)</span>
+</pre></div>
+</div>
+</section>
+<section id="mistake-2-confusing-d-dx-with-x">
+<h3>Mistake 2: Confusing d/dx with ∂/∂x<a class="headerlink" href="#mistake-2-confusing-d-dx-with-x" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>d/dx</strong>: Total derivative (x is the only variable)</p></li>
+<li><p><strong>∂/∂x</strong>: Partial derivative (other variables held constant)</p></li>
+</ul>
+</section>
+<section id="mistake-3-forgetting-that-derivatives-are-functions">
+<h3>Mistake 3: Forgetting That Derivatives Are Functions<a class="headerlink" href="#mistake-3-forgetting-that-derivatives-are-functions" title="Link to this heading"></a></h3>
+<p>The derivative of f(x) = x² is f’(x) = 2x, not just “2x at some point.”</p>
+</section>
+</section>
+<section id="key-takeaways">
+<h2>Key Takeaways<a class="headerlink" href="#key-takeaways" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Basic rules</strong> (power, sum, constant) handle simple functions</p></li>
+<li><p><strong>Product and quotient rules</strong> handle combinations</p></li>
+<li><p><strong>Chain rule</strong> handles compositions—and IS backpropagation</p></li>
+<li><p><strong>Autodiff</strong> applies these rules automatically through computational graphs</p></li>
+<li><p><strong>Gradient problems</strong> (vanishing/exploding) come from chain rule multiplication</p></li>
+</ol>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Differentiate by hand</strong>:</p>
+<ul class="simple">
+<li><p>f(x) = x³ - 3x² + 2x - 1</p></li>
+<li><p>f(x) = e^(x²)</p></li>
+<li><p>f(x) = ln(sin(x))</p></li>
+</ul>
+</li>
+<li><p><strong>Verify with PyDelt</strong>: Use <code class="docutils literal notranslate"><span class="pre">SplineInterpolator</span></code> to numerically verify your answers.</p></li>
+<li><p><strong>Trace backprop</strong>: For a simple 2-layer network f(x) = σ(w₂·σ(w₁x)), write out the full chain rule expression for ∂f/∂w₁.</p></li>
+</ol>
+<hr class="docutils" />
+<p><em>Previous: <a class="reference internal" href="02_derivatives_intuition.html"><span class="std std-doc">← Derivatives Intuition</span></a> | Next: <a class="reference internal" href="04_integration_intuition.html"><span class="std std-doc">Integration Intuition →</span></a></em></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="02_derivatives_intuition.html" class="btn btn-neutral float-left" title="Chapter 2: Derivatives Intuition" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="04_integration_intuition.html" class="btn btn-neutral float-right" title="Chapter 4: Integration Intuition" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

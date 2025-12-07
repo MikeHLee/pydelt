@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.0] - 2025-12-07
+
+### Added
+- **Comprehensive Theory Documentation**: Complete rewrite of educational documentation with unified pedagogical approach
+  - New central thesis: "Approximating unknown dynamical systems to make them tractable"
+  - 9 interconnected chapters covering foundations through advanced applications
+  - Progressive learning path from linear regression to stochastic calculus
+
+### Documentation Structure
+- **Chapter 0: Introduction** - The Approximation Paradigm
+  - Starts with linear regression as simplest derivative estimator
+  - Multiple regression for partial derivatives
+  - Natural progression to advanced methods
+- **Chapter 1: Numerical Differentiation** - Finite differences, error analysis
+- **Chapter 2: Noise and Smoothing** - Bias-variance tradeoff, regularization
+- **Chapter 3: Interpolation Methods** - Splines, local regression, kernels, neural nets
+- **Chapter 4: Multivariate Derivatives** - Gradients, Jacobians, Hessians from data
+- **Chapter 5: Approximation Theory** - Error bounds, convergence rates
+- **Chapter 6: Differential Equations** - System identification, SINDy, Neural ODEs
+- **Chapter 7: Stochastic Calculus** - Itô calculus, SDEs, drift/diffusion estimation
+- **Chapter 8: Applications** - Finance, physics, sensors, ML under error
+
+### Key Themes
+- Every chapter connects to central thesis: approximating unknown dynamics
+- Practical code examples throughout using PyDelt API
+- Error quantification and validation strategies
+- Domain-specific considerations for real-world applications
+
+### Technical
+- Updated Sphinx configuration for improved Markdown rendering
+- Fixed RST/Markdown integration issues
+- All documentation builds cleanly with Sphinx
+
 ## [0.6.3] - 2025-10-11
 
 ### Added

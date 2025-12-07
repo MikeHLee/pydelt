@@ -1,0 +1,233 @@
+# Chapter 1: Functions and Limits
+
+> *"A function is a machine: input → output. A limit asks: what happens as we get infinitely close to something?"*
+
+## What Is a Function, Really?
+
+Before we can talk about derivatives, we need to be crystal clear about what a function is.
+
+### The Machine Metaphor
+
+Think of a function as a **machine with one rule**: for every input, there's exactly one output.
+
+```
+Input → [Function Machine] → Output
+  x   →       f(x)        →   y
+```
+
+Some examples:
+- **f(x) = x²**: Input 3, output 9. Input -2, output 4.
+- **f(x) = sin(x)**: Input π/2, output 1. Input 0, output 0.
+- **Neural network**: Input image, output class probabilities.
+
+### Why This Matters for ML
+
+In machine learning, almost everything is a function:
+- Your **model** is a function: inputs → predictions
+- Your **loss** is a function: (predictions, labels) → scalar
+- Your **optimizer** updates weights based on functions of gradients
+
+Understanding functions deeply helps you understand what your models are actually doing.
+
+## The Three Ways to Represent Functions
+
+### 1. Analytical (Formula)
+
+```python
+def f(x):
+    return x**2 + 2*x + 1
+```
+
+This is the cleanest representation—you have an exact formula. Calculus textbooks mostly work with these.
+
+### 2. Tabular (Data Points)
+
+```python
+x_data = [0, 1, 2, 3, 4, 5]
+y_data = [1, 4, 9, 16, 25, 36]
+```
+
+This is what you usually have in practice—measurements, observations, samples. **PyDelt specializes in this case.**
+
+### 3. Graphical (Visual)
+
+A curve on a plot. Useful for intuition, but you can't compute with it directly.
+
+### The PyDelt Bridge
+
+PyDelt converts **tabular data** into **smooth functions** that behave like analytical ones:
+
+```python
+from pydelt.interpolation import SplineInterpolator
+
+# Your data (tabular)
+x_data = [0, 1, 2, 3, 4, 5]
+y_data = [1, 4, 9, 16, 25, 36]
+
+# Convert to smooth function
+interpolator = SplineInterpolator(smoothing=0.1)
+interpolator.fit(x_data, y_data)
+
+# Now you can evaluate anywhere
+f_approx = interpolator(2.5)  # Returns ~12.25
+```
+
+## Limits: The Foundation of Calculus
+
+### The Intuition
+
+A **limit** answers the question: *"What value does f(x) approach as x gets closer and closer to some point a?"*
+
+We write this as:
+
+$$\lim_{x \to a} f(x) = L$$
+
+This means: as x gets arbitrarily close to a, f(x) gets arbitrarily close to L.
+
+### Why Limits Matter
+
+Limits are the foundation of derivatives. The derivative is defined as a limit:
+
+$$f'(a) = \lim_{h \to 0} \frac{f(a+h) - f(a)}{h}$$
+
+This says: "The derivative is what the slope of the secant line approaches as the two points get infinitely close together."
+
+### A Concrete Example
+
+Consider f(x) = x². What is the derivative at x = 2?
+
+Let's compute the limit step by step:
+
+| h | (f(2+h) - f(2)) / h | = | ((2+h)² - 4) / h |
+|---|---------------------|---|------------------|
+| 1 | (9 - 4) / 1 | = | 5 |
+| 0.1 | (4.41 - 4) / 0.1 | = | 4.1 |
+| 0.01 | (4.0401 - 4) / 0.01 | = | 4.01 |
+| 0.001 | (4.004001 - 4) / 0.001 | = | 4.001 |
+
+As h → 0, the value approaches **4**. So f'(2) = 4.
+
+(Analytically: if f(x) = x², then f'(x) = 2x, so f'(2) = 4. ✓)
+
+### Limits in Code
+
+```python
+import numpy as np
+
+def f(x):
+    return x**2
+
+def numerical_derivative(f, a, h=1e-8):
+    """Approximate derivative using limit definition."""
+    return (f(a + h) - f(a)) / h
+
+# Compute derivative at x=2
+derivative_at_2 = numerical_derivative(f, 2)
+print(f"f'(2) ≈ {derivative_at_2:.6f}")  # Output: 4.000000
+```
+
+## When Limits Don't Exist
+
+Not every limit exists. Understanding when limits fail helps you understand when derivatives fail.
+
+### Case 1: Jump Discontinuities
+
+```python
+def step_function(x):
+    return 1 if x >= 0 else 0
+```
+
+At x = 0, the left limit is 0 and the right limit is 1. They don't match, so the limit doesn't exist—and neither does the derivative.
+
+**ML Connection**: This is why ReLU has no derivative at x = 0 (though we define it as 0 by convention).
+
+### Case 2: Infinite Oscillation
+
+```python
+def oscillating(x):
+    if x == 0:
+        return 0
+    return np.sin(1/x)
+```
+
+As x → 0, this function oscillates infinitely fast between -1 and 1. No limit exists.
+
+### Case 3: Vertical Asymptotes
+
+```python
+def reciprocal(x):
+    return 1/x
+```
+
+As x → 0, f(x) → ±∞. The limit is infinite (doesn't exist as a real number).
+
+## Continuity: When Functions Behave Nicely
+
+A function is **continuous** at a point if:
+1. The limit exists
+2. The function is defined at that point
+3. The limit equals the function value
+
+$$\lim_{x \to a} f(x) = f(a)$$
+
+### Why Continuity Matters for ML
+
+**Continuous functions are easier to optimize.** Gradient descent assumes your loss function is continuous (and usually differentiable). When it's not:
+- Training can be unstable
+- Gradients can be undefined
+- Optimization can get stuck
+
+**PyDelt's interpolation methods produce continuous functions** from your discrete data, making derivative computation well-defined.
+
+## The Epsilon-Delta Definition (For the Curious)
+
+The formal definition of a limit uses two Greek letters:
+
+> For every ε > 0, there exists a δ > 0 such that if 0 < |x - a| < δ, then |f(x) - L| < ε.
+
+In plain English: "No matter how close you want f(x) to be to L (within ε), I can find a range around a (within δ) where that's true."
+
+You don't need this for practical ML work, but it's the foundation that makes calculus rigorous.
+
+## Connecting to PyDelt
+
+When PyDelt fits an interpolator to your data, it's creating a **continuous, smooth function** that:
+1. Passes through (or near) your data points
+2. Has well-defined limits everywhere
+3. Has well-defined derivatives (which you can compute!)
+
+```python
+from pydelt.interpolation import SplineInterpolator
+import numpy as np
+
+# Noisy data
+x = np.linspace(0, 2*np.pi, 50)
+y = np.sin(x) + 0.1 * np.random.randn(50)
+
+# Create smooth, continuous function
+interpolator = SplineInterpolator(smoothing=0.5)
+interpolator.fit(x, y)
+
+# This function has well-defined limits and derivatives everywhere
+derivative_func = interpolator.differentiate(order=1)
+```
+
+## Key Takeaways
+
+1. **Functions map inputs to outputs** deterministically
+2. **Limits describe behavior** as we approach a point
+3. **Derivatives are defined as limits** of difference quotients
+4. **Continuity ensures** limits and function values match
+5. **PyDelt creates continuous functions** from discrete data
+
+## Exercises
+
+1. **Compute by hand**: What is lim(x→3) of (x² - 9)/(x - 3)? (Hint: factor the numerator)
+
+2. **Code it**: Write a function that computes the numerical derivative at multiple points and plots it against the analytical derivative for f(x) = sin(x).
+
+3. **Think about it**: Why does the ReLU function f(x) = max(0, x) have a derivative everywhere except x = 0?
+
+---
+
+*Previous: [← Why Calculus?](00_why_calculus.md) | Next: [Derivatives Intuition →](02_derivatives_intuition.md)*

@@ -6,20 +6,23 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mathematical Theory &mdash; pydelt 0.4.0 documentation</title>
+  <title>Mathematical Theory &mdash; pydelt 0.7.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=6c02275b"></script>
+      <script src="_static/documentation_options.js?v=5a057da9"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Basic Interpolation &amp; Derivatives" href="basic_interpolation.html" />
+    <link rel="prev" title="Bibliography" href="theory/bibliography.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,6 +48,79 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematical Foundations:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="theory_index.html">Theory: Calculus for ML</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Mathematical Theory</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#notation-and-problem-setup">Notation and Problem Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#continuous-vs-discrete-functions">Continuous vs. Discrete Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#grid-types">Grid Types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#method-categories">Method Categories</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#applicability-to-known-vs-unknown-functions">Applicability to Known vs. Unknown Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#finite-difference-methods">Finite Difference Methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-principle">Basic Principle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#central-difference-2nd-order">Central Difference (2nd Order)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#higher-order-derivatives">Higher-Order Derivatives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#accuracy-and-stability">Accuracy and Stability</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#interpolation-based-methods">Interpolation-Based Methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core-idea">Core Idea</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spline-interpolation">Spline Interpolation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#local-linear-approximation-lla">Local Linear Approximation (LLA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generalized-lla-glla">Generalized LLA (GLLA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lowess-loess-methods">LOWESS/LOESS Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#functional-data-analysis-fda">Functional Data Analysis (FDA)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#neural-network-methods">Neural Network Methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#automatic-differentiation">Automatic Differentiation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#multivariate-derivatives">Multivariate Derivatives</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gradient-scalar-functions">Gradient (Scalar Functions)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#jacobian-vector-functions">Jacobian (Vector Functions)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hessian-second-derivatives">Hessian (Second Derivatives)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#laplacian-divergence-of-gradient">Laplacian (Divergence of Gradient)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#tensor-calculus-operations">Tensor Calculus Operations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#divergence-vector-fields">Divergence (Vector Fields)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#curl-vector-fields">Curl (Vector Fields)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#strain-and-stress-tensors">Strain and Stress Tensors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#directional-derivatives">Directional Derivatives</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#stochastic-calculus-extensions">Stochastic Calculus Extensions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ito-vs-stratonovich">Itô vs. Stratonovich</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stochastic-link-functions">Stochastic Link Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#error-analysis-and-accuracy">Error Analysis and Accuracy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sources-of-error">Sources of Error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-bounds">Error Bounds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#method-selection-guidelines">Method Selection Guidelines</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#theoretical-guarantees">Theoretical Guarantees</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#convergence-properties">Convergence Properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#consistency">Consistency</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#asymptotic-normality">Asymptotic Normality</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#references-and-further-reading">References and Further Reading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implementation-status">Implementation Status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#citing-pydelt">Citing PyDelt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a></li>
+</ul>
+</li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
 <ul>
@@ -857,7 +933,10 @@ S''(t) &amp;= 2c_i + 6d_i(t-t_i)\end{split}\]</div>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="theory/bibliography.html" class="btn btn-neutral float-left" title="Bibliography" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="basic_interpolation.html" class="btn btn-neutral float-right" title="Basic Interpolation &amp; Derivatives" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

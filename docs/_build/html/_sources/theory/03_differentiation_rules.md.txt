@@ -1,0 +1,284 @@
+# Chapter 3: Differentiation Rules
+
+> *"We don't compute derivatives from scratch. We use rules that let us differentiate complex functions by breaking them into simple parts."*
+
+## Why Rules Matter
+
+Computing derivatives from the limit definition every time would be tedious and error-prone. Instead, we use a small set of rules that let us differentiate almost any function by breaking it into pieces.
+
+**This is exactly what automatic differentiation does**—it applies these rules systematically through your computational graph.
+
+## The Basic Rules
+
+### Rule 1: Constant Rule
+
+If f(x) = c (a constant), then f'(x) = 0.
+
+*Intuition*: A constant doesn't change, so its rate of change is zero.
+
+```python
+# f(x) = 5
+# f'(x) = 0
+```
+
+### Rule 2: Power Rule
+
+If f(x) = xⁿ, then f'(x) = n·xⁿ⁻¹.
+
+*Intuition*: Bring down the exponent, reduce it by one.
+
+```python
+# f(x) = x³
+# f'(x) = 3x²
+
+# f(x) = x^(-1) = 1/x
+# f'(x) = -1·x^(-2) = -1/x²
+
+# f(x) = √x = x^(1/2)
+# f'(x) = (1/2)·x^(-1/2) = 1/(2√x)
+```
+
+### Rule 3: Constant Multiple Rule
+
+If f(x) = c·g(x), then f'(x) = c·g'(x).
+
+*Intuition*: Constants factor out of derivatives.
+
+```python
+# f(x) = 5x²
+# f'(x) = 5·(2x) = 10x
+```
+
+### Rule 4: Sum Rule
+
+If f(x) = g(x) + h(x), then f'(x) = g'(x) + h'(x).
+
+*Intuition*: Differentiate term by term.
+
+```python
+# f(x) = x² + sin(x)
+# f'(x) = 2x + cos(x)
+```
+
+## The Product Rule
+
+If f(x) = g(x)·h(x), then:
+
+$$f'(x) = g'(x)·h(x) + g(x)·h'(x)$$
+
+*Mnemonic*: "First times derivative of second, plus second times derivative of first."
+
+### Example
+
+```python
+# f(x) = x²·sin(x)
+# g(x) = x²,     g'(x) = 2x
+# h(x) = sin(x), h'(x) = cos(x)
+
+# f'(x) = 2x·sin(x) + x²·cos(x)
+```
+
+### ML Connection
+
+The product rule appears when you have:
+- Attention mechanisms (query × key)
+- Gating mechanisms (gate × value)
+- Any multiplicative interaction between learned features
+
+## The Quotient Rule
+
+If f(x) = g(x)/h(x), then:
+
+$$f'(x) = \frac{g'(x)·h(x) - g(x)·h'(x)}{[h(x)]²}$$
+
+*Mnemonic*: "Low d-high minus high d-low, over low squared."
+
+### Example
+
+```python
+# f(x) = sin(x)/x
+# g(x) = sin(x), g'(x) = cos(x)
+# h(x) = x,      h'(x) = 1
+
+# f'(x) = (cos(x)·x - sin(x)·1) / x²
+#       = (x·cos(x) - sin(x)) / x²
+```
+
+## The Chain Rule (The Most Important Rule)
+
+If f(x) = g(h(x))—a composition of functions—then:
+
+$$f'(x) = g'(h(x)) · h'(x)$$
+
+*Intuition*: Multiply the derivatives along the chain.
+
+### Example
+
+```python
+# f(x) = sin(x²)
+# Outer function: g(u) = sin(u), g'(u) = cos(u)
+# Inner function: h(x) = x²,     h'(x) = 2x
+
+# f'(x) = cos(x²) · 2x = 2x·cos(x²)
+```
+
+### The Chain Rule IS Backpropagation
+
+When you call `loss.backward()` in PyTorch, you're applying the chain rule through your entire network:
+
+```
+Input → Layer1 → Layer2 → ... → LayerN → Loss
+  x       h₁       h₂              hₙ      L
+
+∂L/∂x = ∂L/∂hₙ · ∂hₙ/∂hₙ₋₁ · ... · ∂h₂/∂h₁ · ∂h₁/∂x
+```
+
+Each layer computes its local derivative, and they're all multiplied together.
+
+### Why Deep Networks Have Gradient Problems
+
+The chain rule multiplies many terms together:
+- If each term is < 1: gradients **vanish** (exponential decay)
+- If each term is > 1: gradients **explode** (exponential growth)
+
+This is why:
+- **ReLU** is popular (derivative is exactly 1 for positive inputs)
+- **Residual connections** help (add identity, so gradient flows directly)
+- **Normalization** helps (keeps activations in reasonable range)
+
+## Derivatives of Special Functions
+
+### Exponential and Logarithm
+
+| Function | Derivative | Notes |
+|----------|------------|-------|
+| eˣ | eˣ | Only function equal to its own derivative! |
+| aˣ | aˣ·ln(a) | General exponential |
+| ln(x) | 1/x | Natural log |
+| log_a(x) | 1/(x·ln(a)) | General log |
+
+### Trigonometric Functions
+
+| Function | Derivative |
+|----------|------------|
+| sin(x) | cos(x) |
+| cos(x) | -sin(x) |
+| tan(x) | sec²(x) = 1/cos²(x) |
+
+### Activation Functions
+
+| Function | Formula | Derivative |
+|----------|---------|------------|
+| Sigmoid | σ(x) = 1/(1+e⁻ˣ) | σ(x)(1-σ(x)) |
+| Tanh | tanh(x) | 1 - tanh²(x) |
+| ReLU | max(0,x) | 1 if x>0, 0 if x<0 |
+| Leaky ReLU | max(αx,x) | 1 if x>0, α if x<0 |
+| Softplus | ln(1+eˣ) | σ(x) |
+| GELU | x·Φ(x) | Complex (see PyTorch docs) |
+
+## Putting It All Together: A Complex Example
+
+Let's differentiate a function that might appear in a neural network:
+
+$$f(x) = \sigma(w_2 \cdot \text{ReLU}(w_1 x + b_1) + b_2)$$
+
+where σ is the sigmoid function.
+
+### Step by Step
+
+1. **Innermost**: h₁(x) = w₁x + b₁, so h₁'(x) = w₁
+2. **ReLU**: h₂ = ReLU(h₁), so h₂' = 1 if h₁ > 0, else 0
+3. **Linear**: h₃ = w₂h₂ + b₂, so ∂h₃/∂h₂ = w₂
+4. **Sigmoid**: f = σ(h₃), so ∂f/∂h₃ = σ(h₃)(1-σ(h₃))
+
+### Chain Rule Application
+
+$$\frac{df}{dx} = \sigma(h_3)(1-\sigma(h_3)) \cdot w_2 \cdot \mathbb{1}_{h_1 > 0} \cdot w_1$$
+
+This is exactly what PyTorch computes when you call `.backward()`!
+
+## Implicit Differentiation
+
+Sometimes y is defined implicitly by an equation like:
+
+$$x^2 + y^2 = 1$$
+
+To find dy/dx, differentiate both sides with respect to x, treating y as a function of x:
+
+$$2x + 2y \frac{dy}{dx} = 0$$
+$$\frac{dy}{dx} = -\frac{x}{y}$$
+
+### ML Connection
+
+Implicit differentiation is used in:
+- **Implicit layers** (DEQ, Neural ODEs)
+- **Constrained optimization** (Lagrange multipliers)
+- **Physics-informed networks** (enforcing constraints)
+
+## Automatic Differentiation in Practice
+
+PyDelt's neural network interpolator uses autodiff:
+
+```python
+from pydelt.interpolation import NeuralNetworkInterpolator
+import numpy as np
+
+# Data
+x = np.linspace(0, 2*np.pi, 100)
+y = np.sin(x)
+
+# Neural network learns the function
+nn_interp = NeuralNetworkInterpolator(
+    hidden_layers=[32, 32],
+    epochs=1000
+)
+nn_interp.fit(x, y)
+
+# Autodiff computes exact derivatives
+derivative_func = nn_interp.differentiate(order=1)
+derivatives = derivative_func(x)
+
+# Compare to analytical
+print(f"Max error: {np.max(np.abs(derivatives - np.cos(x))):.4f}")
+```
+
+## Common Mistakes to Avoid
+
+### Mistake 1: Forgetting the Chain Rule
+
+```python
+# WRONG: d/dx[sin(x²)] = cos(x²)
+# RIGHT: d/dx[sin(x²)] = cos(x²) · 2x = 2x·cos(x²)
+```
+
+### Mistake 2: Confusing d/dx with ∂/∂x
+
+- **d/dx**: Total derivative (x is the only variable)
+- **∂/∂x**: Partial derivative (other variables held constant)
+
+### Mistake 3: Forgetting That Derivatives Are Functions
+
+The derivative of f(x) = x² is f'(x) = 2x, not just "2x at some point."
+
+## Key Takeaways
+
+1. **Basic rules** (power, sum, constant) handle simple functions
+2. **Product and quotient rules** handle combinations
+3. **Chain rule** handles compositions—and IS backpropagation
+4. **Autodiff** applies these rules automatically through computational graphs
+5. **Gradient problems** (vanishing/exploding) come from chain rule multiplication
+
+## Exercises
+
+1. **Differentiate by hand**:
+   - f(x) = x³ - 3x² + 2x - 1
+   - f(x) = e^(x²)
+   - f(x) = ln(sin(x))
+
+2. **Verify with PyDelt**: Use `SplineInterpolator` to numerically verify your answers.
+
+3. **Trace backprop**: For a simple 2-layer network f(x) = σ(w₂·σ(w₁x)), write out the full chain rule expression for ∂f/∂w₁.
+
+---
+
+*Previous: [← Derivatives Intuition](02_derivatives_intuition.md) | Next: [Integration Intuition →](04_integration_intuition.md)*

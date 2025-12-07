@@ -1,0 +1,484 @@
+# Chapter 8: Applications to Machine Learning
+
+> *"Backpropagation is just the chain rule. Optimization is gradient descent. Physics-informed networks use differential equations as loss functions."*
+
+## Putting It All Together
+
+This final chapter connects everything we've learned to practical machine learning. Every concept from the previous chapters appears here in action.
+
+## Backpropagation: The Chain Rule at Scale
+
+### What Backpropagation Really Is
+
+Backpropagation is simply the **chain rule** applied systematically through a computational graph.
+
+For a network with layers h₁, h₂, ..., hₙ and loss L:
+
+$$\frac{\partial L}{\partial \theta_1} = \frac{\partial L}{\partial h_n} \cdot \frac{\partial h_n}{\partial h_{n-1}} \cdot ... \cdot \frac{\partial h_2}{\partial h_1} \cdot \frac{\partial h_1}{\partial \theta_1}$$
+
+### The Forward Pass
+
+Compute outputs layer by layer:
+
+```python
+def forward(x, weights):
+    h = x
+    activations = [h]
+    for W, b in weights:
+        h = relu(W @ h + b)
+        activations.append(h)
+    return activations
+```
+
+### The Backward Pass
+
+Propagate gradients in reverse:
+
+```python
+def backward(activations, weights, grad_output):
+    gradients = []
+    grad = grad_output
+    
+    for i in reversed(range(len(weights))):
+        W, b = weights[i]
+        h_prev = activations[i]
+        
+        # Gradient through ReLU
+        grad = grad * (activations[i+1] > 0)  # ReLU derivative
+        
+        # Gradients for this layer
+        grad_W = np.outer(grad, h_prev)
+        grad_b = grad
+        gradients.append((grad_W, grad_b))
+        
+        # Propagate to previous layer
+        grad = W.T @ grad
+    
+    return gradients[::-1]
+```
+
+### Why Understanding This Matters
+
+When you understand backprop as the chain rule:
+- **Vanishing gradients**: Product of many small numbers → 0
+- **Exploding gradients**: Product of many large numbers → ∞
+- **Skip connections**: Add identity, so gradient flows directly
+- **Normalization**: Keeps intermediate values (and gradients) in good range
+
+## Gradient Descent: Optimization via Derivatives
+
+### The Basic Algorithm
+
+To minimize L(θ):
+
+```python
+def gradient_descent(loss_fn, grad_fn, theta_init, lr=0.01, steps=1000):
+    theta = theta_init.copy()
+    history = [theta.copy()]
+    
+    for _ in range(steps):
+        grad = grad_fn(theta)
+        theta = theta - lr * grad
+        history.append(theta.copy())
+    
+    return theta, history
+```
+
+### Variants and Their Calculus
+
+| Algorithm | Update Rule | Calculus Insight |
+|-----------|-------------|------------------|
+| SGD | θ -= lr × ∇L | First-order (gradient only) |
+| Momentum | v = βv + ∇L; θ -= lr × v | Accumulates gradient (integration!) |
+| Adam | Uses first and second moments | Adaptive learning rate per parameter |
+| Newton | θ -= H⁻¹∇L | Second-order (uses Hessian) |
+| L-BFGS | Approximates H⁻¹ | Quasi-Newton method |
+
+### The Loss Landscape
+
+Understanding the loss landscape requires multivariate calculus:
+- **Gradient** ∇L: Direction of steepest ascent
+- **Hessian** H: Curvature information
+- **Eigenvalues of H**: Determine if we're at min, max, or saddle
+
+```python
+from pydelt.multivariate import MultivariateDerivatives
+from pydelt.interpolation import SplineInterpolator
+import numpy as np
+
+# Visualize a loss landscape
+def loss_fn(x, y):
+    return (x - 1)**2 + 10*(y - x**2)**2  # Rosenbrock function
+
+# Generate data
+x = np.linspace(-2, 2, 50)
+y = np.linspace(-1, 3, 50)
+X, Y = np.meshgrid(x, y)
+Z = loss_fn(X, Y)
+
+# Compute gradients
+input_data = np.column_stack([X.flatten(), Y.flatten()])
+output_data = Z.flatten()
+
+mv = MultivariateDerivatives(SplineInterpolator, smoothing=0.1)
+mv.fit(input_data, output_data)
+gradient_func = mv.gradient()
+
+# Gradient at a point
+point = np.array([[0.0, 0.0]])
+grad = gradient_func(point)
+print(f"Gradient at (0,0): {grad[0]}")  # Points toward minimum
+```
+
+## Physics-Informed Neural Networks (PINNs)
+
+### The Idea
+
+Instead of just fitting data, enforce physical laws (differential equations) in the loss function.
+
+### Example: Learning a Differential Equation
+
+Suppose we know the system follows:
+
+$$\frac{du}{dt} = -ku$$
+
+(exponential decay). We can train a network to satisfy this:
+
+```python
+import torch
+import torch.nn as nn
+
+class PINN(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(1, 32),
+            nn.Tanh(),
+            nn.Linear(32, 32),
+            nn.Tanh(),
+            nn.Linear(32, 1)
+        )
+    
+    def forward(self, t):
+        return self.net(t)
+
+def physics_loss(model, t, k=1.0):
+    t.requires_grad_(True)
+    u = model(t)
+    
+    # Compute du/dt using autodiff
+    du_dt = torch.autograd.grad(
+        u, t, 
+        grad_outputs=torch.ones_like(u),
+        create_graph=True
+    )[0]
+    
+    # Physics residual: du/dt + ku should be 0
+    residual = du_dt + k * u
+    return torch.mean(residual**2)
+
+def data_loss(model, t_data, u_data):
+    u_pred = model(t_data)
+    return torch.mean((u_pred - u_data)**2)
+
+# Training combines both losses
+# total_loss = data_loss + lambda * physics_loss
+```
+
+### Why This Works
+
+- **Data loss**: Fit observed measurements
+- **Physics loss**: Enforce known physical laws
+- **Regularization**: Physics constraints prevent overfitting
+
+### PyDelt Connection
+
+PyDelt can compute derivatives from data, which you can use to:
+1. Discover governing equations from data
+2. Validate physics-informed predictions
+3. Compute residuals for physics losses
+
+```python
+from pydelt.interpolation import SplineInterpolator
+import numpy as np
+
+# Observed data (noisy measurements)
+t = np.linspace(0, 5, 100)
+u_true = np.exp(-t)  # True solution to du/dt = -u
+u_noisy = u_true + 0.05 * np.random.randn(100)
+
+# Compute derivative from data
+interp = SplineInterpolator(smoothing=0.5)
+interp.fit(t, u_noisy)
+du_dt = interp.differentiate(order=1)(t)
+
+# Check if du/dt ≈ -u (discovering the equation!)
+u_smooth = interp(t)
+residual = du_dt + u_smooth  # Should be ≈ 0
+print(f"Mean residual: {np.mean(np.abs(residual)):.4f}")
+```
+
+## Neural ODEs: Continuous-Depth Networks
+
+### The Idea
+
+Instead of discrete layers, define the network as a differential equation:
+
+$$\frac{dh}{dt} = f(h, t, \theta)$$
+
+The output is h(T) where T is the "final time."
+
+### Why It Matters
+
+- **Memory efficient**: Don't store intermediate activations
+- **Adaptive computation**: Solve ODE to desired accuracy
+- **Continuous normalizing flows**: Exact likelihood computation
+
+### Connection to Calculus
+
+Neural ODEs are literally solving differential equations:
+- Forward pass: Integrate ODE from t=0 to t=T
+- Backward pass: Solve adjoint ODE (another differential equation!)
+
+## Sensitivity Analysis
+
+### What It Is
+
+How sensitive is the model's output to changes in inputs or parameters?
+
+$$\text{Sensitivity} = \frac{\partial \text{output}}{\partial \text{input}}$$
+
+### Applications
+
+1. **Feature importance**: Which inputs matter most?
+2. **Robustness**: How stable is the model to perturbations?
+3. **Adversarial examples**: Find inputs that maximize output change
+
+### Computing Sensitivity with PyDelt
+
+```python
+from pydelt.multivariate import MultivariateDerivatives
+from pydelt.interpolation import SplineInterpolator
+import numpy as np
+
+# Suppose we have model predictions as a function of features
+# features: (n_samples, n_features)
+# predictions: (n_samples,)
+
+# For demonstration, create synthetic data
+np.random.seed(42)
+n_samples = 500
+features = np.random.randn(n_samples, 3)
+# True model: y = 2*x1 + 0.5*x2 - x3 + noise
+predictions = 2*features[:,0] + 0.5*features[:,1] - features[:,2]
+predictions += 0.1 * np.random.randn(n_samples)
+
+# Compute gradient (sensitivity) at each point
+mv = MultivariateDerivatives(SplineInterpolator, smoothing=0.5)
+mv.fit(features, predictions)
+gradient_func = mv.gradient()
+
+# Sensitivity at a test point
+test_point = np.array([[0.0, 0.0, 0.0]])
+sensitivity = gradient_func(test_point)
+print(f"Sensitivity: {sensitivity[0]}")
+# Should be approximately [2, 0.5, -1]
+```
+
+## Taylor Expansion in Deep Learning
+
+### Local Linear Models
+
+Near any point, a neural network is approximately linear:
+
+$$f(x + \delta) \approx f(x) + \nabla f(x)^T \delta$$
+
+This is the first-order Taylor expansion.
+
+### Applications
+
+1. **Adversarial examples**: Find δ that maximizes change in output
+2. **Interpretability**: Linear approximation shows local feature importance
+3. **Optimization**: Gradient descent uses this approximation
+
+### Second-Order Approximation
+
+$$f(x + \delta) \approx f(x) + \nabla f(x)^T \delta + \frac{1}{2}\delta^T H \delta$$
+
+The Hessian H tells you about curvature:
+- **Positive definite H**: Local minimum
+- **Negative definite H**: Local maximum
+- **Indefinite H**: Saddle point
+
+## Normalizing Flows and the Jacobian
+
+### Change of Variables
+
+When you transform a random variable, the probability density changes:
+
+$$p_Y(y) = p_X(f^{-1}(y)) \cdot \left|\det\left(\frac{\partial f^{-1}}{\partial y}\right)\right|$$
+
+The Jacobian determinant accounts for how the transformation stretches or compresses space.
+
+### Normalizing Flows
+
+Stack invertible transformations to create complex distributions:
+
+$$z_K = f_K \circ f_{K-1} \circ ... \circ f_1(z_0)$$
+
+The log-likelihood involves summing log-Jacobian-determinants:
+
+$$\log p(x) = \log p(z_0) - \sum_{k=1}^{K} \log\left|\det\left(\frac{\partial f_k}{\partial z_{k-1}}\right)\right|$$
+
+## Stochastic Calculus in Finance
+
+### The Black-Scholes Equation
+
+Option pricing uses stochastic differential equations:
+
+$$dS = \mu S dt + \sigma S dW$$
+
+where W is a Wiener process (Brownian motion).
+
+### Greeks: Derivatives of Option Prices
+
+| Greek | Definition | Meaning |
+|-------|------------|---------|
+| Delta (Δ) | ∂V/∂S | Sensitivity to stock price |
+| Gamma (Γ) | ∂²V/∂S² | Sensitivity of delta |
+| Theta (Θ) | ∂V/∂t | Time decay |
+| Vega (ν) | ∂V/∂σ | Sensitivity to volatility |
+| Rho (ρ) | ∂V/∂r | Sensitivity to interest rate |
+
+### PyDelt for Financial Derivatives
+
+```python
+from pydelt.interpolation import SplineInterpolator
+import numpy as np
+
+# Option prices as function of stock price (from market data or model)
+stock_prices = np.linspace(80, 120, 50)
+option_prices = np.maximum(stock_prices - 100, 0) + 5  # Simplified call option
+
+# Compute Delta (first derivative)
+interp = SplineInterpolator(smoothing=0.1)
+interp.fit(stock_prices, option_prices)
+delta = interp.differentiate(order=1)(stock_prices)
+
+# Compute Gamma (second derivative)
+gamma = interp.differentiate(order=2)(stock_prices)
+
+print(f"Delta at S=100: {delta[25]:.4f}")
+print(f"Gamma at S=100: {gamma[25]:.4f}")
+```
+
+## Practical Tips
+
+### 1. Numerical Stability
+
+- Use log-space for products: log(ab) = log(a) + log(b)
+- Normalize inputs and outputs
+- Clip gradients to prevent explosion
+- Use stable implementations (log-sum-exp, etc.)
+
+### 2. Choosing Differentiation Methods
+
+| Situation | Recommended Method |
+|-----------|-------------------|
+| Analytical formula available | Symbolic differentiation |
+| Training neural networks | Automatic differentiation |
+| Discrete data, low noise | Spline interpolation |
+| Discrete data, high noise | LOWESS or LLA |
+| High-dimensional | Neural network interpolation |
+
+### 3. Debugging Gradients
+
+```python
+def check_gradient(f, grad_f, x, eps=1e-5):
+    """Numerical gradient check."""
+    numerical_grad = np.zeros_like(x)
+    for i in range(len(x)):
+        x_plus = x.copy()
+        x_plus[i] += eps
+        x_minus = x.copy()
+        x_minus[i] -= eps
+        numerical_grad[i] = (f(x_plus) - f(x_minus)) / (2 * eps)
+    
+    analytical_grad = grad_f(x)
+    error = np.max(np.abs(numerical_grad - analytical_grad))
+    print(f"Max gradient error: {error:.2e}")
+    return error < 1e-4
+```
+
+## Summary: The Calculus of Machine Learning
+
+| ML Concept | Calculus Foundation |
+|------------|---------------------|
+| Backpropagation | Chain rule |
+| Gradient descent | First derivative |
+| Newton's method | Second derivative (Hessian) |
+| Batch normalization | Jacobian transformation |
+| Normalizing flows | Change of variables, Jacobian |
+| Neural ODEs | Differential equations |
+| PINNs | Differential equations as constraints |
+| Sensitivity analysis | Partial derivatives |
+| Adversarial examples | Gradient-based optimization |
+| Option Greeks | Partial derivatives |
+
+## Key Takeaways
+
+1. **Backpropagation = Chain rule** applied through computational graphs
+2. **Optimization = Gradient descent** using first (and sometimes second) derivatives
+3. **PINNs** embed differential equations in loss functions
+4. **Neural ODEs** treat depth as continuous time
+5. **Jacobians** appear in normalizing flows and change of variables
+6. **PyDelt** bridges discrete data and continuous calculus
+
+## Final Exercises
+
+1. **Implement backprop**: Write forward and backward passes for a 2-layer network from scratch.
+
+2. **Gradient descent visualization**: Use PyDelt to compute gradients of a 2D loss function and visualize gradient descent trajectories.
+
+3. **Discover an ODE**: Given data from an unknown dynamical system, use PyDelt to estimate derivatives and discover the governing equation.
+
+4. **Sensitivity analysis**: For a trained model (or synthetic function), compute and visualize feature sensitivities across the input space.
+
+---
+
+## Conclusion
+
+Calculus is the mathematical language of change, and machine learning is fundamentally about learning from and predicting change. Every gradient update, every backpropagation step, every optimization algorithm is calculus in action.
+
+With PyDelt, you can:
+- Compute derivatives from discrete data
+- Bridge the gap between measurements and mathematical analysis
+- Apply calculus concepts even when you don't have analytical formulas
+
+The journey from "what is a derivative?" to "how does backpropagation work?" is shorter than it seems. We hope this theory section has helped you see the connections.
+
+---
+
+*Previous: [← Complex Analysis](07_complex_analysis.md) | Back to: [Why Calculus?](00_why_calculus.md)*
+
+---
+
+## Further Reading
+
+### Textbooks
+
+1. **Strang, G.** *Calculus*. MIT OpenCourseWare. Free and excellent for intuition.
+2. **Spivak, M.** *Calculus*. Rigorous but readable.
+3. **Goodfellow, I., Bengio, Y., & Courville, A.** *Deep Learning*. Chapter 4 covers numerical computation.
+
+### Papers
+
+4. **Baydin, A. G. et al.** "Automatic Differentiation in Machine Learning: A Survey." JMLR 2018.
+5. **Raissi, M. et al.** "Physics-Informed Neural Networks." Journal of Computational Physics 2019.
+6. **Chen, R. T. Q. et al.** "Neural Ordinary Differential Equations." NeurIPS 2018.
+
+### Online Resources
+
+7. **3Blue1Brown** - "Essence of Calculus" YouTube series
+8. **MIT OpenCourseWare** - 18.01 Single Variable Calculus
+9. **Stanford CS231n** - Backpropagation lecture notes

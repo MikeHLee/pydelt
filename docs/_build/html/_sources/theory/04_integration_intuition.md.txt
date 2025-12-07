@@ -1,0 +1,304 @@
+# Chapter 4: Integration Intuition
+
+> *"Integration is the inverse of differentiation. It accumulates change over time. It computes areas, volumes, and expectations."*
+
+## The Two Faces of Integration
+
+Integration has two complementary interpretations:
+
+1. **Geometric**: The area under a curve
+2. **Analytical**: The reverse of differentiation (antiderivative)
+
+Both are connected by the **Fundamental Theorem of Calculus**—one of the most important results in mathematics.
+
+## Integration as Accumulation
+
+### The Intuition
+
+If the derivative tells you the *rate* of change, the integral tells you the *total* change.
+
+**Example: Velocity and Distance**
+
+- If v(t) is your velocity at time t
+- Then ∫v(t)dt is the total distance traveled
+
+```
+Velocity (rate) ──derivative──> Acceleration
+                <──integral───
+                
+Position ──derivative──> Velocity ──derivative──> Acceleration
+         <──integral───          <──integral───
+```
+
+### In Code
+
+```python
+import numpy as np
+from pydelt.integrals import integrate_derivative
+
+# Velocity data (e.g., from a sensor)
+time = np.linspace(0, 10, 100)
+velocity = 2 * time  # Constant acceleration: v = 2t
+
+# Integrate to get position
+# If v = 2t, then position = t² (plus initial position)
+position = integrate_derivative(velocity, time, initial_value=0)
+
+# Check: position should be approximately t²
+print(f"Position at t=5: {position[50]:.2f}")  # Should be ~25
+print(f"Exact: {5**2}")  # 25
+```
+
+## Integration as Area
+
+### The Geometric View
+
+The **definite integral** ∫ₐᵇ f(x)dx represents the signed area between the curve f(x) and the x-axis, from x=a to x=b.
+
+```
+    f(x)
+    │    ╱╲
+    │   ╱  ╲    ← Area above x-axis (positive)
+    │  ╱    ╲
+────┼─╱──────╲────── x
+    │         ╲
+    │          ╲  ← Area below x-axis (negative)
+    a          b
+```
+
+- Area above the x-axis counts as **positive**
+- Area below the x-axis counts as **negative**
+
+### Why This Matters for ML
+
+**Probability distributions** are defined by integrals:
+
+$$P(a \leq X \leq b) = \int_a^b p(x) dx$$
+
+The total probability must equal 1:
+
+$$\int_{-\infty}^{\infty} p(x) dx = 1$$
+
+## The Fundamental Theorem of Calculus
+
+This theorem connects derivatives and integrals:
+
+### Part 1: Differentiation Undoes Integration
+
+If F(x) = ∫ₐˣ f(t)dt, then F'(x) = f(x).
+
+*Translation*: If you integrate a function and then differentiate the result, you get back the original function.
+
+### Part 2: Integration Undoes Differentiation
+
+If F'(x) = f(x), then ∫ₐᵇ f(x)dx = F(b) - F(a).
+
+*Translation*: To compute a definite integral, find an antiderivative and evaluate at the endpoints.
+
+### Example
+
+$$\int_0^2 x^2 dx = \left[\frac{x^3}{3}\right]_0^2 = \frac{8}{3} - 0 = \frac{8}{3}$$
+
+## Common Integrals
+
+| Function | Integral (Antiderivative) |
+|----------|---------------------------|
+| xⁿ | xⁿ⁺¹/(n+1) + C (n ≠ -1) |
+| 1/x | ln\|x\| + C |
+| eˣ | eˣ + C |
+| sin(x) | -cos(x) + C |
+| cos(x) | sin(x) + C |
+| 1/(1+x²) | arctan(x) + C |
+
+The "+ C" is the **constant of integration**—since the derivative of a constant is zero, any constant could have been there.
+
+## Numerical Integration
+
+When you don't have a formula, you approximate the integral numerically.
+
+### The Trapezoidal Rule
+
+Approximate the area using trapezoids:
+
+$$\int_a^b f(x)dx \approx \sum_{i=0}^{n-1} \frac{f(x_i) + f(x_{i+1})}{2} \cdot \Delta x$$
+
+```python
+def trapezoidal_integrate(y, x):
+    """Integrate y with respect to x using trapezoidal rule."""
+    dx = np.diff(x)
+    return np.sum((y[:-1] + y[1:]) / 2 * dx)
+
+# Example
+x = np.linspace(0, np.pi, 100)
+y = np.sin(x)
+area = trapezoidal_integrate(y, x)
+print(f"∫sin(x)dx from 0 to π = {area:.4f}")  # Should be 2.0
+```
+
+### Simpson's Rule
+
+Uses parabolas instead of lines—more accurate:
+
+$$\int_a^b f(x)dx \approx \frac{\Delta x}{3}\left[f(x_0) + 4f(x_1) + 2f(x_2) + 4f(x_3) + ... + f(x_n)\right]$$
+
+### PyDelt's Integration
+
+```python
+from pydelt.integrals import integrate_derivative, integrate_derivative_with_error
+
+# With error estimation
+result, error = integrate_derivative_with_error(
+    derivative_signal=velocity,
+    time=time,
+    initial_value=0
+)
+print(f"Integrated value: {result[-1]:.4f} ± {error:.4f}")
+```
+
+## Integration in Machine Learning
+
+### 1. Probability and Expectations
+
+The **expected value** of a random variable:
+
+$$\mathbb{E}[X] = \int_{-\infty}^{\infty} x \cdot p(x) dx$$
+
+The **variance**:
+
+$$\text{Var}(X) = \int_{-\infty}^{\infty} (x - \mu)^2 \cdot p(x) dx$$
+
+### 2. Loss Functions as Integrals
+
+Many loss functions are integrals in disguise:
+
+**Cross-entropy** (discrete version of KL divergence):
+$$H(p, q) = -\sum_x p(x) \log q(x) \approx -\int p(x) \log q(x) dx$$
+
+### 3. Cumulative Distribution Functions
+
+The CDF is the integral of the PDF:
+
+$$F(x) = P(X \leq x) = \int_{-\infty}^{x} p(t) dt$$
+
+```python
+# Example: Standard normal CDF
+from scipy import stats
+import numpy as np
+
+x = np.linspace(-3, 3, 100)
+pdf = stats.norm.pdf(x)  # Probability density
+cdf = stats.norm.cdf(x)  # Cumulative (integral of pdf)
+
+# Verify: numerical integration of PDF ≈ CDF
+from scipy.integrate import cumulative_trapezoid
+numerical_cdf = cumulative_trapezoid(pdf, x, initial=0)
+numerical_cdf = numerical_cdf / numerical_cdf[-1]  # Normalize
+```
+
+### 4. Neural ODEs
+
+Neural ODEs define the network as an integral:
+
+$$h(T) = h(0) + \int_0^T f(h(t), t, \theta) dt$$
+
+The hidden state evolves continuously, and the integral is computed numerically.
+
+### 5. Normalizing Flows
+
+Change of variables requires integrating the Jacobian:
+
+$$p_Y(y) = p_X(f^{-1}(y)) \cdot \left|\det\left(\frac{\partial f^{-1}}{\partial y}\right)\right|$$
+
+## Monte Carlo Integration
+
+For high-dimensional integrals, random sampling often works better than grid-based methods:
+
+$$\int f(x) dx \approx \frac{1}{N} \sum_{i=1}^{N} f(x_i)$$
+
+where x_i are random samples.
+
+### Why This Works
+
+By the law of large numbers, the sample mean converges to the expected value:
+
+$$\frac{1}{N} \sum_{i=1}^{N} f(x_i) \xrightarrow{N \to \infty} \mathbb{E}[f(X)]$$
+
+### ML Connection
+
+- **Stochastic gradient descent** is Monte Carlo estimation of the full gradient
+- **Variational inference** uses Monte Carlo to estimate intractable integrals
+- **Reinforcement learning** uses Monte Carlo returns
+
+## Integration Challenges
+
+### 1. No Closed Form
+
+Many integrals have no analytical solution:
+
+$$\int e^{-x^2} dx = \frac{\sqrt{\pi}}{2} \text{erf}(x) + C$$
+
+The error function erf(x) is defined by this integral—it has no simpler form.
+
+### 2. Improper Integrals
+
+Integrals over infinite domains or with singularities:
+
+$$\int_0^{\infty} e^{-x} dx = 1$$
+
+These require careful handling (limits, convergence tests).
+
+### 3. High Dimensions
+
+The "curse of dimensionality" makes grid-based integration impractical:
+- 10 points per dimension
+- 10 dimensions
+- = 10¹⁰ = 10 billion points!
+
+Monte Carlo methods scale much better.
+
+## Connecting Derivatives and Integrals in PyDelt
+
+PyDelt lets you go both directions:
+
+```python
+import numpy as np
+from pydelt.interpolation import SplineInterpolator
+from pydelt.integrals import integrate_derivative
+
+# Original function
+x = np.linspace(0, 2*np.pi, 100)
+y = np.sin(x)
+
+# Differentiate
+interp = SplineInterpolator(smoothing=0.01)
+interp.fit(x, y)
+derivative = interp.differentiate(order=1)(x)  # Should be cos(x)
+
+# Integrate the derivative back
+reconstructed = integrate_derivative(derivative, x, initial_value=0)
+
+# Should recover sin(x) (up to numerical error)
+print(f"Max reconstruction error: {np.max(np.abs(reconstructed - y)):.6f}")
+```
+
+## Key Takeaways
+
+1. **Integration accumulates change**—the inverse of differentiation
+2. **Geometrically, it's the area** under a curve
+3. **The Fundamental Theorem** connects derivatives and integrals
+4. **Numerical methods** (trapezoidal, Simpson's, Monte Carlo) handle real data
+5. **ML uses integrals everywhere**: probability, expectations, loss functions, Neural ODEs
+
+## Exercises
+
+1. **Compute by hand**: ∫₀¹ x² dx (use the power rule for antiderivatives)
+
+2. **Verify numerically**: Use PyDelt's `integrate_derivative` to verify your answer.
+
+3. **Probability**: If X ~ Uniform(0, 1), compute E[X²] = ∫₀¹ x² dx. What is it?
+
+4. **Round trip**: Generate data from f(x) = x³, differentiate it, then integrate the derivative. How close do you get to the original?
+
+---
+
+*Previous: [← Differentiation Rules](03_differentiation_rules.md) | Next: [Approximation Theory →](05_approximation_theory.md)*

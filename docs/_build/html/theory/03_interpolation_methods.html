@@ -1,0 +1,676 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 3: Interpolation Methods &mdash; pydelt 0.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chapter 4: Multivariate Derivatives" href="04_multivariate_derivatives.html" />
+    <link rel="prev" title="Chapter 2: Noise and Smoothing" href="02_noise_and_smoothing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start Here:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematical Foundations:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../theory_index.html">Theory: Numerical Calculus for Real Systems</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#the-central-thesis">The Central Thesis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../theory_index.html#chapters">Chapters</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="00_introduction.html">Introduction: The Approximation Paradigm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="01_numerical_differentiation.html">Chapter 1: Numerical Differentiation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="02_noise_and_smoothing.html">Chapter 2: Noise and Smoothing</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Chapter 3: Interpolation Methods</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#connection-to-the-central-thesis">Connection to the Central Thesis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-interpolation-differentiation-pipeline">The Interpolation-Differentiation Pipeline</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#polynomial-interpolation">Polynomial Interpolation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#spline-interpolation">Spline Interpolation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#local-polynomial-regression">Local Polynomial Regression</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#kernel-methods">Kernel Methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#radial-basis-functions-rbf">Radial Basis Functions (RBF)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gaussian-process-regression">Gaussian Process Regression</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt-s-interpolation-classes">PyDelt’s Interpolation Classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#choosing-an-interpolation-method">Choosing an Interpolation Method</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#key-takeaways">Key Takeaways</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exercises">Exercises</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="04_multivariate_derivatives.html">Chapter 4: Multivariate Derivatives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="05_approximation_theory.html">Chapter 5: Approximation Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="06_differential_equations.html">Chapter 6: Differential Equations from Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="07_stochastic_calculus.html">Chapter 7: Stochastic Calculus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="08_applications.html">Chapter 8: Applications Under Error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#quick-reference">Quick Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#who-this-is-for">Who This Is For</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Mathematical Theory</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference &amp; Help:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visual_examples.html">Visual Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feature_comparison.html">Feature Comparison Matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../theory_index.html">Theory: Numerical Calculus for Real Systems</a></li>
+      <li class="breadcrumb-item active">Chapter 3: Interpolation Methods</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/theory/03_interpolation_methods.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-3-interpolation-methods">
+<h1>Chapter 3: Interpolation Methods<a class="headerlink" href="#chapter-3-interpolation-methods" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p><em>“To differentiate discrete data, first make it continuous. The choice of interpolation method determines everything.”</em></p>
+</div></blockquote>
+<section id="connection-to-the-central-thesis">
+<h2>Connection to the Central Thesis<a class="headerlink" href="#connection-to-the-central-thesis" title="Link to this heading"></a></h2>
+<p>This chapter is the heart of the approximation paradigm. <strong>Interpolation creates the differentiable surrogate</strong> that makes everything else possible.</p>
+<p>The true system evolves according to unknown dynamics. We observe discrete samples. By fitting an interpolant, we construct a continuous, differentiable function that approximates the true trajectory. This surrogate:</p>
+<ul class="simple">
+<li><p><strong>Exists everywhere</strong> in the domain (not just at data points)</p></li>
+<li><p><strong>Has well-defined derivatives</strong> (by construction)</p></li>
+<li><p><strong>Encodes smoothness assumptions</strong> about the true system</p></li>
+<li><p><strong>Yields to standard calculus</strong> tools</p></li>
+</ul>
+<p>The choice of interpolation method is the most consequential decision in numerical differentiation. It determines what class of functions you’re searching over, what smoothness you assume, and what errors you’ll incur.</p>
+</section>
+<section id="the-interpolation-differentiation-pipeline">
+<h2>The Interpolation-Differentiation Pipeline<a class="headerlink" href="#the-interpolation-differentiation-pipeline" title="Link to this heading"></a></h2>
+<p>The standard approach to numerical differentiation:</p>
+<ol class="arabic simple">
+<li><p><strong>Fit</strong> a continuous function f̂(x) to discrete data (xᵢ, yᵢ)</p></li>
+<li><p><strong>Differentiate</strong> f̂(x) analytically or numerically</p></li>
+<li><p><strong>Evaluate</strong> f̂’(x) at desired points</p></li>
+</ol>
+<p>The interpolation method determines:</p>
+<ul class="simple">
+<li><p>Smoothness of derivatives</p></li>
+<li><p>Bias-variance tradeoff</p></li>
+<li><p>Computational cost</p></li>
+<li><p>Behavior at boundaries</p></li>
+</ul>
+</section>
+<section id="polynomial-interpolation">
+<h2>Polynomial Interpolation<a class="headerlink" href="#polynomial-interpolation" title="Link to this heading"></a></h2>
+<section id="lagrange-interpolation">
+<h3>Lagrange Interpolation<a class="headerlink" href="#lagrange-interpolation" title="Link to this heading"></a></h3>
+<p>Given n+1 points, there’s a unique polynomial of degree n passing through all of them:</p>
+<div class="math notranslate nohighlight">
+\[p(x) = \sum_{i=0}^{n} y_i \prod_{j \neq i} \frac{x - x_j}{x_i - x_j}\]</div>
+<p><strong>Problem</strong>: High-degree polynomials oscillate wildly (Runge’s phenomenon).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="c1"># Runge&#39;s function</span>
+<span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">25</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># Interpolate with increasing degree</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">]:</span>
+    <span class="n">xi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">yi</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">xi</span><span class="p">)</span>
+    
+    <span class="c1"># Lagrange interpolation</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">numpy.polynomial</span><span class="w"> </span><span class="kn">import</span> <span class="n">polynomial</span> <span class="k">as</span> <span class="n">P</span>
+    <span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyval</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+    
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;degree </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Runge&#39;s Phenomenon&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>Lesson</strong>: Global polynomial interpolation is unstable. Use piecewise methods instead.</p>
+</section>
+</section>
+<section id="spline-interpolation">
+<h2>Spline Interpolation<a class="headerlink" href="#spline-interpolation" title="Link to this heading"></a></h2>
+<section id="what-is-a-spline">
+<h3>What is a Spline?<a class="headerlink" href="#what-is-a-spline" title="Link to this heading"></a></h3>
+<p>A spline of degree k is a piecewise polynomial where:</p>
+<ul class="simple">
+<li><p>Each piece is degree k</p></li>
+<li><p>Function is Cᵏ⁻¹ continuous (k-1 continuous derivatives)</p></li>
+<li><p>Pieces join at <strong>knots</strong></p></li>
+</ul>
+</section>
+<section id="cubic-splines-k-3">
+<h3>Cubic Splines (k=3)<a class="headerlink" href="#cubic-splines-k-3" title="Link to this heading"></a></h3>
+<p>Most common choice. Between knots xᵢ and xᵢ₊₁:</p>
+<div class="math notranslate nohighlight">
+\[S_i(x) = a_i + b_i(x-x_i) + c_i(x-x_i)^2 + d_i(x-x_i)^3\]</div>
+<p>Constraints:</p>
+<ul class="simple">
+<li><p>Interpolation: S(xᵢ) = yᵢ</p></li>
+<li><p>C¹ continuity: S’ᵢ(xᵢ₊₁) = S’ᵢ₊₁(xᵢ₊₁)</p></li>
+<li><p>C² continuity: S’’ᵢ(xᵢ₊₁) = S’’ᵢ₊₁(xᵢ₊₁)</p></li>
+<li><p>Boundary conditions (natural, clamped, not-a-knot)</p></li>
+</ul>
+</section>
+<section id="natural-cubic-splines">
+<h3>Natural Cubic Splines<a class="headerlink" href="#natural-cubic-splines" title="Link to this heading"></a></h3>
+<p>Boundary condition: S’’(x₀) = S’’(xₙ) = 0</p>
+<p>This minimizes the “total curvature”:</p>
+<div class="math notranslate nohighlight">
+\[\int_{x_0}^{x_n} (S''(x))^2 dx\]</div>
+<p>among all C² interpolants.</p>
+</section>
+<section id="smoothing-splines">
+<h3>Smoothing Splines<a class="headerlink" href="#smoothing-splines" title="Link to this heading"></a></h3>
+<p>Don’t interpolate exactly—balance fit and smoothness:</p>
+<div class="math notranslate nohighlight">
+\[\min_f \sum_{i=1}^n (y_i - f(x_i))^2 + \lambda \int (f''(x))^2 dx\]</div>
+<p>The solution is a natural cubic spline with knots at all data points.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnivariateSpline</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># Interpolating spline (s=0)</span>
+<span class="n">spline_interp</span> <span class="o">=</span> <span class="n">UnivariateSpline</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Smoothing spline</span>
+<span class="n">spline_smooth</span> <span class="o">=</span> <span class="n">UnivariateSpline</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+<span class="c1"># Derivatives are analytical</span>
+<span class="n">dy_smooth</span> <span class="o">=</span> <span class="n">spline_smooth</span><span class="o">.</span><span class="n">derivative</span><span class="p">()(</span><span class="n">t</span><span class="p">)</span>
+<span class="n">d2y_smooth</span> <span class="o">=</span> <span class="n">spline_smooth</span><span class="o">.</span><span class="n">derivative</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="b-splines">
+<h3>B-Splines<a class="headerlink" href="#b-splines" title="Link to this heading"></a></h3>
+<p>Splines represented in the B-spline basis:</p>
+<div class="math notranslate nohighlight">
+\[S(x) = \sum_{i} c_i B_{i,k}(x)\]</div>
+<p>where Bᵢ,ₖ are B-spline basis functions of degree k.</p>
+<p><strong>Advantages</strong>:</p>
+<ul class="simple">
+<li><p>Numerically stable</p></li>
+<li><p>Local support (changing one coefficient affects limited region)</p></li>
+<li><p>Efficient algorithms (de Boor’s algorithm)</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">BSpline</span><span class="p">,</span> <span class="n">make_interp_spline</span>
+
+<span class="c1"># Create B-spline interpolant</span>
+<span class="n">spline</span> <span class="o">=</span> <span class="n">make_interp_spline</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># Evaluate and differentiate</span>
+<span class="n">y_interp</span> <span class="o">=</span> <span class="n">spline</span><span class="p">(</span><span class="n">t_new</span><span class="p">)</span>
+<span class="n">dy_interp</span> <span class="o">=</span> <span class="n">spline</span><span class="o">.</span><span class="n">derivative</span><span class="p">()(</span><span class="n">t_new</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="local-polynomial-regression">
+<h2>Local Polynomial Regression<a class="headerlink" href="#local-polynomial-regression" title="Link to this heading"></a></h2>
+<section id="the-idea">
+<h3>The Idea<a class="headerlink" href="#the-idea" title="Link to this heading"></a></h3>
+<p>Instead of fitting one global function, fit local polynomials around each query point.</p>
+<p>At query point x₀:</p>
+<ol class="arabic simple">
+<li><p>Select nearby data points</p></li>
+<li><p>Fit weighted polynomial (weights decrease with distance)</p></li>
+<li><p>Use polynomial value/derivative at x₀</p></li>
+</ol>
+</section>
+<section id="lowess-loess">
+<h3>LOWESS/LOESS<a class="headerlink" href="#lowess-loess" title="Link to this heading"></a></h3>
+<p><strong>LO</strong>cally <strong>W</strong>eighted <strong>S</strong>catterplot <strong>S</strong>moothing:</p>
+<div class="math notranslate nohighlight">
+\[\min_{\beta} \sum_{i=1}^n w_i(x_0) (y_i - \beta_0 - \beta_1(x_i - x_0) - ...)^2\]</div>
+<p>where weights w_i(x₀) decrease with |xᵢ - x₀|.</p>
+<p>Common weight function (tricube):</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}w(u) = \begin{cases} (1 - |u|^3)^3 &amp; |u| &lt; 1 \\ 0 &amp; |u| \geq 1 \end{cases}\end{split}\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">LowessInterpolator</span>
+
+<span class="c1"># LOWESS with 10% of data in each local fit</span>
+<span class="n">lowess</span> <span class="o">=</span> <span class="n">LowessInterpolator</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">lowess</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="c1"># Smooth values and derivatives</span>
+<span class="n">y_smooth</span> <span class="o">=</span> <span class="n">lowess</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="n">dy_smooth</span> <span class="o">=</span> <span class="n">lowess</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="local-linear-approximation-lla">
+<h3>Local Linear Approximation (LLA)<a class="headerlink" href="#local-linear-approximation-lla" title="Link to this heading"></a></h3>
+<p>PyDelt’s LLA fits local polynomials with explicit derivative estimation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">LlaInterpolator</span>
+
+<span class="c1"># Window-based local fitting</span>
+<span class="n">lla</span> <span class="o">=</span> <span class="n">LlaInterpolator</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">poly_order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">lla</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="c1"># First and second derivatives</span>
+<span class="n">dy</span> <span class="o">=</span> <span class="n">lla</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">t</span><span class="p">)</span>
+<span class="n">d2y</span> <span class="o">=</span> <span class="n">lla</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="comparison-global-vs-local">
+<h3>Comparison: Global vs. Local<a class="headerlink" href="#comparison-global-vs-local" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Aspect</p></th>
+<th class="head"><p>Global (Splines)</p></th>
+<th class="head"><p>Local (LOWESS/LLA)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Smoothness</p></td>
+<td><p>C² everywhere</p></td>
+<td><p>May have discontinuities</p></td>
+</tr>
+<tr class="row-odd"><td><p>Adaptivity</p></td>
+<td><p>Same smoothing everywhere</p></td>
+<td><p>Can adapt to local features</p></td>
+</tr>
+<tr class="row-even"><td><p>Computation</p></td>
+<td><p>O(n) after setup</p></td>
+<td><p>O(n²) naive, O(n log n) with trees</p></td>
+</tr>
+<tr class="row-odd"><td><p>Extrapolation</p></td>
+<td><p>Dangerous</p></td>
+<td><p>Very dangerous</p></td>
+</tr>
+<tr class="row-even"><td><p>Outlier robustness</p></td>
+<td><p>Poor</p></td>
+<td><p>Good (with robust weights)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="kernel-methods">
+<h2>Kernel Methods<a class="headerlink" href="#kernel-methods" title="Link to this heading"></a></h2>
+<section id="kernel-smoothing">
+<h3>Kernel Smoothing<a class="headerlink" href="#kernel-smoothing" title="Link to this heading"></a></h3>
+<p>Generalization of local averaging:</p>
+<div class="math notranslate nohighlight">
+\[\hat{f}(x) = \frac{\sum_i K_h(x - x_i) y_i}{\sum_i K_h(x - x_i)}\]</div>
+<p>where Kₕ(u) = K(u/h)/h is a scaled kernel.</p>
+</section>
+<section id="common-kernels">
+<h3>Common Kernels<a class="headerlink" href="#common-kernels" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Kernel</p></th>
+<th class="head"><p>Formula</p></th>
+<th class="head"><p>Properties</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Gaussian</p></td>
+<td><p>exp(-u²/2)</p></td>
+<td><p>Infinitely smooth</p></td>
+</tr>
+<tr class="row-odd"><td><p>Epanechnikov</p></td>
+<td><p>(3/4)(1-u²) for</p></td>
+<td><p>u</p></td>
+</tr>
+<tr class="row-even"><td><p>Tricube</p></td>
+<td><p>(1-</p></td>
+<td><p>u</p></td>
+</tr>
+<tr class="row-odd"><td><p>Uniform</p></td>
+<td><p>1 for</p></td>
+<td><p>u</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="bandwidth-selection">
+<h3>Bandwidth Selection<a class="headerlink" href="#bandwidth-selection" title="Link to this heading"></a></h3>
+<p>The bandwidth h controls bias-variance:</p>
+<ul class="simple">
+<li><p>Small h: Low bias, high variance</p></li>
+<li><p>Large h: High bias, low variance</p></li>
+</ul>
+<p>Optimal bandwidth (for MSE) scales as n^(-1/5) for kernel regression.</p>
+</section>
+</section>
+<section id="radial-basis-functions-rbf">
+<h2>Radial Basis Functions (RBF)<a class="headerlink" href="#radial-basis-functions-rbf" title="Link to this heading"></a></h2>
+<section id="the-approach">
+<h3>The Approach<a class="headerlink" href="#the-approach" title="Link to this heading"></a></h3>
+<p>Represent the function as:</p>
+<div class="math notranslate nohighlight">
+\[f(x) = \sum_{i=1}^n c_i \phi(\|x - x_i\|)\]</div>
+<p>where φ is a radial basis function.</p>
+</section>
+<section id="common-rbfs">
+<h3>Common RBFs<a class="headerlink" href="#common-rbfs" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>RBF</p></th>
+<th class="head"><p>Formula</p></th>
+<th class="head"><p>Properties</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Gaussian</p></td>
+<td><p>exp(-r²/ε²)</p></td>
+<td><p>Infinitely smooth</p></td>
+</tr>
+<tr class="row-odd"><td><p>Multiquadric</p></td>
+<td><p>√(1 + (εr)²)</p></td>
+<td><p>Smooth, good for interpolation</p></td>
+</tr>
+<tr class="row-even"><td><p>Thin plate spline</p></td>
+<td><p>r² log(r)</p></td>
+<td><p>Minimizes bending energy</p></td>
+</tr>
+<tr class="row-odd"><td><p>Polyharmonic</p></td>
+<td><p>rᵏ or rᵏ log(r)</p></td>
+<td><p>Generalizes thin plate</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="interpolation-with-rbfs">
+<h3>Interpolation with RBFs<a class="headerlink" href="#interpolation-with-rbfs" title="Link to this heading"></a></h3>
+<p>Solve the linear system:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{pmatrix} \Phi &amp; P \\ P^T &amp; 0 \end{pmatrix} \begin{pmatrix} c \\ \lambda \end{pmatrix} = \begin{pmatrix} y \\ 0 \end{pmatrix}\end{split}\]</div>
+<p>where Φᵢⱼ = φ(‖xᵢ - xⱼ‖) and P contains polynomial terms.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">RBFInterpolator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># 1D example</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">flatten</span><span class="p">())</span>
+
+<span class="c1"># RBF interpolation</span>
+<span class="n">rbf</span> <span class="o">=</span> <span class="n">RBFInterpolator</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;thin_plate_spline&#39;</span><span class="p">)</span>
+
+<span class="c1"># Evaluate</span>
+<span class="n">x_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">y_new</span> <span class="o">=</span> <span class="n">rbf</span><span class="p">(</span><span class="n">x_new</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="gaussian-process-regression">
+<h2>Gaussian Process Regression<a class="headerlink" href="#gaussian-process-regression" title="Link to this heading"></a></h2>
+<section id="probabilistic-interpolation">
+<h3>Probabilistic Interpolation<a class="headerlink" href="#probabilistic-interpolation" title="Link to this heading"></a></h3>
+<p>Model the function as a Gaussian process:</p>
+<div class="math notranslate nohighlight">
+\[f(x) \sim \mathcal{GP}(m(x), k(x, x'))\]</div>
+<p>where m(x) is the mean function and k(x, x’) is the covariance kernel.</p>
+</section>
+<section id="posterior-mean-and-variance">
+<h3>Posterior Mean and Variance<a class="headerlink" href="#posterior-mean-and-variance" title="Link to this heading"></a></h3>
+<p>Given data (X, y), the posterior at new point x* is:</p>
+<div class="math notranslate nohighlight">
+\[f(x^*) | X, y \sim \mathcal{N}(\mu^*, \sigma^{*2})\]</div>
+<p>where:
+$<span class="math notranslate nohighlight">\(\mu^* = k(x^*, X) [K + \sigma_n^2 I]^{-1} y\)</span><span class="math notranslate nohighlight">\(
+\)</span><span class="math notranslate nohighlight">\(\sigma^{*2} = k(x^*, x^*) - k(x^*, X) [K + \sigma_n^2 I]^{-1} k(X, x^*)\)</span>$</p>
+</section>
+<section id="derivatives-of-gps">
+<h3>Derivatives of GPs<a class="headerlink" href="#derivatives-of-gps" title="Link to this heading"></a></h3>
+<p>If f ~ GP, then f’ ~ GP with:</p>
+<ul class="simple">
+<li><p>Mean: derivative of posterior mean</p></li>
+<li><p>Covariance: derivative of kernel</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.gaussian_process</span><span class="w"> </span><span class="kn">import</span> <span class="n">GaussianProcessRegressor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.gaussian_process.kernels</span><span class="w"> </span><span class="kn">import</span> <span class="n">RBF</span><span class="p">,</span> <span class="n">WhiteKernel</span>
+
+<span class="c1"># GP regression</span>
+<span class="n">kernel</span> <span class="o">=</span> <span class="n">RBF</span><span class="p">(</span><span class="n">length_scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">+</span> <span class="n">WhiteKernel</span><span class="p">(</span><span class="n">noise_level</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">gp</span> <span class="o">=</span> <span class="n">GaussianProcessRegressor</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="c1"># Predictions with uncertainty</span>
+<span class="n">y_pred</span><span class="p">,</span> <span class="n">y_std</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">t_new</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">return_std</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="pydelt-s-interpolation-classes">
+<h2>PyDelt’s Interpolation Classes<a class="headerlink" href="#pydelt-s-interpolation-classes" title="Link to this heading"></a></h2>
+<section id="unified-interface">
+<h3>Unified Interface<a class="headerlink" href="#unified-interface" title="Link to this heading"></a></h3>
+<p>All interpolators share the same API:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SplineInterpolator</span><span class="p">,</span>
+    <span class="n">LlaInterpolator</span><span class="p">,</span>
+    <span class="n">GllaInterpolator</span><span class="p">,</span>
+    <span class="n">LowessInterpolator</span><span class="p">,</span>
+    <span class="n">LoessInterpolator</span><span class="p">,</span>
+    <span class="n">FdaInterpolator</span><span class="p">,</span>
+    <span class="n">NeuralNetworkInterpolator</span>
+<span class="p">)</span>
+
+<span class="c1"># Same pattern for all</span>
+<span class="n">interp</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">interp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="c1"># Evaluate</span>
+<span class="n">y_smooth</span> <span class="o">=</span> <span class="n">interp</span><span class="p">(</span><span class="n">t_query</span><span class="p">)</span>
+
+<span class="c1"># Differentiate</span>
+<span class="n">dy</span> <span class="o">=</span> <span class="n">interp</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">t_query</span><span class="p">)</span>
+<span class="n">d2y</span> <span class="o">=</span> <span class="n">interp</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">t_query</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="method-comparison">
+<h3>Method Comparison<a class="headerlink" href="#method-comparison" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Best For</p></th>
+<th class="head"><p>Smoothing Control</p></th>
+<th class="head"><p>Derivative Quality</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Spline</p></td>
+<td><p>Smooth functions</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">smoothing</span></code> parameter</p></td>
+<td><p>Excellent (analytical)</p></td>
+</tr>
+<tr class="row-odd"><td><p>LLA</p></td>
+<td><p>Local features</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">window_size</span></code></p></td>
+<td><p>Good (polynomial)</p></td>
+</tr>
+<tr class="row-even"><td><p>GLLA</p></td>
+<td><p>Noisy + local</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">embedding</span></code>, <code class="docutils literal notranslate"><span class="pre">n</span></code></p></td>
+<td><p>Good</p></td>
+</tr>
+<tr class="row-odd"><td><p>LOWESS</p></td>
+<td><p>Outliers</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">frac</span></code></p></td>
+<td><p>Moderate (numerical)</p></td>
+</tr>
+<tr class="row-even"><td><p>FDA</p></td>
+<td><p>Functional data</p></td>
+<td><p>Basis functions</p></td>
+<td><p>Excellent</p></td>
+</tr>
+<tr class="row-odd"><td><p>Neural</p></td>
+<td><p>Complex patterns</p></td>
+<td><p>Architecture</p></td>
+<td><p>Exact (autodiff)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="choosing-an-interpolation-method">
+<h2>Choosing an Interpolation Method<a class="headerlink" href="#choosing-an-interpolation-method" title="Link to this heading"></a></h2>
+<section id="decision-tree">
+<h3>Decision Tree<a class="headerlink" href="#decision-tree" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Is data very noisy?</strong></p>
+<ul class="simple">
+<li><p>Yes → Use smoothing spline or LOWESS</p></li>
+<li><p>No → Interpolating spline may work</p></li>
+</ul>
+</li>
+<li><p><strong>Are there outliers?</strong></p>
+<ul class="simple">
+<li><p>Yes → LOWESS/LOESS (robust)</p></li>
+<li><p>No → Splines are fine</p></li>
+</ul>
+</li>
+<li><p><strong>Do you need derivatives at non-data points?</strong></p>
+<ul class="simple">
+<li><p>Yes → Splines or GP (continuous derivatives)</p></li>
+<li><p>No → Local methods are fine</p></li>
+</ul>
+</li>
+<li><p><strong>Is the function highly nonlinear/complex?</strong></p>
+<ul class="simple">
+<li><p>Yes → Neural network or GP</p></li>
+<li><p>No → Splines or local polynomials</p></li>
+</ul>
+</li>
+<li><p><strong>Is computational speed critical?</strong></p>
+<ul class="simple">
+<li><p>Yes → Splines (O(n) after setup)</p></li>
+<li><p>No → Any method</p></li>
+</ul>
+</li>
+</ol>
+</section>
+</section>
+<section id="key-takeaways">
+<h2>Key Takeaways<a class="headerlink" href="#key-takeaways" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Avoid high-degree global polynomials</strong> (Runge’s phenomenon)</p></li>
+<li><p><strong>Splines</strong> are the workhorse: piecewise polynomials with continuity</p></li>
+<li><p><strong>Local methods</strong> (LOWESS, LLA) adapt to local structure</p></li>
+<li><p><strong>Smoothing parameter</strong> controls bias-variance tradeoff</p></li>
+<li><p><strong>PyDelt provides unified interface</strong> across all methods</p></li>
+</ol>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Runge’s phenomenon</strong>: Interpolate 1/(1+25x²) with polynomials of degree 5, 10, 15, 20. Then use cubic splines. Compare.</p></li>
+<li><p><strong>Spline vs. LOWESS</strong>: Generate sin(x) + outliers. Compare derivative estimates from smoothing spline vs. LOWESS.</p></li>
+<li><p><strong>Bandwidth selection</strong>: Implement cross-validation for LOWESS bandwidth. Find optimal for sin(x) + noise.</p></li>
+<li><p><strong>GP derivatives</strong>: Use sklearn’s GP to fit noisy data. Extract derivative by finite-differencing the posterior mean. Compare to analytical GP derivative.</p></li>
+</ol>
+<hr class="docutils" />
+<p><em>Previous: <a class="reference internal" href="02_noise_and_smoothing.html"><span class="std std-doc">← Noise and Smoothing</span></a> | Next: <a class="reference internal" href="04_multivariate_derivatives.html"><span class="std std-doc">Multivariate Derivatives →</span></a></em></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="02_noise_and_smoothing.html" class="btn btn-neutral float-left" title="Chapter 2: Noise and Smoothing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="04_multivariate_derivatives.html" class="btn btn-neutral float-right" title="Chapter 4: Multivariate Derivatives" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

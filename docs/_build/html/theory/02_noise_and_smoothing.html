@@ -1,0 +1,539 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 2: Noise and Smoothing &mdash; pydelt 0.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chapter 3: Interpolation Methods" href="03_interpolation_methods.html" />
+    <link rel="prev" title="Chapter 1: Numerical Differentiation" href="01_numerical_differentiation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start Here:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematical Foundations:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../theory_index.html">Theory: Numerical Calculus for Real Systems</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#the-central-thesis">The Central Thesis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../theory_index.html#chapters">Chapters</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="00_introduction.html">Introduction: The Approximation Paradigm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="01_numerical_differentiation.html">Chapter 1: Numerical Differentiation</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Chapter 2: Noise and Smoothing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#connection-to-the-central-thesis">Connection to the Central Thesis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-fundamental-tradeoff">The Fundamental Tradeoff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#why-differentiation-amplifies-noise">Why Differentiation Amplifies Noise</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#smoothing-as-regularization">Smoothing as Regularization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#smoothing-methods">Smoothing Methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-bias-variance-decomposition">The Bias-Variance Decomposition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#choosing-the-smoothing-parameter">Choosing the Smoothing Parameter</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#differentiation-specific-considerations">Differentiation-Specific Considerations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt-s-smoothing-options">PyDelt’s Smoothing Options</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#practical-guidelines">Practical Guidelines</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#key-takeaways">Key Takeaways</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exercises">Exercises</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="03_interpolation_methods.html">Chapter 3: Interpolation Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="04_multivariate_derivatives.html">Chapter 4: Multivariate Derivatives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="05_approximation_theory.html">Chapter 5: Approximation Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="06_differential_equations.html">Chapter 6: Differential Equations from Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="07_stochastic_calculus.html">Chapter 7: Stochastic Calculus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="08_applications.html">Chapter 8: Applications Under Error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#quick-reference">Quick Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#who-this-is-for">Who This Is For</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Mathematical Theory</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference &amp; Help:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visual_examples.html">Visual Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feature_comparison.html">Feature Comparison Matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../theory_index.html">Theory: Numerical Calculus for Real Systems</a></li>
+      <li class="breadcrumb-item active">Chapter 2: Noise and Smoothing</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/theory/02_noise_and_smoothing.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-2-noise-and-smoothing">
+<h1>Chapter 2: Noise and Smoothing<a class="headerlink" href="#chapter-2-noise-and-smoothing" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p><em>“Differentiation amplifies noise. Smoothing reduces noise but introduces bias. There is no free lunch.”</em></p>
+</div></blockquote>
+<section id="connection-to-the-central-thesis">
+<h2>Connection to the Central Thesis<a class="headerlink" href="#connection-to-the-central-thesis" title="Link to this heading"></a></h2>
+<p>Real measurements are never clean. Sensors have precision limits. Environments fluctuate. Sampling introduces quantization. The data we observe is:</p>
+<div class="math notranslate nohighlight">
+\[y_i = x(t_i) + \epsilon_i\]</div>
+<p>where x(t) is the true state and ε is measurement noise.</p>
+<p>This creates a fundamental tension: <strong>differentiation amplifies noise</strong>, but <strong>smoothing distorts the signal</strong>. The approximation paradigm addresses this by treating numerical differentiation as a <strong>regularized inverse problem</strong>—we accept some bias to control variance.</p>
+<p>The smoothing parameter encodes our belief about the true system: “the underlying dynamics are probably smooth, so extreme oscillations in the derivative are likely noise, not signal.”</p>
+</section>
+<section id="the-fundamental-tradeoff">
+<h2>The Fundamental Tradeoff<a class="headerlink" href="#the-fundamental-tradeoff" title="Link to this heading"></a></h2>
+<p>Every numerical differentiation method faces the same dilemma:</p>
+<ul class="simple">
+<li><p><strong>No smoothing</strong>: Derivatives are noisy (high variance)</p></li>
+<li><p><strong>Heavy smoothing</strong>: Derivatives are biased (systematic error)</p></li>
+</ul>
+<p>This is the <strong>bias-variance tradeoff</strong> applied to differentiation.</p>
+</section>
+<section id="why-differentiation-amplifies-noise">
+<h2>Why Differentiation Amplifies Noise<a class="headerlink" href="#why-differentiation-amplifies-noise" title="Link to this heading"></a></h2>
+<section id="frequency-domain-perspective">
+<h3>Frequency Domain Perspective<a class="headerlink" href="#frequency-domain-perspective" title="Link to this heading"></a></h3>
+<p>Differentiation in the frequency domain is multiplication by iω:</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{F}[f'(t)] = i\omega \cdot \mathcal{F}[f(t)]\]</div>
+<p>High-frequency components get amplified. Noise is typically high-frequency. Therefore, differentiation amplifies noise.</p>
+</section>
+<section id="quantitative-analysis">
+<h3>Quantitative Analysis<a class="headerlink" href="#quantitative-analysis" title="Link to this heading"></a></h3>
+<p>If your signal is y(t) = f(t) + ε(t) where ε is white noise with power spectral density S_ε:</p>
+<ul class="simple">
+<li><p>Signal derivative power: |iω|² S_f(ω) = ω² S_f(ω)</p></li>
+<li><p>Noise derivative power: |iω|² S_ε = ω² S_ε</p></li>
+</ul>
+<p>The signal-to-noise ratio after differentiation:</p>
+<div class="math notranslate nohighlight">
+\[\text{SNR}_{\text{derivative}} = \frac{\omega^2 S_f(\omega)}{\omega^2 S_\epsilon} = \frac{S_f(\omega)}{S_\epsilon}\]</div>
+<p>The SNR is unchanged only if signal and noise have the same spectrum. In practice, noise dominates at high frequencies, so differentiation destroys SNR.</p>
+</section>
+</section>
+<section id="smoothing-as-regularization">
+<h2>Smoothing as Regularization<a class="headerlink" href="#smoothing-as-regularization" title="Link to this heading"></a></h2>
+<section id="the-regularization-framework">
+<h3>The Regularization Framework<a class="headerlink" href="#the-regularization-framework" title="Link to this heading"></a></h3>
+<p>Instead of solving:
+$<span class="math notranslate nohighlight">\(\text{Find } f' \text{ such that } f \text{ matches data}\)</span>$</p>
+<p>Solve:
+$<span class="math notranslate nohighlight">\(\text{Minimize } \|f - \text{data}\|^2 + \lambda \cdot \text{Roughness}(f)\)</span>$</p>
+<p>where λ controls the bias-variance tradeoff:</p>
+<ul class="simple">
+<li><p>λ = 0: Interpolate exactly (high variance)</p></li>
+<li><p>λ → ∞: Maximally smooth (high bias)</p></li>
+</ul>
+</section>
+<section id="common-roughness-penalties">
+<h3>Common Roughness Penalties<a class="headerlink" href="#common-roughness-penalties" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Penalty</p></th>
+<th class="head"><p>Formula</p></th>
+<th class="head"><p>Effect</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>First derivative</p></td>
+<td><p>∫(f’)² dt</p></td>
+<td><p>Penalizes slopes</p></td>
+</tr>
+<tr class="row-odd"><td><p>Second derivative</p></td>
+<td><p>∫(f’’)² dt</p></td>
+<td><p>Penalizes curvature</p></td>
+</tr>
+<tr class="row-even"><td><p>Total variation</p></td>
+<td><p>∫</p></td>
+<td><p>f’</p></td>
+</tr>
+</tbody>
+</table>
+<p>The second derivative penalty is most common—it produces <strong>cubic smoothing splines</strong>.</p>
+</section>
+</section>
+<section id="smoothing-methods">
+<h2>Smoothing Methods<a class="headerlink" href="#smoothing-methods" title="Link to this heading"></a></h2>
+<section id="moving-average">
+<h3>1. Moving Average<a class="headerlink" href="#moving-average" title="Link to this heading"></a></h3>
+<p>The simplest smoother: replace each point with the average of its neighbors.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">moving_average</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simple moving average.&quot;&quot;&quot;</span>
+    <span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">window</span><span class="p">)</span> <span class="o">/</span> <span class="n">window</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;same&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Properties</strong>:</p>
+<ul class="simple">
+<li><p>Reduces variance by factor of 1/window</p></li>
+<li><p>Introduces phase lag</p></li>
+<li><p>Blurs sharp features</p></li>
+<li><p>Not optimal for any particular noise model</p></li>
+</ul>
+</section>
+<section id="savitzky-golay-filter">
+<h3>2. Savitzky-Golay Filter<a class="headerlink" href="#savitzky-golay-filter" title="Link to this heading"></a></h3>
+<p>Fit a polynomial locally, use the polynomial’s value (or derivative) at center.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">savgol_filter</span>
+
+<span class="c1"># Smooth and differentiate in one step</span>
+<span class="n">y_smooth</span> <span class="o">=</span> <span class="n">savgol_filter</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">window_length</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">polyorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">dy_smooth</span> <span class="o">=</span> <span class="n">savgol_filter</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">window_length</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">polyorder</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">deriv</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Properties</strong>:</p>
+<ul class="simple">
+<li><p>Preserves moments up to polynomial order</p></li>
+<li><p>Better edge preservation than moving average</p></li>
+<li><p>Analytical derivatives from fitted polynomial</p></li>
+<li><p>Window size and polynomial order are tuning parameters</p></li>
+</ul>
+</section>
+<section id="gaussian-smoothing">
+<h3>3. Gaussian Smoothing<a class="headerlink" href="#gaussian-smoothing" title="Link to this heading"></a></h3>
+<p>Convolve with a Gaussian kernel:</p>
+<div class="math notranslate nohighlight">
+\[y_{\text{smooth}}(t) = \int y(\tau) \cdot \frac{1}{\sqrt{2\pi}\sigma} e^{-(t-\tau)^2/2\sigma^2} d\tau\]</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">gaussian_filter1d</span>
+
+<span class="n">y_smooth</span> <span class="o">=</span> <span class="n">gaussian_filter1d</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Properties</strong>:</p>
+<ul class="simple">
+<li><p>Optimal for Gaussian noise (in MSE sense)</p></li>
+<li><p>No ringing artifacts</p></li>
+<li><p>σ controls smoothing strength</p></li>
+<li><p>Derivative of Gaussian = smoothed derivative</p></li>
+</ul>
+</section>
+<section id="kernel-regression-nadaraya-watson">
+<h3>4. Kernel Regression (Nadaraya-Watson)<a class="headerlink" href="#kernel-regression-nadaraya-watson" title="Link to this heading"></a></h3>
+<p>Weighted average with kernel weights:</p>
+<div class="math notranslate nohighlight">
+\[\hat{f}(x) = \frac{\sum_i K\left(\frac{x - x_i}{h}\right) y_i}{\sum_i K\left(\frac{x - x_i}{h}\right)}\]</div>
+<p>where K is a kernel (Gaussian, Epanechnikov, etc.) and h is the bandwidth.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.kernel_ridge</span><span class="w"> </span><span class="kn">import</span> <span class="n">KernelRidge</span>
+
+<span class="c1"># Kernel regression</span>
+<span class="n">kr</span> <span class="o">=</span> <span class="n">KernelRidge</span><span class="p">(</span><span class="n">kernel</span><span class="o">=</span><span class="s1">&#39;rbf&#39;</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">kr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">y_smooth</span> <span class="o">=</span> <span class="n">kr</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="spline-smoothing">
+<h3>5. Spline Smoothing<a class="headerlink" href="#spline-smoothing" title="Link to this heading"></a></h3>
+<p>Minimize:</p>
+<div class="math notranslate nohighlight">
+\[\sum_i (y_i - f(t_i))^2 + \lambda \int (f''(t))^2 dt\]</div>
+<p>The solution is a <strong>natural cubic spline</strong> with knots at data points.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnivariateSpline</span>
+
+<span class="c1"># Smoothing spline (s controls smoothing)</span>
+<span class="n">spline</span> <span class="o">=</span> <span class="n">UnivariateSpline</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">*</span><span class="n">noise_variance</span><span class="p">)</span>
+<span class="n">y_smooth</span> <span class="o">=</span> <span class="n">spline</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="n">dy_smooth</span> <span class="o">=</span> <span class="n">spline</span><span class="o">.</span><span class="n">derivative</span><span class="p">()(</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="the-bias-variance-decomposition">
+<h2>The Bias-Variance Decomposition<a class="headerlink" href="#the-bias-variance-decomposition" title="Link to this heading"></a></h2>
+<p>For any estimator f̂ of true function f:</p>
+<div class="math notranslate nohighlight">
+\[\mathbb{E}[(f̂ - f)^2] = \text{Bias}^2 + \text{Variance}\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><strong>Bias</strong> = E[f̂] - f (systematic error from smoothing)</p></li>
+<li><p><strong>Variance</strong> = E[(f̂ - E[f̂])²] (random error from noise)</p></li>
+</ul>
+<section id="visualizing-the-tradeoff">
+<h3>Visualizing the Tradeoff<a class="headerlink" href="#visualizing-the-tradeoff" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">UnivariateSpline</span>
+
+<span class="c1"># True function</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="n">dy_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Noisy observations</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">noise</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">y_noisy</span> <span class="o">=</span> <span class="n">y_true</span> <span class="o">+</span> <span class="n">noise</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+
+<span class="c1"># Different smoothing levels</span>
+<span class="n">smoothing_values</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">]</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<span class="n">axes</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">smoothing_values</span><span class="p">):</span>
+    <span class="n">spline</span> <span class="o">=</span> <span class="n">UnivariateSpline</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y_noisy</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+    <span class="n">dy_est</span> <span class="o">=</span> <span class="n">spline</span><span class="o">.</span><span class="n">derivative</span><span class="p">()(</span><span class="n">t</span><span class="p">)</span>
+    
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">dy_true</span><span class="p">,</span> <span class="s1">&#39;k-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;True derivative&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">dy_est</span><span class="p">,</span> <span class="s1">&#39;r-&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;Estimated (s=</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Smoothing = </span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;t&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;f&#39;(t)&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="choosing-the-smoothing-parameter">
+<h2>Choosing the Smoothing Parameter<a class="headerlink" href="#choosing-the-smoothing-parameter" title="Link to this heading"></a></h2>
+<section id="cross-validation">
+<h3>1. Cross-Validation<a class="headerlink" href="#cross-validation" title="Link to this heading"></a></h3>
+<p>Leave out data points, predict them, minimize prediction error:</p>
+<div class="math notranslate nohighlight">
+\[\text{CV}(\lambda) = \frac{1}{n} \sum_{i=1}^n (y_i - \hat{f}_{-i}(x_i))^2\]</div>
+<p>where f̂₋ᵢ is fitted without point i.</p>
+</section>
+<section id="generalized-cross-validation-gcv">
+<h3>2. Generalized Cross-Validation (GCV)<a class="headerlink" href="#generalized-cross-validation-gcv" title="Link to this heading"></a></h3>
+<p>Efficient approximation to leave-one-out CV:</p>
+<div class="math notranslate nohighlight">
+\[\text{GCV}(\lambda) = \frac{\frac{1}{n}\sum_i (y_i - \hat{f}(x_i))^2}{(1 - \text{tr}(S)/n)^2}\]</div>
+<p>where S is the smoothing matrix (ŷ = Sy).</p>
+</section>
+<section id="aic-bic">
+<h3>3. AIC/BIC<a class="headerlink" href="#aic-bic" title="Link to this heading"></a></h3>
+<p>Information criteria that penalize complexity:</p>
+<div class="math notranslate nohighlight">
+\[\text{AIC} = n \log(\text{RSS}/n) + 2 \cdot \text{df}\]</div>
+<div class="math notranslate nohighlight">
+\[\text{BIC} = n \log(\text{RSS}/n) + \log(n) \cdot \text{df}\]</div>
+<p>where df is the effective degrees of freedom.</p>
+</section>
+<section id="known-noise-level">
+<h3>4. Known Noise Level<a class="headerlink" href="#known-noise-level" title="Link to this heading"></a></h3>
+<p>If you know σ², set smoothing so residual variance ≈ σ²:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># For UnivariateSpline, s ≈ n * sigma^2</span>
+<span class="n">spline</span> <span class="o">=</span> <span class="n">UnivariateSpline</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">*</span> <span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="differentiation-specific-considerations">
+<h2>Differentiation-Specific Considerations<a class="headerlink" href="#differentiation-specific-considerations" title="Link to this heading"></a></h2>
+<section id="smoothing-for-derivatives-vs-values">
+<h3>Smoothing for Derivatives vs. Values<a class="headerlink" href="#smoothing-for-derivatives-vs-values" title="Link to this heading"></a></h3>
+<p>The optimal smoothing for estimating f(x) differs from optimal smoothing for f’(x):</p>
+<ul class="simple">
+<li><p><strong>For values</strong>: Moderate smoothing</p></li>
+<li><p><strong>For derivatives</strong>: More smoothing needed (noise amplification)</p></li>
+<li><p><strong>For second derivatives</strong>: Even more smoothing</p></li>
+</ul>
+<p>Rule of thumb: Increase smoothing parameter by ~2-4x per derivative order.</p>
+</section>
+<section id="boundary-effects">
+<h3>Boundary Effects<a class="headerlink" href="#boundary-effects" title="Link to this heading"></a></h3>
+<p>Smoothing methods often perform poorly near boundaries:</p>
+<ul class="simple">
+<li><p>Less data available for local averaging</p></li>
+<li><p>Splines may oscillate</p></li>
+<li><p>Derivatives especially unreliable</p></li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ul class="simple">
+<li><p>Extend data with padding (reflection, extrapolation)</p></li>
+<li><p>Use boundary-aware methods</p></li>
+<li><p>Trim boundary regions from analysis</p></li>
+</ul>
+</section>
+<section id="preserving-features">
+<h3>Preserving Features<a class="headerlink" href="#preserving-features" title="Link to this heading"></a></h3>
+<p>Heavy smoothing can destroy important features:</p>
+<ul class="simple">
+<li><p>Peaks get flattened</p></li>
+<li><p>Edges get blurred</p></li>
+<li><p>Oscillations get damped</p></li>
+</ul>
+<p><strong>Solutions</strong>:</p>
+<ul class="simple">
+<li><p>Adaptive smoothing (less smoothing where curvature is high)</p></li>
+<li><p>Edge-preserving methods (total variation, bilateral filter)</p></li>
+<li><p>Physics-informed constraints</p></li>
+</ul>
+</section>
+</section>
+<section id="pydelt-s-smoothing-options">
+<h2>PyDelt’s Smoothing Options<a class="headerlink" href="#pydelt-s-smoothing-options" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">LowessInterpolator</span>
+
+<span class="c1"># Spline with explicit smoothing</span>
+<span class="n">spline</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">spline</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">dy</span> <span class="o">=</span> <span class="n">spline</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># LOWESS (robust to outliers)</span>
+<span class="n">lowess</span> <span class="o">=</span> <span class="n">LowessInterpolator</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">lowess</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">dy</span> <span class="o">=</span> <span class="n">lowess</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="practical-guidelines">
+<h2>Practical Guidelines<a class="headerlink" href="#practical-guidelines" title="Link to this heading"></a></h2>
+<section id="when-to-use-what">
+<h3>When to Use What<a class="headerlink" href="#when-to-use-what" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Situation</p></th>
+<th class="head"><p>Recommended Method</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Gaussian noise, smooth function</p></td>
+<td><p>Spline smoothing</p></td>
+</tr>
+<tr class="row-odd"><td><p>Outliers present</p></td>
+<td><p>LOWESS/LOESS</p></td>
+</tr>
+<tr class="row-even"><td><p>Sharp features to preserve</p></td>
+<td><p>Savitzky-Golay or adaptive</p></td>
+</tr>
+<tr class="row-odd"><td><p>Very high noise</p></td>
+<td><p>Heavy smoothing + accept bias</p></td>
+</tr>
+<tr class="row-even"><td><p>Unknown noise level</p></td>
+<td><p>Cross-validation</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="diagnostic-checks">
+<h3>Diagnostic Checks<a class="headerlink" href="#diagnostic-checks" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Residual analysis</strong>: Residuals should look like noise, not signal</p></li>
+<li><p><strong>Sensitivity analysis</strong>: How much do results change with smoothing parameter?</p></li>
+<li><p><strong>Physical plausibility</strong>: Do derivatives make sense (sign, magnitude)?</p></li>
+</ol>
+</section>
+</section>
+<section id="key-takeaways">
+<h2>Key Takeaways<a class="headerlink" href="#key-takeaways" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Differentiation amplifies noise</strong> by factor ~1/h or ~ω in frequency domain</p></li>
+<li><p><strong>Smoothing reduces variance</strong> but introduces bias</p></li>
+<li><p><strong>Optimal smoothing</strong> depends on noise level and derivative order</p></li>
+<li><p><strong>Cross-validation</strong> provides data-driven smoothing selection</p></li>
+<li><p><strong>Boundaries and features</strong> require special attention</p></li>
+</ol>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Bias-variance visualization</strong>: For sin(x) + noise, plot bias² and variance of derivative estimate vs. smoothing parameter. Find the optimal smoothing.</p></li>
+<li><p><strong>Cross-validation</strong>: Implement leave-one-out CV for spline smoothing. Compare to GCV.</p></li>
+<li><p><strong>Derivative order</strong>: For the same data, find optimal smoothing for f, f’, and f’’. How do they differ?</p></li>
+<li><p><strong>Outlier robustness</strong>: Add outliers to your data. Compare spline vs. LOWESS derivative estimates.</p></li>
+</ol>
+<hr class="docutils" />
+<p><em>Previous: <a class="reference internal" href="01_numerical_differentiation.html"><span class="std std-doc">← Numerical Differentiation</span></a> | Next: <a class="reference internal" href="03_interpolation_methods.html"><span class="std std-doc">Interpolation Methods →</span></a></em></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="01_numerical_differentiation.html" class="btn btn-neutral float-left" title="Chapter 1: Numerical Differentiation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="03_interpolation_methods.html" class="btn btn-neutral float-right" title="Chapter 3: Interpolation Methods" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

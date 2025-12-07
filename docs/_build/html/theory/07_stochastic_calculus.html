@@ -1,0 +1,503 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 7: Stochastic Calculus &mdash; pydelt 0.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chapter 8: Applications Under Error" href="08_applications.html" />
+    <link rel="prev" title="Chapter 6: Differential Equations from Data" href="06_differential_equations.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start Here:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematical Foundations:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../theory_index.html">Theory: Numerical Calculus for Real Systems</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#the-central-thesis">The Central Thesis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../theory_index.html#chapters">Chapters</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="00_introduction.html">Introduction: The Approximation Paradigm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="01_numerical_differentiation.html">Chapter 1: Numerical Differentiation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="02_noise_and_smoothing.html">Chapter 2: Noise and Smoothing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="03_interpolation_methods.html">Chapter 3: Interpolation Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="04_multivariate_derivatives.html">Chapter 4: Multivariate Derivatives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="05_approximation_theory.html">Chapter 5: Approximation Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="06_differential_equations.html">Chapter 6: Differential Equations from Data</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Chapter 7: Stochastic Calculus</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#connection-to-the-central-thesis">Connection to the Central Thesis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#brownian-motion">Brownian Motion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#why-classical-calculus-fails">Why Classical Calculus Fails</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ito-calculus">Itô Calculus</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#estimating-drift-and-diffusion">Estimating Drift and Diffusion</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-fokker-planck-equation">The Fokker-Planck Equation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#numerical-methods-for-sdes">Numerical Methods for SDEs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#applications">Applications</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pydelt-for-stochastic-systems">PyDelt for Stochastic Systems</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#key-takeaways">Key Takeaways</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exercises">Exercises</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="08_applications.html">Chapter 8: Applications Under Error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#quick-reference">Quick Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#who-this-is-for">Who This Is For</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Mathematical Theory</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference &amp; Help:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visual_examples.html">Visual Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feature_comparison.html">Feature Comparison Matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../theory_index.html">Theory: Numerical Calculus for Real Systems</a></li>
+      <li class="breadcrumb-item active">Chapter 7: Stochastic Calculus</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/theory/07_stochastic_calculus.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-7-stochastic-calculus">
+<h1>Chapter 7: Stochastic Calculus<a class="headerlink" href="#chapter-7-stochastic-calculus" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p><em>“When the path is nowhere differentiable, classical calculus fails. Itô calculus provides the rules for random worlds.”</em></p>
+</div></blockquote>
+<section id="connection-to-the-central-thesis">
+<h2>Connection to the Central Thesis<a class="headerlink" href="#connection-to-the-central-thesis" title="Link to this heading"></a></h2>
+<p>So far, we’ve assumed the underlying system is deterministic—noisy observations of a smooth trajectory. But many systems are <strong>inherently stochastic</strong>:</p>
+<ul class="simple">
+<li><p>Financial markets (prices driven by random shocks)</p></li>
+<li><p>Molecular dynamics (thermal fluctuations)</p></li>
+<li><p>Population biology (random births and deaths)</p></li>
+<li><p>Turbulent fluids (chaotic, effectively random)</p></li>
+</ul>
+<p>For these systems, the trajectory itself is random. The governing equation is a <strong>stochastic differential equation (SDE)</strong>:</p>
+<div class="math notranslate nohighlight">
+\[dX_t = \mu(X_t, t) dt + \sigma(X_t, t) dW_t\]</div>
+<p>where W_t is a Wiener process (Brownian motion).</p>
+<p><strong>The problem</strong>: W_t is continuous but <strong>nowhere differentiable</strong>. Classical derivatives don’t exist. We need new tools.</p>
+</section>
+<section id="brownian-motion">
+<h2>Brownian Motion<a class="headerlink" href="#brownian-motion" title="Link to this heading"></a></h2>
+<section id="definition">
+<h3>Definition<a class="headerlink" href="#definition" title="Link to this heading"></a></h3>
+<p>A Wiener process W_t is a continuous stochastic process with:</p>
+<ol class="arabic simple">
+<li><p>W_0 = 0</p></li>
+<li><p>Independent increments: W_t - W_s independent of W_r for r ≤ s &lt; t</p></li>
+<li><p>Gaussian increments: W_t - W_s ~ N(0, t-s)</p></li>
+<li><p>Continuous paths (almost surely)</p></li>
+</ol>
+</section>
+<section id="key-properties">
+<h3>Key Properties<a class="headerlink" href="#key-properties" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Nowhere differentiable</strong>: dW/dt doesn’t exist</p></li>
+<li><p><strong>Unbounded variation</strong>: Total up-and-down movement is infinite</p></li>
+<li><p><strong>Quadratic variation</strong>: [W, W]_t = t (this is crucial for Itô calculus)</p></li>
+<li><p><strong>Self-similar</strong>: W_{ct} has same distribution as √c · W_t</p></li>
+</ul>
+</section>
+<section id="simulation">
+<h3>Simulation<a class="headerlink" href="#simulation" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">simulate_brownian</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">,</span> <span class="n">n_paths</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulate Brownian motion paths.&quot;&quot;&quot;</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">T</span> <span class="o">/</span> <span class="n">n_steps</span>
+    <span class="n">dW</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n_paths</span><span class="p">,</span> <span class="n">n_steps</span><span class="p">)</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">dW</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">W</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_paths</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span> <span class="n">W</span><span class="p">])</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">n_steps</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">t</span><span class="p">,</span> <span class="n">W</span>
+
+<span class="n">t</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="n">simulate_brownian</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="n">n_paths</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">W</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;W(t)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Brownian Motion Sample Paths&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="why-classical-calculus-fails">
+<h2>Why Classical Calculus Fails<a class="headerlink" href="#why-classical-calculus-fails" title="Link to this heading"></a></h2>
+<section id="the-chain-rule-breaks">
+<h3>The Chain Rule Breaks<a class="headerlink" href="#the-chain-rule-breaks" title="Link to this heading"></a></h3>
+<p>For smooth functions, d[f(X_t)] = f’(X_t) dX_t.</p>
+<p>For Brownian motion, this is wrong. Consider f(x) = x²:</p>
+<div class="math notranslate nohighlight">
+\[d[W_t^2] \neq 2W_t \, dW_t\]</div>
+<p>The correct answer (Itô’s lemma) includes an extra term:</p>
+<div class="math notranslate nohighlight">
+\[d[W_t^2] = 2W_t \, dW_t + dt\]</div>
+</section>
+<section id="the-culprit-quadratic-variation">
+<h3>The Culprit: Quadratic Variation<a class="headerlink" href="#the-culprit-quadratic-variation" title="Link to this heading"></a></h3>
+<p>In classical calculus, (dx)² → 0 as dx → 0.</p>
+<p>For Brownian motion, (dW)² → dt ≠ 0.</p>
+<p>This non-vanishing quadratic variation is why stochastic calculus has different rules.</p>
+</section>
+</section>
+<section id="ito-calculus">
+<h2>Itô Calculus<a class="headerlink" href="#ito-calculus" title="Link to this heading"></a></h2>
+<section id="ito-s-lemma">
+<h3>Itô’s Lemma<a class="headerlink" href="#ito-s-lemma" title="Link to this heading"></a></h3>
+<p>For a smooth function f(X_t, t) where dX_t = μ dt + σ dW_t:</p>
+<div class="math notranslate nohighlight">
+\[df = \frac{\partial f}{\partial t} dt + \frac{\partial f}{\partial x} dX_t + \frac{1}{2} \frac{\partial^2 f}{\partial x^2} (dX_t)^2\]</div>
+<p>Using (dW)² = dt, (dt)² = 0, dt·dW = 0:</p>
+<div class="math notranslate nohighlight">
+\[df = \left(\frac{\partial f}{\partial t} + \mu \frac{\partial f}{\partial x} + \frac{\sigma^2}{2} \frac{\partial^2 f}{\partial x^2}\right) dt + \sigma \frac{\partial f}{\partial x} dW_t\]</div>
+<p>The extra term (σ²/2) ∂²f/∂x² is the <strong>Itô correction</strong>.</p>
+</section>
+<section id="example-geometric-brownian-motion">
+<h3>Example: Geometric Brownian Motion<a class="headerlink" href="#example-geometric-brownian-motion" title="Link to this heading"></a></h3>
+<p>Stock prices often modeled as:
+$<span class="math notranslate nohighlight">\(dS_t = \mu S_t \, dt + \sigma S_t \, dW_t\)</span>$</p>
+<p>Apply Itô’s lemma to f(S) = log(S):</p>
+<div class="math notranslate nohighlight">
+\[d[\log S_t] = \left(\mu - \frac{\sigma^2}{2}\right) dt + \sigma \, dW_t\]</div>
+<p>So log(S_t) is Brownian motion with drift μ - σ²/2.</p>
+<p><strong>Solution</strong>:
+$<span class="math notranslate nohighlight">\(S_t = S_0 \exp\left[\left(\mu - \frac{\sigma^2}{2}\right)t + \sigma W_t\right]\)</span>$</p>
+</section>
+</section>
+<section id="estimating-drift-and-diffusion">
+<h2>Estimating Drift and Diffusion<a class="headerlink" href="#estimating-drift-and-diffusion" title="Link to this heading"></a></h2>
+<section id="the-estimation-problem">
+<h3>The Estimation Problem<a class="headerlink" href="#the-estimation-problem" title="Link to this heading"></a></h3>
+<p>Given observations X_{t₁}, X_{t₂}, …, X_{tₙ} from:
+$<span class="math notranslate nohighlight">\(dX_t = \mu(X_t) dt + \sigma(X_t) dW_t\)</span>$</p>
+<p>Estimate μ(x) and σ(x).</p>
+</section>
+<section id="infinitesimal-moments">
+<h3>Infinitesimal Moments<a class="headerlink" href="#infinitesimal-moments" title="Link to this heading"></a></h3>
+<p>For small Δt:
+$<span class="math notranslate nohighlight">\(\mathbb{E}[X_{t+\Delta t} - X_t | X_t = x] \approx \mu(x) \Delta t\)</span><span class="math notranslate nohighlight">\(
+\)</span><span class="math notranslate nohighlight">\(\mathbb{E}[(X_{t+\Delta t} - X_t)^2 | X_t = x] \approx \sigma^2(x) \Delta t\)</span>$</p>
+</section>
+<section id="nonparametric-estimation">
+<h3>Nonparametric Estimation<a class="headerlink" href="#nonparametric-estimation" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">LowessInterpolator</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">estimate_drift_diffusion</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Estimate drift and diffusion from SDE observations.</span>
+<span class="sd">    </span>
+<span class="sd">    Uses local averaging of increments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">dX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">X_mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">/</span> <span class="mi">2</span>
+    
+    <span class="c1"># Estimate drift: E[dX]/dt</span>
+    <span class="n">drift_raw</span> <span class="o">=</span> <span class="n">dX</span> <span class="o">/</span> <span class="n">dt</span>
+    
+    <span class="c1"># Estimate diffusion: E[(dX)²]/dt</span>
+    <span class="n">diffusion_raw</span> <span class="o">=</span> <span class="n">dX</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">dt</span>
+    
+    <span class="c1"># Smooth estimates</span>
+    <span class="n">lowess_drift</span> <span class="o">=</span> <span class="n">LowessInterpolator</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="n">bandwidth</span><span class="p">)</span>
+    <span class="n">lowess_drift</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_mid</span><span class="p">,</span> <span class="n">drift_raw</span><span class="p">)</span>
+    
+    <span class="n">lowess_diff</span> <span class="o">=</span> <span class="n">LowessInterpolator</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="n">bandwidth</span><span class="p">)</span>
+    <span class="n">lowess_diff</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_mid</span><span class="p">,</span> <span class="n">diffusion_raw</span><span class="p">)</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">mu</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">lowess_drift</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">sigma_sq</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">lowess_diff</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span> <span class="mi">0</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sigma_sq</span>
+
+<span class="c1"># Example: Ornstein-Uhlenbeck process</span>
+<span class="c1"># dX = -θX dt + σ dW</span>
+<span class="n">theta</span><span class="p">,</span> <span class="n">sigma_true</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.5</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">0.01</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">dt</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)):</span>
+    <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">theta</span> <span class="o">*</span> <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">dt</span> <span class="o">+</span> <span class="n">sigma_true</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">()</span>
+
+<span class="n">mu_est</span><span class="p">,</span> <span class="n">sigma_sq_est</span> <span class="o">=</span> <span class="n">estimate_drift_diffusion</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">bandwidth</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+
+<span class="c1"># Check estimates</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;True drift at x=1: </span><span class="si">{</span><span class="o">-</span><span class="n">theta</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">1</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estimated drift at x=1: </span><span class="si">{</span><span class="n">mu_est</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;True σ²: </span><span class="si">{</span><span class="n">sigma_true</span><span class="o">**</span><span class="mi">2</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estimated σ² at x=0: </span><span class="si">{</span><span class="n">sigma_sq_est</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="the-fokker-planck-equation">
+<h2>The Fokker-Planck Equation<a class="headerlink" href="#the-fokker-planck-equation" title="Link to this heading"></a></h2>
+<section id="from-sde-to-pde">
+<h3>From SDE to PDE<a class="headerlink" href="#from-sde-to-pde" title="Link to this heading"></a></h3>
+<p>The probability density p(x, t) of X_t evolves according to:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial p}{\partial t} = -\frac{\partial}{\partial x}[\mu(x) p] + \frac{1}{2}\frac{\partial^2}{\partial x^2}[\sigma^2(x) p]\]</div>
+<p>This is the <strong>Fokker-Planck</strong> (or Kolmogorov forward) equation.</p>
+</section>
+<section id="stationary-distribution">
+<h3>Stationary Distribution<a class="headerlink" href="#stationary-distribution" title="Link to this heading"></a></h3>
+<p>If the system reaches equilibrium, ∂p/∂t = 0:</p>
+<div class="math notranslate nohighlight">
+\[p_{\text{eq}}(x) \propto \frac{1}{\sigma^2(x)} \exp\left(\int^x \frac{2\mu(y)}{\sigma^2(y)} dy\right)\]</div>
+</section>
+<section id="application-estimating-potential">
+<h3>Application: Estimating Potential<a class="headerlink" href="#application-estimating-potential" title="Link to this heading"></a></h3>
+<p>For gradient systems μ(x) = -∂U/∂x with constant σ:</p>
+<div class="math notranslate nohighlight">
+\[p_{\text{eq}}(x) \propto \exp\left(-\frac{2U(x)}{\sigma^2}\right)\]</div>
+<p>The stationary distribution reveals the potential landscape.</p>
+</section>
+</section>
+<section id="numerical-methods-for-sdes">
+<h2>Numerical Methods for SDEs<a class="headerlink" href="#numerical-methods-for-sdes" title="Link to this heading"></a></h2>
+<section id="euler-maruyama">
+<h3>Euler-Maruyama<a class="headerlink" href="#euler-maruyama" title="Link to this heading"></a></h3>
+<p>Simplest discretization:
+$<span class="math notranslate nohighlight">\(X_{n+1} = X_n + \mu(X_n) \Delta t + \sigma(X_n) \sqrt{\Delta t} \, Z_n\)</span>$</p>
+<p>where Z_n ~ N(0, 1).</p>
+<p><strong>Strong convergence</strong>: O(√Δt)
+<strong>Weak convergence</strong>: O(Δt)</p>
+</section>
+<section id="milstein-method">
+<h3>Milstein Method<a class="headerlink" href="#milstein-method" title="Link to this heading"></a></h3>
+<p>Includes Itô correction:
+$<span class="math notranslate nohighlight">\(X_{n+1} = X_n + \mu \Delta t + \sigma \sqrt{\Delta t} Z_n + \frac{1}{2}\sigma \sigma' (\Delta t Z_n^2 - \Delta t)\)</span>$</p>
+<p><strong>Strong convergence</strong>: O(Δt)</p>
+</section>
+<section id="when-to-use-what">
+<h3>When to Use What<a class="headerlink" href="#when-to-use-what" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Goal</p></th>
+<th class="head"><p>Method</p></th>
+<th class="head"><p>Convergence</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Distribution statistics</p></td>
+<td><p>Euler-Maruyama</p></td>
+<td><p>Weak O(Δt) sufficient</p></td>
+</tr>
+<tr class="row-odd"><td><p>Path-dependent quantities</p></td>
+<td><p>Milstein</p></td>
+<td><p>Need strong O(Δt)</p></td>
+</tr>
+<tr class="row-even"><td><p>High accuracy</p></td>
+<td><p>Higher-order Runge-Kutta</p></td>
+<td><p>O(Δt^{1.5}) or better</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="applications">
+<h2>Applications<a class="headerlink" href="#applications" title="Link to this heading"></a></h2>
+<section id="finance-option-pricing">
+<h3>Finance: Option Pricing<a class="headerlink" href="#finance-option-pricing" title="Link to this heading"></a></h3>
+<p>The Black-Scholes model:
+$<span class="math notranslate nohighlight">\(dS_t = rS_t \, dt + \sigma S_t \, dW_t\)</span>$</p>
+<p>Option price V(S, t) satisfies:
+$<span class="math notranslate nohighlight">\(\frac{\partial V}{\partial t} + rS\frac{\partial V}{\partial S} + \frac{\sigma^2 S^2}{2}\frac{\partial^2 V}{\partial S^2} = rV\)</span>$</p>
+<p><strong>Greeks</strong> (sensitivities) are derivatives:</p>
+<ul class="simple">
+<li><p>Delta: ∂V/∂S</p></li>
+<li><p>Gamma: ∂²V/∂S²</p></li>
+<li><p>Theta: ∂V/∂t</p></li>
+<li><p>Vega: ∂V/∂σ</p></li>
+</ul>
+</section>
+<section id="physics-langevin-dynamics">
+<h3>Physics: Langevin Dynamics<a class="headerlink" href="#physics-langevin-dynamics" title="Link to this heading"></a></h3>
+<p>Particle in potential U(x) with thermal noise:
+$<span class="math notranslate nohighlight">\(m\ddot{x} = -\gamma \dot{x} - \nabla U(x) + \sqrt{2\gamma k_B T} \, \xi(t)\)</span>$</p>
+<p>In overdamped limit:
+$<span class="math notranslate nohighlight">\(dx = -\frac{1}{\gamma}\nabla U(x) \, dt + \sqrt{\frac{2k_B T}{\gamma}} \, dW_t\)</span>$</p>
+</section>
+<section id="biology-population-dynamics">
+<h3>Biology: Population Dynamics<a class="headerlink" href="#biology-population-dynamics" title="Link to this heading"></a></h3>
+<p>Stochastic logistic growth:
+$<span class="math notranslate nohighlight">\(dN = rN\left(1 - \frac{N}{K}\right) dt + \sigma N \, dW_t\)</span>$</p>
+<p>Noise can cause extinction even when deterministic model predicts survival.</p>
+</section>
+</section>
+<section id="pydelt-for-stochastic-systems">
+<h2>PyDelt for Stochastic Systems<a class="headerlink" href="#pydelt-for-stochastic-systems" title="Link to this heading"></a></h2>
+<section id="challenges">
+<h3>Challenges<a class="headerlink" href="#challenges" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Paths are rough</strong>: Standard smoothing may over-smooth</p></li>
+<li><p><strong>Derivatives don’t exist</strong>: Estimate drift/diffusion instead</p></li>
+<li><p><strong>Noise is intrinsic</strong>: Can’t be “removed”</p></li>
+</ol>
+</section>
+<section id="recommended-approach">
+<h3>Recommended Approach<a class="headerlink" href="#recommended-approach" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">LowessInterpolator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># For SDE data, estimate drift and diffusion rather than derivatives</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">analyze_sde_data</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Analyze SDE observations.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns drift and diffusion estimates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">dX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">X_mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">/</span> <span class="mi">2</span>
+    
+    <span class="c1"># Local estimates</span>
+    <span class="n">drift_local</span> <span class="o">=</span> <span class="n">dX</span> <span class="o">/</span> <span class="n">dt</span>
+    <span class="n">diff_local</span> <span class="o">=</span> <span class="n">dX</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">dt</span>
+    
+    <span class="c1"># Smooth with robust method (handles outliers from large jumps)</span>
+    <span class="n">lowess</span> <span class="o">=</span> <span class="n">LowessInterpolator</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+    
+    <span class="n">lowess</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_mid</span><span class="p">,</span> <span class="n">drift_local</span><span class="p">)</span>
+    <span class="n">drift_smooth</span> <span class="o">=</span> <span class="n">lowess</span><span class="p">(</span><span class="n">X_mid</span><span class="p">)</span>
+    
+    <span class="n">lowess</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_mid</span><span class="p">,</span> <span class="n">diff_local</span><span class="p">)</span>
+    <span class="n">diff_smooth</span> <span class="o">=</span> <span class="n">lowess</span><span class="p">(</span><span class="n">X_mid</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">X_mid</span><span class="p">,</span> <span class="n">drift_smooth</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">diff_smooth</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="key-takeaways">
+<h2>Key Takeaways<a class="headerlink" href="#key-takeaways" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Stochastic systems need different calculus</strong> (Itô, not Newton-Leibniz)</p></li>
+<li><p><strong>Itô’s lemma has an extra term</strong> from quadratic variation</p></li>
+<li><p><strong>Estimate drift and diffusion</strong>, not pointwise derivatives</p></li>
+<li><p><strong>Fokker-Planck connects SDEs to PDEs</strong> for probability evolution</p></li>
+<li><p><strong>Numerical methods exist</strong> but convergence is slower than for ODEs</p></li>
+<li><p><strong>Applications span finance, physics, biology</strong></p></li>
+</ol>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Itô’s lemma</strong>: Verify that for geometric Brownian motion, d[S²] = (2μS² + σ²S²)dt + 2σS² dW.</p></li>
+<li><p><strong>Drift estimation</strong>: Simulate an Ornstein-Uhlenbeck process. Estimate drift μ(x) = -θx and verify you recover θ.</p></li>
+<li><p><strong>Euler-Maruyama convergence</strong>: Simulate geometric Brownian motion with decreasing Δt. Verify weak convergence is O(Δt).</p></li>
+<li><p><strong>Stationary distribution</strong>: For dX = -X dt + dW, the stationary distribution is N(0, 1/2). Simulate long trajectory and verify.</p></li>
+</ol>
+<hr class="docutils" />
+<p><em>Previous: <a class="reference internal" href="06_differential_equations.html"><span class="std std-doc">← Differential Equations</span></a> | Next: <a class="reference internal" href="08_applications.html"><span class="std std-doc">Applications →</span></a></em></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="06_differential_equations.html" class="btn btn-neutral float-left" title="Chapter 6: Differential Equations from Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="08_applications.html" class="btn btn-neutral float-right" title="Chapter 8: Applications Under Error" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

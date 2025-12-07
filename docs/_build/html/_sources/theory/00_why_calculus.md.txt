@@ -1,0 +1,145 @@
+# Why Calculus? A Guide for ML Practitioners
+
+> *"Calculus is the mathematics of change. In machine learning, everything changes: weights during training, predictions with inputs, loss over time."*
+
+## The Hidden Language of Machine Learning
+
+If you've trained a neural network, you've used calculus—even if you didn't realize it. Every time PyTorch or TensorFlow updates your model's weights, it's computing derivatives. Every time you minimize a loss function, you're navigating a landscape shaped by calculus.
+
+But here's the thing: **you don't need to be a mathematician to understand calculus**. You need to understand *why* it matters and *how* it connects to what you're already doing.
+
+## What Calculus Actually Does
+
+At its core, calculus answers two fundamental questions:
+
+### Question 1: How Fast Is Something Changing?
+
+This is the domain of **derivatives**. When you ask:
+- "How sensitive is my model's output to this input feature?"
+- "Which direction should I adjust my weights to reduce the loss?"
+- "How quickly is my training loss decreasing?"
+
+You're asking about rates of change—derivatives.
+
+### Question 2: How Much Has Accumulated Over Time?
+
+This is the domain of **integrals**. When you ask:
+- "What's the total probability under this distribution?"
+- "What's the expected value of this random variable?"
+- "How much error has accumulated over this time series?"
+
+You're asking about accumulation—integrals.
+
+## Why ML Practitioners Should Care
+
+### 1. Gradient Descent Is Just Calculus
+
+The most important algorithm in modern ML is gradient descent:
+
+```
+new_weights = old_weights - learning_rate × gradient
+```
+
+That gradient? It's a vector of derivatives. Understanding what derivatives *mean* helps you:
+- Debug training issues (vanishing/exploding gradients)
+- Choose appropriate learning rates
+- Understand why certain architectures work better than others
+
+### 2. Backpropagation Is the Chain Rule
+
+When you call `loss.backward()` in PyTorch, you're applying the **chain rule** of calculus—a method for computing derivatives of composed functions. Understanding this helps you:
+- Design custom loss functions
+- Implement custom layers
+- Debug gradient flow issues
+
+### 3. Probability Distributions Require Integration
+
+Every time you work with:
+- Probability density functions (PDFs)
+- Cumulative distribution functions (CDFs)
+- Expected values and variances
+- KL divergence or cross-entropy
+
+You're working with integrals, whether you realize it or not.
+
+### 4. Physics-Informed ML Uses Differential Equations
+
+The cutting edge of ML increasingly incorporates physical laws:
+- Neural ODEs (Ordinary Differential Equations)
+- Physics-Informed Neural Networks (PINNs)
+- Hamiltonian Neural Networks
+
+These all require understanding how derivatives describe physical systems.
+
+## The PyDelt Perspective
+
+PyDelt exists because **real-world data doesn't come with analytical formulas**. You have:
+- Sensor measurements, not equations
+- Time series, not functions
+- Noisy observations, not clean curves
+
+Traditional calculus assumes you have a formula like f(x) = sin(x). But what if you only have 1000 data points that *look like* a sine wave?
+
+**PyDelt bridges this gap.** It lets you:
+1. Fit smooth functions to your data
+2. Compute derivatives of those functions
+3. Use those derivatives for analysis, optimization, or modeling
+
+## What You'll Learn in This Series
+
+This theory section builds your calculus intuition from the ground up:
+
+| Chapter | What You'll Learn | ML Connection |
+|---------|-------------------|---------------|
+| [Functions & Limits](01_functions_and_limits.md) | What functions are and how limits work | Understanding model behavior at boundaries |
+| [Derivatives Intuition](02_derivatives_intuition.md) | Rates of change, slopes, sensitivity | Gradients, feature importance, sensitivity analysis |
+| [Differentiation Rules](03_differentiation_rules.md) | Chain rule, product rule, quotient rule | Backpropagation, custom gradients |
+| [Integration Intuition](04_integration_intuition.md) | Accumulation, area, inverse of derivative | Probability, expectations, cumulative metrics |
+| [Approximation Theory](05_approximation_theory.md) | Taylor series, polynomial approximation | Why neural networks work, local linear models |
+| [Multivariate Calculus](06_multivariate_calculus.md) | Gradients, Jacobians, Hessians | High-dimensional optimization, curvature |
+| [Complex Analysis](07_complex_analysis.md) | Complex numbers, Euler's formula | Fourier transforms, signal processing |
+| [Applications to ML](08_applications_to_ml.md) | Putting it all together | Backprop, optimization, physics-informed NN |
+
+## A Note on Rigor vs. Intuition
+
+This series prioritizes **intuition over formalism**. We'll:
+- Start with real-world examples before equations
+- Use visualizations to build geometric understanding
+- Connect every concept to practical ML applications
+- Provide rigorous definitions for those who want them
+
+If you want theorem-proof style mathematics, excellent textbooks exist (see [Bibliography](bibliography.md)). Our goal is different: to give you the **working understanding** you need to be a more effective ML practitioner.
+
+## Getting Started
+
+Ready to begin? Start with [Chapter 1: Functions and Limits](01_functions_and_limits.md), where we'll explore what it really means for a function to approach a value—and why that matters for understanding derivatives.
+
+---
+
+## Quick Reference: Calculus in ML
+
+| Calculus Concept | ML Application |
+|------------------|----------------|
+| Derivative | Gradient, sensitivity, rate of change |
+| Partial derivative | Gradient component for one parameter |
+| Gradient (∇f) | Direction of steepest ascent |
+| Chain rule | Backpropagation |
+| Integral | Probability, expectation, cumulative sum |
+| Taylor series | Local approximation, why NNs work |
+| Jacobian | Transformation of probability densities |
+| Hessian | Curvature, second-order optimization |
+| Laplacian | Diffusion, smoothing, graph neural networks |
+
+---
+
+## References
+
+For those wanting deeper mathematical treatment:
+
+1. **Strang, G.** *Calculus*. MIT OpenCourseWare. [Free online](https://ocw.mit.edu/courses/mathematics/18-01sc-single-variable-calculus-fall-2010/)
+2. **Goodfellow, I., Bengio, Y., & Courville, A.** *Deep Learning*, Chapter 4: Numerical Computation. [deeplearningbook.org](https://www.deeplearningbook.org/)
+3. **Boyd, S. & Vandenberghe, L.** *Convex Optimization*. [stanford.edu](https://web.stanford.edu/~boyd/cvxbook/)
+
+---
+
+*Next: [Chapter 1: Functions and Limits →](01_functions_and_limits.md)*

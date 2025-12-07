@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pydelt.derivatives &mdash; pydelt 0.4.0 documentation</title>
+  <title>pydelt.derivatives &mdash; pydelt 0.7.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=6c02275b"></script>
+      <script src="../../_static/documentation_options.js?v=5a057da9"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,6 +43,11 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematical Foundations:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../theory_index.html">Theory: Calculus for ML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory.html">Mathematical Theory</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
 <ul>
@@ -135,7 +140,6 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="c1"># Handle backward compatibility</span>
     <span class="k">if</span> <span class="n">time_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">signal_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;time_data and signal_data parameters are deprecated. Use input_data and output_data instead.&quot;</span><span class="p">,</span> 
                      <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="n">input_data</span> <span class="o">=</span> <span class="n">time_data</span>
@@ -195,7 +199,6 @@
                 <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">r_squared</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">r2_threshold</span>
                 <span class="n">valid_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">resample_method</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">valid_indices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_best_interpolation</span><span class="p">,</span> <span class="n">local_segmented_linear</span><span class="p">,</span> <span class="n">spline_interpolation</span><span class="p">,</span> <span class="n">lowess_interpolation</span><span class="p">,</span> <span class="n">loess_interpolation</span>
                     <span class="n">methods</span> <span class="o">=</span> <span class="p">{</span>
                         <span class="s1">&#39;best&#39;</span><span class="p">:</span> <span class="n">get_best_interpolation</span><span class="p">,</span>
                         <span class="s1">&#39;linear&#39;</span><span class="p">:</span> <span class="n">local_segmented_linear</span><span class="p">,</span>
@@ -411,7 +414,6 @@
     <span class="c1"># Validate input dimensions</span>
     <span class="c1"># Handle backward compatibility</span>
     <span class="k">if</span> <span class="n">signal</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;signal and time parameters are deprecated. Use input_data and output_data instead.&quot;</span><span class="p">,</span> 
                      <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="n">input_data</span> <span class="o">=</span> <span class="n">time</span>
@@ -590,15 +592,14 @@
         <span class="c1"># Apply R² threshold filtering if requested</span>
         <span class="k">if</span> <span class="n">r2_threshold</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">r_squared_global</span> <span class="o">&lt;</span> <span class="n">r2_threshold</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">resample_method</span><span class="p">:</span>
+                <span class="n">methods</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="s1">&#39;best&#39;</span><span class="p">:</span> <span class="n">get_best_interpolation</span><span class="p">,</span>
+                    <span class="s1">&#39;linear&#39;</span><span class="p">:</span> <span class="n">local_segmented_linear</span><span class="p">,</span>
+                    <span class="s1">&#39;spline&#39;</span><span class="p">:</span> <span class="n">spline_interpolation</span><span class="p">,</span>
+                    <span class="s1">&#39;lowess&#39;</span><span class="p">:</span> <span class="n">lowess_interpolation</span><span class="p">,</span>
+                    <span class="s1">&#39;loess&#39;</span><span class="p">:</span> <span class="n">loess_interpolation</span>
+                <span class="p">}</span>
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
-                    <span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_best_interpolation</span><span class="p">,</span> <span class="n">local_segmented_linear</span><span class="p">,</span> <span class="n">spline_interpolation</span><span class="p">,</span> <span class="n">lowess_interpolation</span><span class="p">,</span> <span class="n">loess_interpolation</span>
-                    <span class="n">methods</span> <span class="o">=</span> <span class="p">{</span>
-                        <span class="s1">&#39;best&#39;</span><span class="p">:</span> <span class="n">get_best_interpolation</span><span class="p">,</span>
-                        <span class="s1">&#39;linear&#39;</span><span class="p">:</span> <span class="n">local_segmented_linear</span><span class="p">,</span>
-                        <span class="s1">&#39;spline&#39;</span><span class="p">:</span> <span class="n">spline_interpolation</span><span class="p">,</span>
-                        <span class="s1">&#39;lowess&#39;</span><span class="p">:</span> <span class="n">lowess_interpolation</span><span class="p">,</span>
-                        <span class="s1">&#39;loess&#39;</span><span class="p">:</span> <span class="n">loess_interpolation</span>
-                    <span class="p">}</span>
                     <span class="n">interp_func</span> <span class="o">=</span> <span class="n">methods</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">resample_method</span><span class="p">,</span> <span class="n">spline_interpolation</span><span class="p">)(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">deriv_mat</span><span class="p">[:,</span> <span class="n">k</span><span class="p">])</span>
                     <span class="n">deriv_mat</span><span class="p">[:,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">interp_func</span><span class="p">(</span><span class="n">input_data</span><span class="p">)</span>
         <span class="n">derivatives</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">deriv_mat</span>

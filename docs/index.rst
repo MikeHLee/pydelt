@@ -201,6 +201,13 @@ Traditional numerical differentiation is notoriously unstable - small changes in
 
 .. toctree::
    :maxdepth: 2
+   :caption: Mathematical Foundations:
+
+   theory_index
+   theory
+
+.. toctree::
+   :maxdepth: 2
    :caption: Master the Methods:
 
    basic_interpolation

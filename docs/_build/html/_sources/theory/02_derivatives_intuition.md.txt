@@ -1,0 +1,262 @@
+# Chapter 2: Derivatives Intuition
+
+> *"The derivative measures instantaneous rate of change. It's the slope of the tangent line. It tells you: if I nudge the input, how much does the output change?"*
+
+## Three Ways to Think About Derivatives
+
+The derivative is one of the most important concepts in all of mathematics—and it has multiple interpretations that are all equally valid.
+
+### Interpretation 1: Instantaneous Rate of Change
+
+Imagine you're driving a car. Your speedometer shows your **instantaneous speed**—how fast you're going *right now*, not your average speed over the trip.
+
+If your position is p(t) at time t, then:
+- **Average speed** over interval [t₁, t₂]: (p(t₂) - p(t₁)) / (t₂ - t₁)
+- **Instantaneous speed** at time t: p'(t) = lim[h→0] (p(t+h) - p(t)) / h
+
+The derivative gives you the instantaneous rate of change.
+
+### Interpretation 2: Slope of the Tangent Line
+
+Geometrically, the derivative at a point is the **slope of the line that just touches the curve** at that point.
+
+```
+        /
+       /  ← tangent line (slope = derivative)
+      •
+     /|
+    / |
+   /  |
+──────────
+```
+
+- If the tangent line goes up (positive slope), the function is increasing
+- If the tangent line goes down (negative slope), the function is decreasing
+- If the tangent line is flat (zero slope), you're at a local maximum or minimum
+
+### Interpretation 3: Sensitivity (The ML Interpretation)
+
+This is the most useful interpretation for machine learning:
+
+> **The derivative tells you how sensitive the output is to changes in the input.**
+
+If f'(x) = 3, then a small change Δx in the input produces approximately 3Δx change in the output.
+
+This is exactly what gradients tell you during training:
+- Large gradient → weight has big impact on loss
+- Small gradient → weight has little impact on loss
+- Zero gradient → changing this weight doesn't affect loss (at this point)
+
+## The Derivative as a Function
+
+The derivative of f(x) is itself a function, f'(x), that tells you the slope at every point.
+
+### Example: f(x) = x²
+
+| x | f(x) = x² | f'(x) = 2x | Interpretation |
+|---|-----------|------------|----------------|
+| -2 | 4 | -4 | Steeply decreasing |
+| -1 | 1 | -2 | Decreasing |
+| 0 | 0 | 0 | Flat (minimum!) |
+| 1 | 1 | 2 | Increasing |
+| 2 | 4 | 4 | Steeply increasing |
+
+Notice: the derivative is zero exactly where the function has its minimum. This is the foundation of optimization!
+
+## Computing Derivatives with PyDelt
+
+When you have data instead of formulas, PyDelt computes derivatives numerically:
+
+```python
+import numpy as np
+from pydelt.interpolation import SplineInterpolator
+
+# Generate data from f(x) = x²
+x = np.linspace(-3, 3, 100)
+y = x**2
+
+# Fit and differentiate
+interpolator = SplineInterpolator(smoothing=0.01)
+interpolator.fit(x, y)
+derivative_func = interpolator.differentiate(order=1)
+
+# Evaluate derivative
+x_test = np.array([-2, -1, 0, 1, 2])
+derivatives = derivative_func(x_test)
+print(f"Computed: {derivatives}")
+print(f"Exact:    {2 * x_test}")
+# Output: Computed: [-4. -2.  0.  2.  4.]
+#         Exact:    [-4 -2  0  2  4]
+```
+
+## Higher-Order Derivatives
+
+You can differentiate a derivative to get the **second derivative**, and so on:
+
+- **f(x)**: Position
+- **f'(x)**: Velocity (first derivative)
+- **f''(x)**: Acceleration (second derivative)
+- **f'''(x)**: Jerk (third derivative)
+
+### What Second Derivatives Tell You
+
+The second derivative measures **curvature**—how the slope itself is changing:
+
+- **f''(x) > 0**: Curve is concave up (like a smile 😊), slope is increasing
+- **f''(x) < 0**: Curve is concave down (like a frown 😞), slope is decreasing
+- **f''(x) = 0**: Inflection point (curvature changes sign)
+
+### ML Connection: The Hessian
+
+In optimization, the second derivative (or its multidimensional analog, the **Hessian**) tells you about the curvature of your loss landscape:
+
+- **Positive curvature**: You're in a valley (good for optimization)
+- **Negative curvature**: You're on a ridge (saddle point or maximum)
+- **Mixed curvature**: Saddle point (common in high dimensions)
+
+```python
+# Second derivative with PyDelt
+second_derivative_func = interpolator.differentiate(order=2)
+curvature = second_derivative_func(x_test)
+print(f"Curvature at all points: {curvature}")
+# For f(x) = x², f''(x) = 2 everywhere
+```
+
+## Notation: A Quick Guide
+
+Different fields use different notation for derivatives:
+
+| Notation | Read as | Common in |
+|----------|---------|-----------|
+| f'(x) | "f prime of x" | Mathematics |
+| df/dx | "d f d x" | Physics, engineering |
+| ∂f/∂x | "partial f partial x" | Multivariate calculus |
+| ∇f | "gradient of f" | Machine learning |
+| Df | "D f" | Functional analysis |
+
+They all mean the same thing: the derivative of f with respect to x.
+
+## Derivatives of Common Functions
+
+Here are derivatives you'll encounter constantly:
+
+| Function | Derivative | Why It Matters |
+|----------|------------|----------------|
+| xⁿ | n·xⁿ⁻¹ | Polynomial layers |
+| eˣ | eˣ | Softmax, exponential families |
+| ln(x) | 1/x | Log-likelihood, cross-entropy |
+| sin(x) | cos(x) | Positional encodings, Fourier |
+| cos(x) | -sin(x) | Positional encodings, Fourier |
+| σ(x) = 1/(1+e⁻ˣ) | σ(x)(1-σ(x)) | Sigmoid activation |
+| tanh(x) | 1 - tanh²(x) | Tanh activation |
+| max(0,x) | 1 if x>0, 0 if x<0 | ReLU activation |
+
+## The Derivative Doesn't Always Exist
+
+Some functions have points where the derivative is undefined:
+
+### 1. Corners (Non-Differentiable Points)
+
+```python
+def relu(x):
+    return max(0, x)
+```
+
+At x = 0, ReLU has a "corner"—the left slope is 0, the right slope is 1. The derivative doesn't exist (though we define it as 0 by convention).
+
+### 2. Vertical Tangents
+
+If the tangent line is vertical, the slope is infinite—the derivative doesn't exist as a finite number.
+
+### 3. Discontinuities
+
+If the function jumps, there's no tangent line at the jump point.
+
+### Why This Matters for ML
+
+- **ReLU** is not differentiable at 0, but we use it anyway (subgradients)
+- **Discrete operations** (argmax, sampling) have no gradients (use Gumbel-Softmax, REINFORCE)
+- **Quantization** breaks differentiability (use straight-through estimators)
+
+## Numerical vs. Analytical Derivatives
+
+### Analytical Derivatives
+
+When you have a formula, you can compute the derivative exactly using rules (next chapter).
+
+**Pros**: Exact, fast to evaluate
+**Cons**: Requires knowing the formula
+
+### Numerical Derivatives
+
+When you only have data, you approximate:
+
+$$f'(x) \approx \frac{f(x+h) - f(x-h)}{2h}$$
+
+**Pros**: Works with any data
+**Cons**: Approximate, sensitive to noise, amplifies high-frequency errors
+
+### Automatic Differentiation (Autodiff)
+
+The best of both worlds—used by PyTorch and TensorFlow:
+- Computes exact derivatives
+- Works with complex compositions
+- No need to derive formulas by hand
+
+PyDelt's `NeuralNetworkInterpolator` uses autodiff internally.
+
+## Visualizing Derivatives
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from pydelt.interpolation import SplineInterpolator
+
+# Create data
+x = np.linspace(0, 2*np.pi, 100)
+y = np.sin(x)
+
+# Fit and differentiate
+interp = SplineInterpolator(smoothing=0.01)
+interp.fit(x, y)
+deriv = interp.differentiate(order=1)
+
+# Plot
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 6))
+
+ax1.plot(x, y, 'b-', label='f(x) = sin(x)')
+ax1.set_ylabel('f(x)')
+ax1.legend()
+ax1.grid(True)
+
+ax2.plot(x, deriv(x), 'r-', label="f'(x) = cos(x)")
+ax2.plot(x, np.cos(x), 'k--', alpha=0.5, label='Exact cos(x)')
+ax2.set_xlabel('x')
+ax2.set_ylabel("f'(x)")
+ax2.legend()
+ax2.grid(True)
+
+plt.tight_layout()
+plt.show()
+```
+
+## Key Takeaways
+
+1. **Derivatives measure instantaneous rate of change**
+2. **Geometrically, it's the slope of the tangent line**
+3. **For ML, it's sensitivity: how outputs respond to input changes**
+4. **Second derivatives measure curvature** (important for optimization)
+5. **Derivatives don't always exist** (corners, jumps, vertical tangents)
+6. **PyDelt computes derivatives from data** when you don't have formulas
+
+## Exercises
+
+1. **Intuition check**: If f'(3) = -2, is f increasing or decreasing at x = 3? By approximately how much does f change if x increases from 3 to 3.1?
+
+2. **Find the minimum**: For f(x) = x² - 4x + 5, find where f'(x) = 0. Verify this is a minimum by checking f''(x).
+
+3. **Code it**: Use PyDelt to compute the derivative of f(x) = e^(-x²) and plot both the function and its derivative.
+
+---
+
+*Previous: [← Functions and Limits](01_functions_and_limits.md) | Next: [Differentiation Rules →](03_differentiation_rules.md)*

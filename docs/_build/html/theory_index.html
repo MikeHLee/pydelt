@@ -1,0 +1,244 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Theory: Numerical Calculus for Real Systems &mdash; pydelt 0.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5a057da9"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Introduction: The Approximation Paradigm" href="theory/00_introduction.html" />
+    <link rel="prev" title="Quick Start Guide" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start Here:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematical Foundations:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Theory: Numerical Calculus for Real Systems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-central-thesis">The Central Thesis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#chapters">Chapters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="theory/00_introduction.html">Introduction: The Approximation Paradigm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="theory/01_numerical_differentiation.html">Chapter 1: Numerical Differentiation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="theory/02_noise_and_smoothing.html">Chapter 2: Noise and Smoothing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="theory/03_interpolation_methods.html">Chapter 3: Interpolation Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="theory/04_multivariate_derivatives.html">Chapter 4: Multivariate Derivatives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="theory/05_approximation_theory.html">Chapter 5: Approximation Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="theory/06_differential_equations.html">Chapter 6: Differential Equations from Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="theory/07_stochastic_calculus.html">Chapter 7: Stochastic Calculus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="theory/08_applications.html">Chapter 8: Applications Under Error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="theory/bibliography.html">Bibliography</a></li>
+<li class="toctree-l3"><a class="reference internal" href="theory/index.html">Theory: Numerical Calculus for Real Systems</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#quick-reference">Quick Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#who-this-is-for">Who This Is For</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">Mathematical Theory</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference &amp; Help:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visual_examples.html">Visual Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature_comparison.html">Feature Comparison Matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Theory: Numerical Calculus for Real Systems</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/theory_index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="theory-numerical-calculus-for-real-systems">
+<h1>Theory: Numerical Calculus for Real Systems<a class="headerlink" href="#theory-numerical-calculus-for-real-systems" title="Link to this heading"></a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This documentation teaches numerical differentiation from a practical perspective:
+approximating unknown dynamical systems from discrete, noisy observations.</p>
+</div>
+<section id="the-central-thesis">
+<h2>The Central Thesis<a class="headerlink" href="#the-central-thesis" title="Link to this heading"></a></h2>
+<p>We cannot compute exact derivatives from data. But by approximating the underlying
+system with a differentiable surrogate, we transform an intractable problem into
+a tractable one—trading exactness for practicality.</p>
+</section>
+<section id="chapters">
+<h2>Chapters<a class="headerlink" href="#chapters" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Part I: Foundations</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory/00_introduction.html">Introduction: The Approximation Paradigm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/01_numerical_differentiation.html">Chapter 1: Numerical Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/02_noise_and_smoothing.html">Chapter 2: Noise and Smoothing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/03_interpolation_methods.html">Chapter 3: Interpolation Methods</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Part II: Extensions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory/04_multivariate_derivatives.html">Chapter 4: Multivariate Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/05_approximation_theory.html">Chapter 5: Approximation Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/06_differential_equations.html">Chapter 6: Differential Equations from Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/07_stochastic_calculus.html">Chapter 7: Stochastic Calculus</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Part III: Practice</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory/08_applications.html">Chapter 8: Applications Under Error</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/bibliography.html">Bibliography</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory/index.html">Theory: Numerical Calculus for Real Systems</a></li>
+</ul>
+</div>
+</section>
+<section id="quick-reference">
+<h2>Quick Reference<a class="headerlink" href="#quick-reference" title="Link to this heading"></a></h2>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">PyDelt Methods</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 35.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>Use Case</p></th>
+<th class="head"><p>PyDelt Method</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>First derivative</p></td>
+<td><p>Velocity, rate of change</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.differentiate(order=1)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Second derivative</p></td>
+<td><p>Acceleration, curvature</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.differentiate(order=2)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Gradient (∇f)</p></td>
+<td><p>Optimization, sensitivity</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives.gradient()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Jacobian</p></td>
+<td><p>Vector field analysis</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives.jacobian()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Hessian</p></td>
+<td><p>Curvature, stability</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives.hessian()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Laplacian</p></td>
+<td><p>Diffusion, PDEs</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MultivariateDerivatives.laplacian()</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="who-this-is-for">
+<h2>Who This Is For<a class="headerlink" href="#who-this-is-for" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Data scientists</strong> who know basic calculus but need numerical methods</p></li>
+<li><p><strong>Engineers</strong> working with sensor data and dynamical systems</p></li>
+<li><p><strong>Researchers</strong> in physics, biology, or finance dealing with noisy observations</p></li>
+<li><p><strong>ML practitioners</strong> who want to understand gradients beyond autodiff</p></li>
+</ul>
+<p>Prerequisites: Undergraduate calculus, basic linear algebra, Python/NumPy.</p>
+<p><em>Start your journey:</em> <a class="reference internal" href="theory/00_introduction.html"><span class="doc">Introduction: The Approximation Paradigm</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quick Start Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="theory/00_introduction.html" class="btn btn-neutral float-right" title="Introduction: The Approximation Paradigm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

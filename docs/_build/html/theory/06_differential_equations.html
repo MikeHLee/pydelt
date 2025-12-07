@@ -1,0 +1,533 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 6: Differential Equations from Data &mdash; pydelt 0.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chapter 7: Stochastic Calculus" href="07_stochastic_calculus.html" />
+    <link rel="prev" title="Chapter 5: Approximation Theory" href="05_approximation_theory.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start Here:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematical Foundations:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../theory_index.html">Theory: Numerical Calculus for Real Systems</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#the-central-thesis">The Central Thesis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../theory_index.html#chapters">Chapters</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="00_introduction.html">Introduction: The Approximation Paradigm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="01_numerical_differentiation.html">Chapter 1: Numerical Differentiation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="02_noise_and_smoothing.html">Chapter 2: Noise and Smoothing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="03_interpolation_methods.html">Chapter 3: Interpolation Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="04_multivariate_derivatives.html">Chapter 4: Multivariate Derivatives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="05_approximation_theory.html">Chapter 5: Approximation Theory</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Chapter 6: Differential Equations from Data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#connection-to-the-central-thesis">Connection to the Central Thesis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-system-identification-problem">The System Identification Problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#estimating-derivatives-for-odes">Estimating Derivatives for ODEs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sparse-identification-of-nonlinear-dynamics-sindy">Sparse Identification of Nonlinear Dynamics (SINDy)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#neural-network-dynamics">Neural Network Dynamics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#phase-space-analysis">Phase Space Analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#stability-analysis">Stability Analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#partial-differential-equations">Partial Differential Equations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#practical-workflow">Practical Workflow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#key-takeaways">Key Takeaways</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exercises">Exercises</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="07_stochastic_calculus.html">Chapter 7: Stochastic Calculus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="08_applications.html">Chapter 8: Applications Under Error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#quick-reference">Quick Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#who-this-is-for">Who This Is For</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Mathematical Theory</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference &amp; Help:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visual_examples.html">Visual Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feature_comparison.html">Feature Comparison Matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../theory_index.html">Theory: Numerical Calculus for Real Systems</a></li>
+      <li class="breadcrumb-item active">Chapter 6: Differential Equations from Data</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/theory/06_differential_equations.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-6-differential-equations-from-data">
+<h1>Chapter 6: Differential Equations from Data<a class="headerlink" href="#chapter-6-differential-equations-from-data" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p><em>“The universe is written in the language of differential equations. But we rarely know the equations—only the trajectories.”</em></p>
+</div></blockquote>
+<section id="connection-to-the-central-thesis">
+<h2>Connection to the Central Thesis<a class="headerlink" href="#connection-to-the-central-thesis" title="Link to this heading"></a></h2>
+<p>This chapter brings together everything we’ve learned. The ultimate goal of numerical differentiation is often to understand <strong>dynamical systems</strong>:</p>
+<div class="math notranslate nohighlight">
+\[\frac{dx}{dt} = f(x, t)\]</div>
+<p>We observe trajectories x(t). We want to:</p>
+<ol class="arabic simple">
+<li><p><strong>Estimate derivatives</strong> dx/dt from noisy samples</p></li>
+<li><p><strong>Identify the dynamics</strong> f(x, t) from derivative estimates</p></li>
+<li><p><strong>Predict future states</strong> by integrating the identified system</p></li>
+<li><p><strong>Analyze stability</strong> and long-term behavior</p></li>
+</ol>
+<p>This is the payoff of the approximation paradigm: transforming raw observations into mathematical understanding of the underlying system.</p>
+</section>
+<section id="the-system-identification-problem">
+<h2>The System Identification Problem<a class="headerlink" href="#the-system-identification-problem" title="Link to this heading"></a></h2>
+<section id="setup">
+<h3>Setup<a class="headerlink" href="#setup" title="Link to this heading"></a></h3>
+<p>You observe a system at discrete times:</p>
+<ul class="simple">
+<li><p>States: x(t₁), x(t₂), …, x(tₙ)</p></li>
+<li><p>Possibly with noise: yᵢ = x(tᵢ) + εᵢ</p></li>
+</ul>
+<p>You want to find f such that dx/dt = f(x, t) explains the observations.</p>
+</section>
+<section id="the-two-step-approach">
+<h3>The Two-Step Approach<a class="headerlink" href="#the-two-step-approach" title="Link to this heading"></a></h3>
+<p><strong>Step 1</strong>: Estimate derivatives
+$<span class="math notranslate nohighlight">\(\hat{v}_i \approx \frac{dx}{dt}\bigg|_{t=t_i}\)</span>$</p>
+<p>using interpolation + differentiation (PyDelt’s core functionality).</p>
+<p><strong>Step 2</strong>: Fit dynamics
+$<span class="math notranslate nohighlight">\(\hat{v}_i \approx f(x_i, t_i)\)</span>$</p>
+<p>by regression, sparse regression, or neural networks.</p>
+</section>
+<section id="why-this-is-hard">
+<h3>Why This Is Hard<a class="headerlink" href="#why-this-is-hard" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Derivative estimation amplifies noise</strong> (Chapter 2)</p></li>
+<li><p><strong>The form of f is unknown</strong> (could be anything)</p></li>
+<li><p><strong>Data may not cover the state space</strong> (limited observations)</p></li>
+<li><p><strong>Multiple f’s may fit the data</strong> (non-identifiability)</p></li>
+</ol>
+</section>
+</section>
+<section id="estimating-derivatives-for-odes">
+<h2>Estimating Derivatives for ODEs<a class="headerlink" href="#estimating-derivatives-for-odes" title="Link to this heading"></a></h2>
+<section id="the-noise-problem">
+<h3>The Noise Problem<a class="headerlink" href="#the-noise-problem" title="Link to this heading"></a></h3>
+<p>For ODEs, derivative errors propagate:</p>
+<ul class="simple">
+<li><p>Small errors in dx/dt → errors in identified f</p></li>
+<li><p>Errors in f → errors in predictions</p></li>
+<li><p>Predictions diverge exponentially for chaotic systems</p></li>
+</ul>
+</section>
+<section id="recommended-approaches">
+<h3>Recommended Approaches<a class="headerlink" href="#recommended-approaches" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Noise Level</p></th>
+<th class="head"><p>Method</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Very low</p></td>
+<td><p>Finite differences</p></td>
+<td><p>Fast, simple</p></td>
+</tr>
+<tr class="row-odd"><td><p>Low</p></td>
+<td><p>Spline interpolation</p></td>
+<td><p>Smooth derivatives</p></td>
+</tr>
+<tr class="row-even"><td><p>Moderate</p></td>
+<td><p>Smoothing splines</p></td>
+<td><p>Balance bias/variance</p></td>
+</tr>
+<tr class="row-odd"><td><p>High</p></td>
+<td><p>LOWESS or GP</p></td>
+<td><p>Robust, uncertainty quantification</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="pydelt-for-ode-derivatives">
+<h3>PyDelt for ODE Derivatives<a class="headerlink" href="#pydelt-for-ode-derivatives" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Observed trajectory (e.g., from sensors)</span>
+<span class="n">t_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">x_obs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t_obs</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>  <span class="c1"># Noisy observations</span>
+
+<span class="c1"># Fit smooth surrogate</span>
+<span class="n">interp</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">interp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t_obs</span><span class="p">,</span> <span class="n">x_obs</span><span class="p">)</span>
+
+<span class="c1"># Estimate derivatives</span>
+<span class="n">x_smooth</span> <span class="o">=</span> <span class="n">interp</span><span class="p">(</span><span class="n">t_obs</span><span class="p">)</span>
+<span class="n">dx_dt</span> <span class="o">=</span> <span class="n">interp</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">t_obs</span><span class="p">)</span>
+<span class="n">d2x_dt2</span> <span class="o">=</span> <span class="n">interp</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)(</span><span class="n">t_obs</span><span class="p">)</span>
+
+<span class="c1"># Now (x_smooth, dx_dt) pairs can be used for system identification</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="sparse-identification-of-nonlinear-dynamics-sindy">
+<h2>Sparse Identification of Nonlinear Dynamics (SINDy)<a class="headerlink" href="#sparse-identification-of-nonlinear-dynamics-sindy" title="Link to this heading"></a></h2>
+<section id="the-idea">
+<h3>The Idea<a class="headerlink" href="#the-idea" title="Link to this heading"></a></h3>
+<p>Assume f is a sparse combination of candidate functions:</p>
+<div class="math notranslate nohighlight">
+\[\frac{dx}{dt} = \sum_k \xi_k \phi_k(x)\]</div>
+<p>where φₖ are candidates (1, x, x², sin(x), …) and most ξₖ = 0.</p>
+</section>
+<section id="algorithm">
+<h3>Algorithm<a class="headerlink" href="#algorithm" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Build library matrix Θ with columns [1, x, x², x³, sin(x), …]</p></li>
+<li><p>Estimate derivatives: ẋ</p></li>
+<li><p>Solve sparse regression: ẋ ≈ Θξ with ‖ξ‖₀ small</p></li>
+</ol>
+</section>
+<section id="example-discovering-a-pendulum">
+<h3>Example: Discovering a Pendulum<a class="headerlink" href="#example-discovering-a-pendulum" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">odeint</span>
+
+<span class="c1"># True system: d²θ/dt² = -sin(θ) (pendulum)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">true_dynamics</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="n">theta</span><span class="p">,</span> <span class="n">omega</span> <span class="o">=</span> <span class="n">y</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">omega</span><span class="p">,</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)]</span>
+
+<span class="c1"># Generate data</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="n">y0</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">sol</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">true_dynamics</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
+<span class="n">theta</span><span class="p">,</span> <span class="n">omega</span> <span class="o">=</span> <span class="n">sol</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">sol</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># Add noise</span>
+<span class="n">theta_noisy</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">+</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+<span class="n">omega_noisy</span> <span class="o">=</span> <span class="n">omega</span> <span class="o">+</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+
+<span class="c1"># Estimate derivatives using PyDelt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+
+<span class="n">interp_theta</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">interp_theta</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">theta_noisy</span><span class="p">)</span>
+<span class="n">dtheta_dt</span> <span class="o">=</span> <span class="n">interp_theta</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="n">interp_omega</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">interp_omega</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">omega_noisy</span><span class="p">)</span>
+<span class="n">domega_dt</span> <span class="o">=</span> <span class="n">interp_omega</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Build library: [1, θ, ω, θ², θω, ω², sin(θ), cos(θ), ...]</span>
+<span class="n">Theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span>
+    <span class="n">theta_noisy</span><span class="p">,</span>
+    <span class="n">omega_noisy</span><span class="p">,</span>
+    <span class="n">theta_noisy</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta_noisy</span><span class="p">),</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta_noisy</span><span class="p">)</span>
+<span class="p">])</span>
+
+<span class="c1"># Sparse regression for dω/dt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">Lasso</span>
+<span class="n">lasso</span> <span class="o">=</span> <span class="n">Lasso</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="n">lasso</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Theta</span><span class="p">,</span> <span class="n">domega_dt</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Discovered coefficients:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  1: </span><span class="si">{</span><span class="n">lasso</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  θ: </span><span class="si">{</span><span class="n">lasso</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  ω: </span><span class="si">{</span><span class="n">lasso</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  θ²: </span><span class="si">{</span><span class="n">lasso</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  sin(θ): </span><span class="si">{</span><span class="n">lasso</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Should be ≈ -1</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  cos(θ): </span><span class="si">{</span><span class="n">lasso</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="neural-network-dynamics">
+<h2>Neural Network Dynamics<a class="headerlink" href="#neural-network-dynamics" title="Link to this heading"></a></h2>
+<section id="neural-odes">
+<h3>Neural ODEs<a class="headerlink" href="#neural-odes" title="Link to this heading"></a></h3>
+<p>Learn f directly as a neural network:</p>
+<div class="math notranslate nohighlight">
+\[\frac{dx}{dt} = f_\theta(x, t)\]</div>
+<p>where f_θ is a neural network with parameters θ.</p>
+</section>
+<section id="training">
+<h3>Training<a class="headerlink" href="#training" title="Link to this heading"></a></h3>
+<p>Minimize prediction error:
+$<span class="math notranslate nohighlight">\(L(\theta) = \sum_i \|x(t_i) - \hat{x}(t_i; \theta)\|^2\)</span>$</p>
+<p>where x̂ is obtained by integrating the neural ODE.</p>
+</section>
+<section id="advantages">
+<h3>Advantages<a class="headerlink" href="#advantages" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>No need to specify functional form</p></li>
+<li><p>Can capture complex, nonlinear dynamics</p></li>
+<li><p>Automatic differentiation handles gradients</p></li>
+</ul>
+</section>
+<section id="disadvantages">
+<h3>Disadvantages<a class="headerlink" href="#disadvantages" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Black box (hard to interpret)</p></li>
+<li><p>May not generalize outside training data</p></li>
+<li><p>Computationally expensive</p></li>
+</ul>
+</section>
+</section>
+<section id="phase-space-analysis">
+<h2>Phase Space Analysis<a class="headerlink" href="#phase-space-analysis" title="Link to this heading"></a></h2>
+<section id="reconstructing-phase-space">
+<h3>Reconstructing Phase Space<a class="headerlink" href="#reconstructing-phase-space" title="Link to this heading"></a></h3>
+<p>From a single time series x(t), reconstruct the full state using <strong>delay embedding</strong>:</p>
+<div class="math notranslate nohighlight">
+\[\mathbf{y}(t) = [x(t), x(t-\tau), x(t-2\tau), ..., x(t-(d-1)\tau)]\]</div>
+<p><strong>Takens’ theorem</strong>: For generic systems, this reconstruction is diffeomorphic to the true attractor if d &gt; 2n (where n is the true dimension).</p>
+</section>
+<section id="estimating-derivatives-in-reconstructed-space">
+<h3>Estimating Derivatives in Reconstructed Space<a class="headerlink" href="#estimating-derivatives-in-reconstructed-space" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">GllaInterpolator</span>
+
+<span class="c1"># GLLA is designed for delay embedding</span>
+<span class="n">glla</span> <span class="o">=</span> <span class="n">GllaInterpolator</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">glla</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">x_obs</span><span class="p">)</span>
+
+<span class="c1"># Get derivatives in embedded space</span>
+<span class="n">dx_dt</span> <span class="o">=</span> <span class="n">glla</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="stability-analysis">
+<h2>Stability Analysis<a class="headerlink" href="#stability-analysis" title="Link to this heading"></a></h2>
+<section id="linearization">
+<h3>Linearization<a class="headerlink" href="#linearization" title="Link to this heading"></a></h3>
+<p>Near an equilibrium x*, the dynamics are approximately linear:</p>
+<div class="math notranslate nohighlight">
+\[\frac{d\delta x}{dt} = J \cdot \delta x\]</div>
+<p>where J = ∂f/∂x|_{x*} is the Jacobian.</p>
+</section>
+<section id="stability-from-eigenvalues">
+<h3>Stability from Eigenvalues<a class="headerlink" href="#stability-from-eigenvalues" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Eigenvalues of J</p></th>
+<th class="head"><p>Stability</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>All Re(λ) &lt; 0</p></td>
+<td><p>Asymptotically stable</p></td>
+</tr>
+<tr class="row-odd"><td><p>Any Re(λ) &gt; 0</p></td>
+<td><p>Unstable</p></td>
+</tr>
+<tr class="row-even"><td><p>All Re(λ) ≤ 0, some = 0</p></td>
+<td><p>Marginal (need higher order)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="computing-jacobians-from-data">
+<h3>Computing Jacobians from Data<a class="headerlink" href="#computing-jacobians-from-data" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.multivariate</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultivariateDerivatives</span>
+
+<span class="c1"># Fit multivariate surrogate to vector field</span>
+<span class="n">mv</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span><span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">mv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">state_data</span><span class="p">,</span> <span class="n">derivative_data</span><span class="p">)</span>
+
+<span class="c1"># Jacobian at equilibrium</span>
+<span class="n">jacobian_func</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">jacobian</span><span class="p">()</span>
+<span class="n">J</span> <span class="o">=</span> <span class="n">jacobian_func</span><span class="p">(</span><span class="n">equilibrium_point</span><span class="p">)</span>
+
+<span class="c1"># Eigenvalue analysis</span>
+<span class="n">eigenvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvals</span><span class="p">(</span><span class="n">J</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Eigenvalues: </span><span class="si">{</span><span class="n">eigenvalues</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Stable: </span><span class="si">{</span><span class="nb">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="partial-differential-equations">
+<h2>Partial Differential Equations<a class="headerlink" href="#partial-differential-equations" title="Link to this heading"></a></h2>
+<section id="from-odes-to-pdes">
+<h3>From ODEs to PDEs<a class="headerlink" href="#from-odes-to-pdes" title="Link to this heading"></a></h3>
+<p>PDEs involve derivatives in space and time:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial u}{\partial t} = F\left(u, \frac{\partial u}{\partial x}, \frac{\partial^2 u}{\partial x^2}, ...\right)\]</div>
+</section>
+<section id="estimating-spatial-derivatives">
+<h3>Estimating Spatial Derivatives<a class="headerlink" href="#estimating-spatial-derivatives" title="Link to this heading"></a></h3>
+<p>Same techniques apply, but now in space:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># u(x, t) observed on a grid</span>
+<span class="c1"># Estimate ∂u/∂x at fixed t</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+
+<span class="c1"># For each time slice</span>
+<span class="k">for</span> <span class="n">t_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_times</span><span class="p">):</span>
+    <span class="n">interp</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">interp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_grid</span><span class="p">,</span> <span class="n">u</span><span class="p">[:,</span> <span class="n">t_idx</span><span class="p">])</span>
+    <span class="n">du_dx</span><span class="p">[:,</span> <span class="n">t_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">interp</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">x_grid</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="physics-informed-approaches">
+<h3>Physics-Informed Approaches<a class="headerlink" href="#physics-informed-approaches" title="Link to this heading"></a></h3>
+<p>If you know the PDE form, use it as a constraint:</p>
+<div class="math notranslate nohighlight">
+\[L_{\text{physics}} = \left\|\frac{\partial u}{\partial t} - F\left(u, \frac{\partial u}{\partial x}, ...\right)\right\|^2\]</div>
+<p>This is the basis of Physics-Informed Neural Networks (PINNs).</p>
+</section>
+</section>
+<section id="practical-workflow">
+<h2>Practical Workflow<a class="headerlink" href="#practical-workflow" title="Link to this heading"></a></h2>
+<section id="step-by-step-system-identification">
+<h3>Step-by-Step System Identification<a class="headerlink" href="#step-by-step-system-identification" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Visualize data</strong>: Plot trajectories, look for patterns</p></li>
+<li><p><strong>Estimate derivatives</strong>: Use PyDelt with appropriate smoothing</p></li>
+<li><p><strong>Check derivative quality</strong>: Do they make physical sense?</p></li>
+<li><p><strong>Build candidate library</strong>: Based on domain knowledge</p></li>
+<li><p><strong>Fit sparse model</strong>: SINDy or similar</p></li>
+<li><p><strong>Validate</strong>: Integrate identified system, compare to data</p></li>
+<li><p><strong>Analyze</strong>: Stability, bifurcations, long-term behavior</p></li>
+</ol>
+</section>
+<section id="common-pitfalls">
+<h3>Common Pitfalls<a class="headerlink" href="#common-pitfalls" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Over-smoothing</strong>: Misses fast dynamics</p></li>
+<li><p><strong>Under-smoothing</strong>: Noise dominates derivatives</p></li>
+<li><p><strong>Wrong library</strong>: Missing the true terms</p></li>
+<li><p><strong>Overfitting</strong>: Too many terms, poor generalization</p></li>
+<li><p><strong>Extrapolation</strong>: Predictions outside training region fail</p></li>
+</ol>
+</section>
+</section>
+<section id="key-takeaways">
+<h2>Key Takeaways<a class="headerlink" href="#key-takeaways" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>System identification requires good derivative estimates</strong></p></li>
+<li><p><strong>SINDy discovers sparse, interpretable dynamics</strong></p></li>
+<li><p><strong>Neural ODEs learn complex dynamics without functional form</strong></p></li>
+<li><p><strong>Phase space reconstruction works from single time series</strong></p></li>
+<li><p><strong>Stability analysis uses Jacobians from data</strong></p></li>
+<li><p><strong>Validation is essential</strong>—integrate and compare</p></li>
+</ol>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Harmonic oscillator</strong>: Generate data from ẍ + x = 0. Use PyDelt to estimate ẋ and ẍ. Verify the relationship ẍ ≈ -x.</p></li>
+<li><p><strong>Lorenz system</strong>: Generate data from the Lorenz equations. Use SINDy to recover the equations from noisy observations.</p></li>
+<li><p><strong>Stability analysis</strong>: For the damped pendulum θ̈ + 0.1θ̇ + sin(θ) = 0, estimate the Jacobian at θ = 0 from data. Verify stability.</p></li>
+<li><p><strong>Neural ODE</strong>: Train a neural ODE on pendulum data. Compare predictions to the true trajectory.</p></li>
+</ol>
+<hr class="docutils" />
+<p><em>Previous: <a class="reference internal" href="05_approximation_theory.html"><span class="std std-doc">← Approximation Theory</span></a> | Next: <a class="reference internal" href="07_stochastic_calculus.html"><span class="std std-doc">Stochastic Calculus →</span></a></em></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="05_approximation_theory.html" class="btn btn-neutral float-left" title="Chapter 5: Approximation Theory" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="07_stochastic_calculus.html" class="btn btn-neutral float-right" title="Chapter 7: Stochastic Calculus" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

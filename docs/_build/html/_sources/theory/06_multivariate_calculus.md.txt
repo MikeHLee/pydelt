@@ -1,0 +1,346 @@
+# Chapter 6: Multivariate Calculus
+
+> *"Real ML has millions of parameters. Multivariate calculus extends derivatives to functions of many variables: gradients, Jacobians, Hessians."*
+
+## From One Variable to Many
+
+So far, we've focused on functions of a single variable: f(x). But in machine learning:
+- A neural network has millions of parameters
+- An image has thousands of pixels
+- A dataset has many features
+
+We need calculus for functions of **many variables**: f(x₁, x₂, ..., xₙ) or f(**x**).
+
+## Partial Derivatives
+
+### The Idea
+
+A **partial derivative** measures how the function changes when you vary *one* input while holding all others constant.
+
+For f(x, y):
+- ∂f/∂x: How f changes when x changes (y fixed)
+- ∂f/∂y: How f changes when y changes (x fixed)
+
+### Example
+
+$$f(x, y) = x^2 + xy + y^2$$
+
+$$\frac{\partial f}{\partial x} = 2x + y \quad \text{(treat y as constant)}$$
+
+$$\frac{\partial f}{\partial y} = x + 2y \quad \text{(treat x as constant)}$$
+
+### In Code
+
+```python
+import numpy as np
+
+def f(x, y):
+    return x**2 + x*y + y**2
+
+def partial_x(x, y, h=1e-8):
+    """Numerical partial derivative with respect to x."""
+    return (f(x + h, y) - f(x - h, y)) / (2 * h)
+
+def partial_y(x, y, h=1e-8):
+    """Numerical partial derivative with respect to y."""
+    return (f(x, y + h) - f(x, y - h)) / (2 * h)
+
+# At point (1, 2)
+print(f"∂f/∂x at (1,2) = {partial_x(1, 2):.4f}")  # Should be 2(1) + 2 = 4
+print(f"∂f/∂y at (1,2) = {partial_y(1, 2):.4f}")  # Should be 1 + 2(2) = 5
+```
+
+## The Gradient
+
+### Definition
+
+The **gradient** of a scalar function f: ℝⁿ → ℝ is the vector of all partial derivatives:
+
+$$\nabla f = \begin{bmatrix} \frac{\partial f}{\partial x_1} \\ \frac{\partial f}{\partial x_2} \\ \vdots \\ \frac{\partial f}{\partial x_n} \end{bmatrix}$$
+
+### Geometric Meaning
+
+The gradient points in the **direction of steepest ascent**. Its magnitude tells you how steep that direction is.
+
+- To maximize f: move in direction of ∇f
+- To minimize f: move in direction of -∇f ← **This is gradient descent!**
+
+### Example
+
+For f(x, y) = x² + y²:
+
+$$\nabla f = \begin{bmatrix} 2x \\ 2y \end{bmatrix}$$
+
+At point (1, 1), the gradient is [2, 2]. This points away from the minimum at (0, 0).
+
+### PyDelt's Gradient Computation
+
+```python
+from pydelt.multivariate import MultivariateDerivatives
+from pydelt.interpolation import SplineInterpolator
+import numpy as np
+
+# Generate 2D data: f(x,y) = x² + y²
+x = np.linspace(-2, 2, 20)
+y = np.linspace(-2, 2, 20)
+X, Y = np.meshgrid(x, y)
+Z = X**2 + Y**2
+
+# Prepare data
+input_data = np.column_stack([X.flatten(), Y.flatten()])
+output_data = Z.flatten()
+
+# Compute gradient
+mv = MultivariateDerivatives(SplineInterpolator, smoothing=0.1)
+mv.fit(input_data, output_data)
+gradient_func = mv.gradient()
+
+# Evaluate at specific points
+test_points = np.array([[1.0, 1.0], [0.0, 0.0], [-1.0, 2.0]])
+gradients = gradient_func(test_points)
+
+print("Point (1,1): gradient =", gradients[0])   # Should be [2, 2]
+print("Point (0,0): gradient =", gradients[1])   # Should be [0, 0]
+print("Point (-1,2): gradient =", gradients[2])  # Should be [-2, 4]
+```
+
+## The Jacobian
+
+### When Output Is a Vector
+
+For a vector-valued function **f**: ℝⁿ → ℝᵐ, the **Jacobian** is the matrix of all partial derivatives:
+
+$$J_{\mathbf{f}} = \begin{bmatrix} \frac{\partial f_1}{\partial x_1} & \cdots & \frac{\partial f_1}{\partial x_n} \\ \vdots & \ddots & \vdots \\ \frac{\partial f_m}{\partial x_1} & \cdots & \frac{\partial f_m}{\partial x_n} \end{bmatrix}$$
+
+Row i, column j contains ∂fᵢ/∂xⱼ.
+
+### Example
+
+For **f**(x, y) = [x² + y, xy]:
+
+$$J = \begin{bmatrix} 2x & 1 \\ y & x \end{bmatrix}$$
+
+### ML Connection: Backpropagation
+
+In a neural network, each layer is a vector-valued function. The Jacobian of a layer tells you how each output depends on each input.
+
+Backpropagation multiplies Jacobians:
+
+$$\frac{\partial L}{\partial \mathbf{x}} = \frac{\partial L}{\partial \mathbf{h}_n} \cdot J_{h_n} \cdot J_{h_{n-1}} \cdot ... \cdot J_{h_1}$$
+
+### PyDelt's Jacobian Computation
+
+```python
+# Vector-valued function: f(x,y) = [x² + y, xy]
+# We need multiple outputs
+input_data = np.column_stack([X.flatten(), Y.flatten()])
+output_data = np.column_stack([
+    (X**2 + Y).flatten(),  # f1 = x² + y
+    (X * Y).flatten()       # f2 = xy
+])
+
+mv = MultivariateDerivatives(SplineInterpolator, smoothing=0.1)
+mv.fit(input_data, output_data)
+jacobian_func = mv.jacobian()
+
+# Evaluate Jacobian at (1, 2)
+test_point = np.array([[1.0, 2.0]])
+J = jacobian_func(test_point)
+print("Jacobian at (1,2):")
+print(J[0])
+# Should be approximately:
+# [[2, 1],   <- [∂f1/∂x, ∂f1/∂y] = [2x, 1] = [2, 1]
+#  [2, 1]]   <- [∂f2/∂x, ∂f2/∂y] = [y, x] = [2, 1]
+```
+
+## The Hessian
+
+### Second-Order Information
+
+The **Hessian** is the matrix of second partial derivatives:
+
+$$H_f = \begin{bmatrix} \frac{\partial^2 f}{\partial x_1^2} & \frac{\partial^2 f}{\partial x_1 \partial x_2} & \cdots \\ \frac{\partial^2 f}{\partial x_2 \partial x_1} & \frac{\partial^2 f}{\partial x_2^2} & \cdots \\ \vdots & \vdots & \ddots \end{bmatrix}$$
+
+### What It Tells You
+
+The Hessian describes the **curvature** of the function:
+- **Positive definite** H: Local minimum (bowl shape)
+- **Negative definite** H: Local maximum (dome shape)
+- **Indefinite** H: Saddle point
+
+### Example
+
+For f(x, y) = x² + y²:
+
+$$H = \begin{bmatrix} 2 & 0 \\ 0 & 2 \end{bmatrix}$$
+
+This is positive definite (both eigenvalues are 2 > 0), confirming (0, 0) is a minimum.
+
+### ML Connection: Second-Order Optimization
+
+Newton's method uses the Hessian:
+
+$$\theta_{new} = \theta_{old} - H^{-1} \nabla L$$
+
+This converges faster than gradient descent but requires computing and inverting the Hessian—expensive for large models!
+
+Approximations:
+- **L-BFGS**: Approximate Hessian from gradient history
+- **Adam**: Diagonal approximation using second moments
+- **Natural gradient**: Fisher information matrix
+
+### PyDelt's Hessian Computation
+
+```python
+# Compute Hessian
+hessian_func = mv.hessian()
+H = hessian_func(np.array([[0.0, 0.0]]))
+print("Hessian at (0,0):")
+print(H[0])
+# For f(x,y) = x² + y², should be [[2, 0], [0, 2]]
+```
+
+## The Laplacian
+
+### Definition
+
+The **Laplacian** is the trace of the Hessian (sum of diagonal elements):
+
+$$\nabla^2 f = \sum_{i=1}^{n} \frac{\partial^2 f}{\partial x_i^2}$$
+
+### Physical Meaning
+
+The Laplacian measures how much a point differs from its neighbors:
+- **Positive Laplacian**: Point is lower than average of neighbors (local minimum tendency)
+- **Negative Laplacian**: Point is higher than average of neighbors (local maximum tendency)
+
+### Applications
+
+- **Heat equation**: ∂u/∂t = α∇²u (heat flows from hot to cold)
+- **Diffusion**: Concentration spreads out over time
+- **Image processing**: Edge detection, smoothing
+- **Graph neural networks**: Graph Laplacian for message passing
+
+### PyDelt's Laplacian Computation
+
+```python
+laplacian_func = mv.laplacian()
+lap = laplacian_func(np.array([[0.0, 0.0], [1.0, 1.0]]))
+print("Laplacian values:", lap)
+# For f(x,y) = x² + y², Laplacian = 2 + 2 = 4 everywhere
+```
+
+## Directional Derivatives
+
+### Beyond Coordinate Directions
+
+The gradient gives derivatives along coordinate axes. The **directional derivative** gives the derivative along any direction **v**:
+
+$$D_{\mathbf{v}} f = \nabla f \cdot \mathbf{v} = |\nabla f| \cos(\theta)$$
+
+where θ is the angle between ∇f and **v**.
+
+### Key Insight
+
+- Maximum directional derivative: along ∇f (θ = 0)
+- Zero directional derivative: perpendicular to ∇f (θ = 90°)
+- Minimum directional derivative: opposite to ∇f (θ = 180°)
+
+This is why gradient descent works—we move in the direction of maximum decrease.
+
+## Chain Rule in Multiple Dimensions
+
+### Scalar Composition
+
+If z = f(x, y) and x = g(t), y = h(t):
+
+$$\frac{dz}{dt} = \frac{\partial f}{\partial x}\frac{dx}{dt} + \frac{\partial f}{\partial y}\frac{dy}{dt}$$
+
+### Vector Composition
+
+If **z** = **f**(**g**(**x**)):
+
+$$J_{\mathbf{z}} = J_{\mathbf{f}} \cdot J_{\mathbf{g}}$$
+
+The Jacobians multiply! This is the multivariate chain rule—the foundation of backpropagation.
+
+## Optimization in High Dimensions
+
+### Critical Points
+
+A critical point satisfies ∇f = **0**. To classify it:
+
+1. Compute the Hessian H at the critical point
+2. Find eigenvalues of H:
+   - All positive → local minimum
+   - All negative → local maximum
+   - Mixed signs → saddle point
+
+### The Saddle Point Problem
+
+In high dimensions, saddle points are much more common than local minima:
+- For n dimensions, a random critical point has ~50% chance of each eigenvalue being positive
+- Probability of all n eigenvalues positive: ~(1/2)ⁿ
+
+This is why gradient descent often works in deep learning—we're unlikely to get stuck in local minima; we're more likely at saddle points, which have escape directions.
+
+## Practical Example: Gradient Descent
+
+```python
+import numpy as np
+from pydelt.multivariate import MultivariateDerivatives
+from pydelt.interpolation import SplineInterpolator
+
+# Objective: minimize f(x,y) = (x-1)² + (y-2)²
+# Minimum is at (1, 2)
+
+# Generate training data
+x = np.linspace(-3, 5, 30)
+y = np.linspace(-2, 6, 30)
+X, Y = np.meshgrid(x, y)
+Z = (X - 1)**2 + (Y - 2)**2
+
+input_data = np.column_stack([X.flatten(), Y.flatten()])
+output_data = Z.flatten()
+
+# Fit multivariate derivatives
+mv = MultivariateDerivatives(SplineInterpolator, smoothing=0.1)
+mv.fit(input_data, output_data)
+gradient_func = mv.gradient()
+
+# Gradient descent
+point = np.array([[4.0, 5.0]])  # Starting point
+learning_rate = 0.1
+history = [point.copy()]
+
+for i in range(20):
+    grad = gradient_func(point)
+    point = point - learning_rate * grad
+    history.append(point.copy())
+    
+print(f"Final point: {point[0]}")  # Should be close to [1, 2]
+print(f"True minimum: [1, 2]")
+```
+
+## Key Takeaways
+
+1. **Partial derivatives** measure change in one variable at a time
+2. **Gradient** points toward steepest ascent—negate for descent
+3. **Jacobian** is the matrix of derivatives for vector functions
+4. **Hessian** captures curvature—crucial for optimization
+5. **Laplacian** measures deviation from neighbors
+6. **Chain rule** multiplies Jacobians—this IS backpropagation
+
+## Exercises
+
+1. **Compute by hand**: For f(x, y, z) = xyz, find ∇f and evaluate at (1, 2, 3).
+
+2. **Classify critical points**: For f(x, y) = x³ - 3xy², find critical points and classify them using the Hessian.
+
+3. **Implement gradient descent**: Use PyDelt to minimize f(x, y) = sin(x) + cos(y) starting from (0, 0).
+
+4. **Explore saddle points**: For f(x, y) = x² - y², verify that (0, 0) is a saddle point by computing the Hessian eigenvalues.
+
+---
+
+*Previous: [← Approximation Theory](05_approximation_theory.md) | Next: [Complex Analysis →](07_complex_analysis.md)*

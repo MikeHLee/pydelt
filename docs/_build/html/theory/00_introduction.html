@@ -1,0 +1,476 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Introduction: The Approximation Paradigm &mdash; pydelt 0.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chapter 1: Numerical Differentiation" href="01_numerical_differentiation.html" />
+    <link rel="prev" title="Theory: Numerical Calculus for Real Systems" href="../theory_index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start Here:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematical Foundations:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../theory_index.html">Theory: Numerical Calculus for Real Systems</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#the-central-thesis">The Central Thesis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../theory_index.html#chapters">Chapters</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Introduction: The Approximation Paradigm</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#a-quick-refresher-what-calculus-promises">A Quick Refresher: What Calculus Promises</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-real-world-gap">The Real-World Gap</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-simplest-solution-linear-regression">The Simplest Solution: Linear Regression</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#from-lines-to-curves-the-approximation-paradigm">From Lines to Curves: The Approximation Paradigm</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#multiple-regression-partial-derivatives">Multiple Regression: Partial Derivatives</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#beyond-linear-why-we-need-more">Beyond Linear: Why We Need More</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-bias-variance-tradeoff">The Bias-Variance Tradeoff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-progression-from-simple-to-complex">The Progression: From Simple to Complex</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#what-this-buys-you">What This Buys You</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-limitations">The Limitations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-structure-of-this-documentation">The Structure of This Documentation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-payoff">The Payoff</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="01_numerical_differentiation.html">Chapter 1: Numerical Differentiation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="02_noise_and_smoothing.html">Chapter 2: Noise and Smoothing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="03_interpolation_methods.html">Chapter 3: Interpolation Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="04_multivariate_derivatives.html">Chapter 4: Multivariate Derivatives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="05_approximation_theory.html">Chapter 5: Approximation Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="06_differential_equations.html">Chapter 6: Differential Equations from Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="07_stochastic_calculus.html">Chapter 7: Stochastic Calculus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="08_applications.html">Chapter 8: Applications Under Error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
+<li class="toctree-l3"><a class="reference internal" href="index.html">Theory: Numerical Calculus for Real Systems</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#quick-reference">Quick Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#who-this-is-for">Who This Is For</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Mathematical Theory</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference &amp; Help:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visual_examples.html">Visual Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feature_comparison.html">Feature Comparison Matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../theory_index.html">Theory: Numerical Calculus for Real Systems</a></li>
+      <li class="breadcrumb-item active">Introduction: The Approximation Paradigm</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/theory/00_introduction.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="introduction-the-approximation-paradigm">
+<h1>Introduction: The Approximation Paradigm<a class="headerlink" href="#introduction-the-approximation-paradigm" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p><em>“We cannot compute exact derivatives from data. But by approximating the underlying system, we transform an intractable problem into a tractable one.”</em></p>
+</div></blockquote>
+<section id="a-quick-refresher-what-calculus-promises">
+<h2>A Quick Refresher: What Calculus Promises<a class="headerlink" href="#a-quick-refresher-what-calculus-promises" title="Link to this heading"></a></h2>
+<p>Calculus gives us powerful tools for analyzing change:</p>
+<ul class="simple">
+<li><p><strong>Derivatives</strong> tell us instantaneous rates of change</p></li>
+<li><p><strong>Integrals</strong> accumulate quantities over time</p></li>
+<li><p><strong>Differential equations</strong> describe how systems evolve</p></li>
+</ul>
+<p>If you have a function f(x), calculus lets you compute f’(x) exactly. For f(x) = x², you get f’(x) = 2x. Done.</p>
+<p><strong>The problem</strong>: In the real world, we don’t have f(x). We have <em>measurements</em>.</p>
+</section>
+<section id="the-real-world-gap">
+<h2>The Real-World Gap<a class="headerlink" href="#the-real-world-gap" title="Link to this heading"></a></h2>
+<p>Every physical, biological, financial, and engineered system evolves according to some underlying dynamics:</p>
+<div class="math notranslate nohighlight">
+\[\frac{dx}{dt} = f(x, t)\]</div>
+<p>The function f encodes the “equations of motion.” If we knew f exactly, calculus would give us everything.</p>
+<p><strong>But we almost never know f.</strong> What we have instead:</p>
+<ul class="simple">
+<li><p><strong>Discrete observations</strong> at scattered times</p></li>
+<li><p><strong>Noisy measurements</strong> corrupted by sensors</p></li>
+<li><p><strong>No closed-form expression</strong> for the dynamics</p></li>
+</ul>
+<p>This is the gap between textbook calculus and real-world data.</p>
+</section>
+<section id="the-simplest-solution-linear-regression">
+<h2>The Simplest Solution: Linear Regression<a class="headerlink" href="#the-simplest-solution-linear-regression" title="Link to this heading"></a></h2>
+<p>Let’s start with the most basic case. You have data that looks roughly linear:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+
+<span class="c1"># Noisy observations of a linear system</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.1</span><span class="p">,</span> <span class="mf">2.9</span><span class="p">,</span> <span class="mf">5.2</span><span class="p">,</span> <span class="mf">6.8</span><span class="p">,</span> <span class="mf">9.1</span><span class="p">,</span> <span class="mf">10.9</span><span class="p">])</span>  <span class="c1"># True: x = 2t + 1</span>
+
+<span class="c1"># Fit a line</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estimated slope (dx/dt): </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># ≈ 2.0</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estimated intercept: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">intercept_</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>    <span class="c1"># ≈ 1.0</span>
+</pre></div>
+</div>
+<p><strong>The slope of the regression line is our derivative estimate.</strong></p>
+<p>This works because:</p>
+<ol class="arabic simple">
+<li><p>We assume the true relationship is linear: x(t) = mt + b</p></li>
+<li><p>The derivative of a line is its slope: dx/dt = m</p></li>
+<li><p>Linear regression finds the best-fit slope</p></li>
+</ol>
+<p><strong>Key insight</strong>: We approximated the unknown function with a line, then differentiated the approximation. This is the core idea behind all numerical differentiation.</p>
+</section>
+<section id="from-lines-to-curves-the-approximation-paradigm">
+<h2>From Lines to Curves: The Approximation Paradigm<a class="headerlink" href="#from-lines-to-curves-the-approximation-paradigm" title="Link to this heading"></a></h2>
+<p>Linear regression works when the true function is (approximately) linear. But what about curves?</p>
+<p>The same principle applies:</p>
+<blockquote>
+<div><p><strong>Fit a differentiable function to the data, then differentiate the fitted function.</strong></p>
+</div></blockquote>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Data Pattern</p></th>
+<th class="head"><p>Approximation</p></th>
+<th class="head"><p>Derivative</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Linear</p></td>
+<td><p>Line: y = mx + b</p></td>
+<td><p>m (constant)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Quadratic</p></td>
+<td><p>Parabola: y = ax² + bx + c</p></td>
+<td><p>2ax + b</p></td>
+</tr>
+<tr class="row-even"><td><p>Smooth curve</p></td>
+<td><p>Spline</p></td>
+<td><p>Spline derivative</p></td>
+</tr>
+<tr class="row-odd"><td><p>Complex pattern</p></td>
+<td><p>Neural network</p></td>
+<td><p>Autodiff gradient</p></td>
+</tr>
+</tbody>
+</table>
+<p>The approximation is not the true function. But if it’s close, its derivatives approximate the true derivatives.</p>
+</section>
+<section id="multiple-regression-partial-derivatives">
+<h2>Multiple Regression: Partial Derivatives<a class="headerlink" href="#multiple-regression-partial-derivatives" title="Link to this heading"></a></h2>
+<p>What if your system depends on multiple variables? For z = f(x, y):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.linear_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinearRegression</span>
+
+<span class="c1"># Observations of a system depending on two variables</span>
+<span class="c1"># True: z = 3x + 2y + 1</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="n">z</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="mf">0.1</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>  <span class="c1"># Add noise</span>
+
+<span class="c1"># Multiple linear regression</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;∂z/∂x ≈ </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># ≈ 3.0</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;∂z/∂y ≈ </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># ≈ 2.0</span>
+</pre></div>
+</div>
+<p><strong>The regression coefficients are partial derivative estimates.</strong></p>
+<p>This extends to gradients, Jacobians, and Hessians—the multivariate derivatives essential for optimization and machine learning.</p>
+</section>
+<section id="beyond-linear-why-we-need-more">
+<h2>Beyond Linear: Why We Need More<a class="headerlink" href="#beyond-linear-why-we-need-more" title="Link to this heading"></a></h2>
+<p>Linear regression assumes the underlying function is linear. Real systems are often:</p>
+<ul class="simple">
+<li><p><strong>Nonlinear</strong>: Oscillations, exponential growth, saturation</p></li>
+<li><p><strong>Locally varying</strong>: Different behavior in different regions</p></li>
+<li><p><strong>Discontinuous</strong>: Phase transitions, regime changes</p></li>
+<li><p><strong>Stochastic</strong>: Inherent randomness, not just measurement noise</p></li>
+</ul>
+<p>For these, we need more sophisticated approximations:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>System Type</p></th>
+<th class="head"><p>Challenge</p></th>
+<th class="head"><p>PyDelt Solution</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Smooth nonlinear</p></td>
+<td><p>Curves, not lines</p></td>
+<td><p>Splines, local polynomials</p></td>
+</tr>
+<tr class="row-odd"><td><p>Locally varying</p></td>
+<td><p>Different slopes in different regions</p></td>
+<td><p>LOWESS, kernel methods</p></td>
+</tr>
+<tr class="row-even"><td><p>Noisy</p></td>
+<td><p>Noise amplified by differentiation</p></td>
+<td><p>Smoothing, regularization</p></td>
+</tr>
+<tr class="row-odd"><td><p>High-dimensional</p></td>
+<td><p>Curse of dimensionality</p></td>
+<td><p>Neural networks, separable methods</p></td>
+</tr>
+<tr class="row-even"><td><p>Stochastic</p></td>
+<td><p>No classical derivative exists</p></td>
+<td><p>Itô calculus, drift estimation</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="the-bias-variance-tradeoff">
+<h2>The Bias-Variance Tradeoff<a class="headerlink" href="#the-bias-variance-tradeoff" title="Link to this heading"></a></h2>
+<p>Every approximation method faces a fundamental tension:</p>
+<ul class="simple">
+<li><p><strong>Too simple</strong> (e.g., linear fit to curved data): High bias, misses true structure</p></li>
+<li><p><strong>Too complex</strong> (e.g., interpolating every noisy point): High variance, amplifies noise</p></li>
+</ul>
+<p>For derivatives, this is especially severe because <strong>differentiation amplifies noise</strong>. A small wiggle in the function becomes a large spike in the derivative.</p>
+<p>The art is finding the right balance. PyDelt provides tools to navigate this tradeoff.</p>
+</section>
+<section id="the-progression-from-simple-to-complex">
+<h2>The Progression: From Simple to Complex<a class="headerlink" href="#the-progression-from-simple-to-complex" title="Link to this heading"></a></h2>
+<p>This documentation follows a natural progression:</p>
+<section id="level-1-linear-systems">
+<h3>Level 1: Linear Systems<a class="headerlink" href="#level-1-linear-systems" title="Link to this heading"></a></h3>
+<p>Linear regression gives slopes. Multiple regression gives partial derivatives. This is where we start.</p>
+</section>
+<section id="level-2-smooth-nonlinear-systems">
+<h3>Level 2: Smooth Nonlinear Systems<a class="headerlink" href="#level-2-smooth-nonlinear-systems" title="Link to this heading"></a></h3>
+<p>Splines and local polynomials handle curves. We fit piecewise smooth functions and differentiate them analytically.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+
+<span class="n">interp</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">interp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+<span class="n">dx_dt</span> <span class="o">=</span> <span class="n">interp</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="level-3-noisy-systems">
+<h3>Level 3: Noisy Systems<a class="headerlink" href="#level-3-noisy-systems" title="Link to this heading"></a></h3>
+<p>Smoothing methods (LOWESS, Savitzky-Golay) balance fidelity to data against noise amplification.</p>
+</section>
+<section id="level-4-high-dimensional-systems">
+<h3>Level 4: High-Dimensional Systems<a class="headerlink" href="#level-4-high-dimensional-systems" title="Link to this heading"></a></h3>
+<p>Gradients, Jacobians, and Hessians from scattered multivariate data. Neural networks scale where classical methods fail.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.multivariate</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultivariateDerivatives</span>
+
+<span class="n">mv</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span><span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">mv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span>
+<span class="n">gradient</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">gradient</span><span class="p">()(</span><span class="n">query_points</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="level-5-dynamical-systems">
+<h3>Level 5: Dynamical Systems<a class="headerlink" href="#level-5-dynamical-systems" title="Link to this heading"></a></h3>
+<p>ODEs from data. System identification. Predicting future states from learned dynamics.</p>
+</section>
+<section id="level-6-stochastic-systems">
+<h3>Level 6: Stochastic Systems<a class="headerlink" href="#level-6-stochastic-systems" title="Link to this heading"></a></h3>
+<p>When the path itself is random, classical derivatives don’t exist. Itô calculus provides the framework for drift and diffusion estimation.</p>
+</section>
+</section>
+<section id="what-this-buys-you">
+<h2>What This Buys You<a class="headerlink" href="#what-this-buys-you" title="Link to this heading"></a></h2>
+<p>Once you have a differentiable approximation, you can:</p>
+<ol class="arabic simple">
+<li><p><strong>Compute derivatives at any point</strong>—not just at data points</p></li>
+<li><p><strong>Estimate higher derivatives</strong>—acceleration, curvature, jerk</p></li>
+<li><p><strong>Compute multivariate derivatives</strong>—gradients, Jacobians, Hessians</p></li>
+<li><p><strong>Identify governing equations</strong>—discover dx/dt = f(x) from data</p></li>
+<li><p><strong>Quantify uncertainty</strong>—error bounds on derivative estimates</p></li>
+</ol>
+</section>
+<section id="the-limitations">
+<h2>The Limitations<a class="headerlink" href="#the-limitations" title="Link to this heading"></a></h2>
+<p>Approximation is powerful but not magic:</p>
+<ul class="simple">
+<li><p><strong>Garbage in, garbage out</strong>: Too sparse or noisy data defeats any method</p></li>
+<li><p><strong>Extrapolation fails</strong>: Surrogates are only valid within the data domain</p></li>
+<li><p><strong>Sharp features get smoothed</strong>: Discontinuities are blurred</p></li>
+<li><p><strong>High dimensions are hard</strong>: Curse of dimensionality limits classical methods</p></li>
+<li><p><strong>Stochastic systems need special treatment</strong>: Classical smoothing doesn’t apply</p></li>
+</ul>
+</section>
+<section id="the-structure-of-this-documentation">
+<h2>The Structure of This Documentation<a class="headerlink" href="#the-structure-of-this-documentation" title="Link to this heading"></a></h2>
+<p>Each chapter addresses a piece of the approximation paradigm:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Chapter</p></th>
+<th class="head"><p>Question</p></th>
+<th class="head"><p>Answer</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1. Numerical Differentiation</p></td>
+<td><p>How do finite differences work and fail?</p></td>
+<td><p>Truncation vs. rounding error, optimal step sizes</p></td>
+</tr>
+<tr class="row-odd"><td><p>2. Noise and Smoothing</p></td>
+<td><p>How do we handle noisy data?</p></td>
+<td><p>Bias-variance tradeoff, regularization</p></td>
+</tr>
+<tr class="row-even"><td><p>3. Interpolation Methods</p></td>
+<td><p>What surrogates can we use?</p></td>
+<td><p>Splines, local regression, kernels, neural nets</p></td>
+</tr>
+<tr class="row-odd"><td><p>4. Multivariate Derivatives</p></td>
+<td><p>How do we handle multiple dimensions?</p></td>
+<td><p>Gradients, Jacobians, Hessians</p></td>
+</tr>
+<tr class="row-even"><td><p>5. Approximation Theory</p></td>
+<td><p>When does approximation work?</p></td>
+<td><p>Error bounds, convergence rates</p></td>
+</tr>
+<tr class="row-odd"><td><p>6. Differential Equations</p></td>
+<td><p>How do we work with ODEs from data?</p></td>
+<td><p>System identification, prediction</p></td>
+</tr>
+<tr class="row-even"><td><p>7. Stochastic Calculus</p></td>
+<td><p>What about random systems?</p></td>
+<td><p>Itô calculus, SDEs, drift/diffusion estimation</p></td>
+</tr>
+<tr class="row-odd"><td><p>8. Applications</p></td>
+<td><p>Where is this used?</p></td>
+<td><p>Finance, physics, sensors, ML</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
+<p>We assume you have:</p>
+<ul class="simple">
+<li><p><strong>Calculus</strong>: Derivatives, integrals, chain rule, Taylor series</p></li>
+<li><p><strong>Linear algebra</strong>: Vectors, matrices, eigenvalues</p></li>
+<li><p><strong>Basic statistics</strong>: Mean, variance, distributions</p></li>
+<li><p><strong>Python/NumPy</strong>: Arrays, plotting</p></li>
+</ul>
+<p>We’ll introduce:</p>
+<ul class="simple">
+<li><p><strong>Numerical analysis</strong>: Error, stability, convergence</p></li>
+<li><p><strong>Multivariate calculus</strong>: Gradients, Jacobians, Hessians</p></li>
+<li><p><strong>Stochastic processes</strong>: Brownian motion, SDEs</p></li>
+<li><p><strong>Approximation theory</strong>: Function spaces, basis expansions</p></li>
+</ul>
+</section>
+<section id="the-payoff">
+<h2>The Payoff<a class="headerlink" href="#the-payoff" title="Link to this heading"></a></h2>
+<p>By the end of this documentation, you’ll understand:</p>
+<ol class="arabic simple">
+<li><p><strong>Why exact derivatives from data are impossible</strong>—and why that’s okay</p></li>
+<li><p><strong>How to choose the right approximation method</strong> for your problem</p></li>
+<li><p><strong>How to quantify and control error</strong> in derivative estimates</p></li>
+<li><p><strong>How to work with multivariate and stochastic systems</strong></p></li>
+<li><p><strong>How to apply these tools</strong> to real problems in science and engineering</p></li>
+</ol>
+<p>The goal is not to make you a numerical analyst. It’s to give you the <strong>working understanding</strong> needed to use PyDelt effectively and interpret its outputs correctly.</p>
+<hr class="docutils" />
+<p><em>Next: <a class="reference internal" href="01_numerical_differentiation.html"><span class="std std-doc">Numerical Differentiation →</span></a></em></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../theory_index.html" class="btn btn-neutral float-left" title="Theory: Numerical Calculus for Real Systems" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="01_numerical_differentiation.html" class="btn btn-neutral float-right" title="Chapter 1: Numerical Differentiation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

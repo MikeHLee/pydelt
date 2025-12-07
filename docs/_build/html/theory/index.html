@@ -1,0 +1,385 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Theory: Numerical Calculus for Real Systems &mdash; pydelt 0.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start Here:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematical Foundations:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../theory_index.html">Theory: Numerical Calculus for Real Systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Mathematical Theory</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference &amp; Help:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visual_examples.html">Visual Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feature_comparison.html">Feature Comparison Matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Theory: Numerical Calculus for Real Systems</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/theory/index.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="theory-numerical-calculus-for-real-systems">
+<h1>Theory: Numerical Calculus for Real Systems<a class="headerlink" href="#theory-numerical-calculus-for-real-systems" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p><em>“We cannot compute exact derivatives from data. But by approximating the underlying system, we transform an intractable problem into a tractable one.”</em></p>
+</div></blockquote>
+<section id="the-central-thesis">
+<h2>The Central Thesis<a class="headerlink" href="#the-central-thesis" title="Link to this heading"></a></h2>
+<p>Every physical, biological, financial, and engineered system evolves according to some underlying dynamics—equations of motion we rarely know exactly. What we have instead are discrete, noisy observations.</p>
+<p><strong>PyDelt’s approach</strong>: Fit a differentiable surrogate to the data. The surrogate yields to standard calculus tools, giving us approximate derivatives with quantifiable error.</p>
+<p>This documentation teaches you:</p>
+<ol class="arabic simple">
+<li><p><strong>Why exact derivatives are impossible</strong> from discrete, noisy data</p></li>
+<li><p><strong>How approximation methods work</strong> and when they fail</p></li>
+<li><p><strong>How to quantify and control error</strong> in derivative estimates</p></li>
+<li><p><strong>How to apply these tools</strong> across domains</p></li>
+</ol>
+</section>
+<section id="who-this-is-for">
+<h2>Who This Is For<a class="headerlink" href="#who-this-is-for" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Data scientists</strong> who know basic calculus but need numerical methods</p></li>
+<li><p><strong>Engineers</strong> working with sensor data and dynamical systems</p></li>
+<li><p><strong>Researchers</strong> in physics, biology, or finance dealing with noisy observations</p></li>
+<li><p><strong>ML practitioners</strong> who want to understand gradients beyond autodiff</p></li>
+</ul>
+<p>We assume you’ve completed undergraduate calculus (derivatives, integrals, chain rule). We’ll introduce multivariate calculus, numerical analysis, and stochastic processes as needed.</p>
+</section>
+<hr class="docutils" />
+<section id="chapters">
+<h2>Chapters<a class="headerlink" href="#chapters" title="Link to this heading"></a></h2>
+<section id="part-i-foundations">
+<h3>Part I: Foundations<a class="headerlink" href="#part-i-foundations" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Chapter</p></th>
+<th class="head"><p>Topic</p></th>
+<th class="head"><p>Key Question</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="00_introduction.html"><span class="std std-doc">0. Introduction</span></a></p></td>
+<td><p>The Approximation Paradigm</p></td>
+<td><p>Why can’t we compute exact derivatives?</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="01_numerical_differentiation.html"><span class="std std-doc">1. Numerical Differentiation</span></a></p></td>
+<td><p>Finite Differences</p></td>
+<td><p>How do classical methods work and fail?</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="02_noise_and_smoothing.html"><span class="std std-doc">2. Noise and Smoothing</span></a></p></td>
+<td><p>Bias-Variance Tradeoff</p></td>
+<td><p>How do we handle noisy data?</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="03_interpolation_methods.html"><span class="std std-doc">3. Interpolation Methods</span></a></p></td>
+<td><p>Surrogates</p></td>
+<td><p>What functions can we fit?</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="part-ii-extensions">
+<h3>Part II: Extensions<a class="headerlink" href="#part-ii-extensions" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Chapter</p></th>
+<th class="head"><p>Topic</p></th>
+<th class="head"><p>Key Question</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="04_multivariate_derivatives.html"><span class="std std-doc">4. Multivariate Derivatives</span></a></p></td>
+<td><p>Gradients, Jacobians, Hessians</p></td>
+<td><p>How do we handle multiple dimensions?</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="05_approximation_theory.html"><span class="std std-doc">5. Approximation Theory</span></a></p></td>
+<td><p>Error Bounds</p></td>
+<td><p>When does approximation work?</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="06_differential_equations.html"><span class="std std-doc">6. Differential Equations</span></a></p></td>
+<td><p>System Identification</p></td>
+<td><p>How do we discover dynamics from data?</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="07_stochastic_calculus.html"><span class="std std-doc">7. Stochastic Calculus</span></a></p></td>
+<td><p>SDEs and Itô</p></td>
+<td><p>What about random systems?</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="part-iii-practice">
+<h3>Part III: Practice<a class="headerlink" href="#part-iii-practice" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Chapter</p></th>
+<th class="head"><p>Topic</p></th>
+<th class="head"><p>Key Question</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="08_applications.html"><span class="std std-doc">8. Applications</span></a></p></td>
+<td><p>Real-World Use Cases</p></td>
+<td><p>How do we apply this under error?</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="bibliography.html"><span class="std std-doc">Bibliography</span></a></p></td>
+<td><p>References</p></td>
+<td><p>Where can I learn more?</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<hr class="docutils" />
+<section id="the-narrative-arc">
+<h2>The Narrative Arc<a class="headerlink" href="#the-narrative-arc" title="Link to this heading"></a></h2>
+<p><strong>Chapter 0</strong>: Sets up the central problem—we observe systems but don’t know their equations.</p>
+<p><strong>Chapters 1-3</strong>: Build the toolkit—finite differences fail on noise, smoothing helps but biases, interpolation creates differentiable surrogates.</p>
+<p><strong>Chapters 4-5</strong>: Extend to harder problems—multiple dimensions, theoretical guarantees.</p>
+<p><strong>Chapters 6-7</strong>: Handle dynamics—ODEs from data, stochastic systems that break classical calculus.</p>
+<p><strong>Chapter 8</strong>: Apply to real domains—sensors, finance, physics, ML—each with its own error sources.</p>
+</section>
+<hr class="docutils" />
+<section id="quick-reference">
+<h2>Quick Reference<a class="headerlink" href="#quick-reference" title="Link to this heading"></a></h2>
+<section id="pydelt-s-core-pattern">
+<h3>PyDelt’s Core Pattern<a class="headerlink" href="#pydelt-s-core-pattern" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+
+<span class="c1"># 1. Create interpolator with smoothing</span>
+<span class="n">interp</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="c1"># 2. Fit to data</span>
+<span class="n">interp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">time_data</span><span class="p">,</span> <span class="n">signal_data</span><span class="p">)</span>
+
+<span class="c1"># 3. Get derivative function</span>
+<span class="n">derivative</span> <span class="o">=</span> <span class="n">interp</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># 4. Evaluate anywhere</span>
+<span class="n">dy_dt</span> <span class="o">=</span> <span class="n">derivative</span><span class="p">(</span><span class="n">query_points</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="method-selection-guide">
+<h3>Method Selection Guide<a class="headerlink" href="#method-selection-guide" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Scenario</p></th>
+<th class="head"><p>Method</p></th>
+<th class="head"><p>Smoothing</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Low noise, smooth function</p></td>
+<td><p>Spline</p></td>
+<td><p>Low (0.01-0.1)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Moderate noise</p></td>
+<td><p>Spline</p></td>
+<td><p>Medium (0.1-1.0)</p></td>
+</tr>
+<tr class="row-even"><td><p>High noise</p></td>
+<td><p>LOWESS</p></td>
+<td><p>frac=0.1-0.3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Outliers present</p></td>
+<td><p>LOWESS</p></td>
+<td><p>Robust by default</p></td>
+</tr>
+<tr class="row-even"><td><p>Complex patterns</p></td>
+<td><p>Neural Network</p></td>
+<td><p>Architecture-dependent</p></td>
+</tr>
+<tr class="row-odd"><td><p>Stochastic system</p></td>
+<td><p>Estimate drift/diffusion</p></td>
+<td><p>Heavy smoothing</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="error-scaling">
+<h3>Error Scaling<a class="headerlink" href="#error-scaling" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Quantity</p></th>
+<th class="head"><p>Error Scaling</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Function value</p></td>
+<td><p>O(n^{-4/5})</p></td>
+<td><p>For C² functions, optimal</p></td>
+</tr>
+<tr class="row-odd"><td><p>First derivative</p></td>
+<td><p>O(n^{-3/5})</p></td>
+<td><p>One order worse</p></td>
+</tr>
+<tr class="row-even"><td><p>Second derivative</p></td>
+<td><p>O(n^{-2/5})</p></td>
+<td><p>Two orders worse</p></td>
+</tr>
+<tr class="row-odd"><td><p>Noise amplification</p></td>
+<td><p>O(1/h)</p></td>
+<td><p>Smaller step = more noise</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<hr class="docutils" />
+<section id="learning-paths">
+<h2>Learning Paths<a class="headerlink" href="#learning-paths" title="Link to this heading"></a></h2>
+<section id="quick-start-2-hours">
+<h3>Quick Start (2 hours)<a class="headerlink" href="#quick-start-2-hours" title="Link to this heading"></a></h3>
+<p>For those who need to use PyDelt now:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="00_introduction.html"><span class="std std-doc">Introduction</span></a> — 15 min</p></li>
+<li><p><a class="reference internal" href="03_interpolation_methods.html"><span class="std std-doc">Interpolation Methods</span></a> — 45 min</p></li>
+<li><p><a class="reference internal" href="08_applications.html"><span class="std std-doc">Applications</span></a> — 60 min</p></li>
+</ol>
+</section>
+<section id="standard-path-8-10-hours">
+<h3>Standard Path (8-10 hours)<a class="headerlink" href="#standard-path-8-10-hours" title="Link to this heading"></a></h3>
+<p>For solid understanding:</p>
+<ul class="simple">
+<li><p>Work through chapters 0-5 in order</p></li>
+<li><p>Skim 6-7 based on your domain</p></li>
+<li><p>Study 8 for your application area</p></li>
+</ul>
+</section>
+<section id="deep-dive-20-hours">
+<h3>Deep Dive (20+ hours)<a class="headerlink" href="#deep-dive-20-hours" title="Link to this heading"></a></h3>
+<p>For mastery:</p>
+<ul class="simple">
+<li><p>All chapters with exercises</p></li>
+<li><p>Implement methods from scratch</p></li>
+<li><p>Read bibliography references</p></li>
+<li><p>Apply to your own data</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="prerequisites-assumed">
+<h2>Prerequisites Assumed<a class="headerlink" href="#prerequisites-assumed" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Calculus</strong>: Derivatives, integrals, chain rule, Taylor series</p></li>
+<li><p><strong>Linear Algebra</strong>: Vectors, matrices, eigenvalues</p></li>
+<li><p><strong>Statistics</strong>: Mean, variance, Gaussian distribution</p></li>
+<li><p><strong>Python</strong>: NumPy, basic plotting</p></li>
+</ul>
+</section>
+<section id="concepts-introduced">
+<h2>Concepts Introduced<a class="headerlink" href="#concepts-introduced" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Numerical Analysis</strong>: Truncation error, rounding error, stability</p></li>
+<li><p><strong>Multivariate Calculus</strong>: Gradients, Jacobians, Hessians</p></li>
+<li><p><strong>Approximation Theory</strong>: Function spaces, convergence rates</p></li>
+<li><p><strong>Stochastic Processes</strong>: Brownian motion, Itô calculus</p></li>
+<li><p><strong>System Identification</strong>: ODEs from data, SINDy</p></li>
+</ul>
+<hr class="docutils" />
+<p><em>Start your journey: <a class="reference internal" href="00_introduction.html"><span class="std std-doc">Introduction →</span></a></em></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

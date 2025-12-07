@@ -1,0 +1,529 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 6: Multivariate Calculus &mdash; pydelt 0.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chapter 7: Complex Analysis" href="07_complex_analysis.html" />
+    <link rel="prev" title="Chapter 5: Approximation Theory" href="05_approximation_theory.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start Here:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematical Foundations:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../theory_index.html">Theory: Calculus for ML</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../theory_index.html#chapters">Chapters</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="00_why_calculus.html">Why Calculus? A Guide for ML Practitioners</a></li>
+<li class="toctree-l3"><a class="reference internal" href="01_functions_and_limits.html">Chapter 1: Functions and Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="02_derivatives_intuition.html">Chapter 2: Derivatives Intuition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="03_differentiation_rules.html">Chapter 3: Differentiation Rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="04_integration_intuition.html">Chapter 4: Integration Intuition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="05_approximation_theory.html">Chapter 5: Approximation Theory</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Chapter 6: Multivariate Calculus</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#from-one-variable-to-many">From One Variable to Many</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#partial-derivatives">Partial Derivatives</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-gradient">The Gradient</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-jacobian">The Jacobian</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-hessian">The Hessian</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-laplacian">The Laplacian</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#directional-derivatives">Directional Derivatives</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#chain-rule-in-multiple-dimensions">Chain Rule in Multiple Dimensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#optimization-in-high-dimensions">Optimization in High Dimensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#practical-example-gradient-descent">Practical Example: Gradient Descent</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#key-takeaways">Key Takeaways</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exercises">Exercises</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="07_complex_analysis.html">Chapter 7: Complex Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="08_applications_to_ml.html">Chapter 8: Applications to Machine Learning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#quick-reference">Quick Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#learning-paths">Learning Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#who-this-is-for">Who This Is For</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Mathematical Theory</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference &amp; Help:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visual_examples.html">Visual Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feature_comparison.html">Feature Comparison Matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../theory_index.html">Theory: Calculus for ML</a></li>
+      <li class="breadcrumb-item active">Chapter 6: Multivariate Calculus</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/theory/06_multivariate_calculus.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-6-multivariate-calculus">
+<h1>Chapter 6: Multivariate Calculus<a class="headerlink" href="#chapter-6-multivariate-calculus" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p><em>“Real ML has millions of parameters. Multivariate calculus extends derivatives to functions of many variables: gradients, Jacobians, Hessians.”</em></p>
+</div></blockquote>
+<section id="from-one-variable-to-many">
+<h2>From One Variable to Many<a class="headerlink" href="#from-one-variable-to-many" title="Link to this heading"></a></h2>
+<p>So far, we’ve focused on functions of a single variable: f(x). But in machine learning:</p>
+<ul class="simple">
+<li><p>A neural network has millions of parameters</p></li>
+<li><p>An image has thousands of pixels</p></li>
+<li><p>A dataset has many features</p></li>
+</ul>
+<p>We need calculus for functions of <strong>many variables</strong>: f(x₁, x₂, …, xₙ) or f(<strong>x</strong>).</p>
+</section>
+<section id="partial-derivatives">
+<h2>Partial Derivatives<a class="headerlink" href="#partial-derivatives" title="Link to this heading"></a></h2>
+<section id="the-idea">
+<h3>The Idea<a class="headerlink" href="#the-idea" title="Link to this heading"></a></h3>
+<p>A <strong>partial derivative</strong> measures how the function changes when you vary <em>one</em> input while holding all others constant.</p>
+<p>For f(x, y):</p>
+<ul class="simple">
+<li><p>∂f/∂x: How f changes when x changes (y fixed)</p></li>
+<li><p>∂f/∂y: How f changes when y changes (x fixed)</p></li>
+</ul>
+</section>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h3>
+<div class="math notranslate nohighlight">
+\[f(x, y) = x^2 + xy + y^2\]</div>
+<div class="math notranslate nohighlight">
+\[\frac{\partial f}{\partial x} = 2x + y \quad \text{(treat y as constant)}\]</div>
+<div class="math notranslate nohighlight">
+\[\frac{\partial f}{\partial y} = x + 2y \quad \text{(treat x as constant)}\]</div>
+</section>
+<section id="in-code">
+<h3>In Code<a class="headerlink" href="#in-code" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">partial_x</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Numerical partial derivative with respect to x.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">h</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">partial_y</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Numerical partial derivative with respect to y.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="n">h</span><span class="p">)</span> <span class="o">-</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">-</span> <span class="n">h</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
+
+<span class="c1"># At point (1, 2)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;∂f/∂x at (1,2) = </span><span class="si">{</span><span class="n">partial_x</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Should be 2(1) + 2 = 4</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;∂f/∂y at (1,2) = </span><span class="si">{</span><span class="n">partial_y</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Should be 1 + 2(2) = 5</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="the-gradient">
+<h2>The Gradient<a class="headerlink" href="#the-gradient" title="Link to this heading"></a></h2>
+<section id="definition">
+<h3>Definition<a class="headerlink" href="#definition" title="Link to this heading"></a></h3>
+<p>The <strong>gradient</strong> of a scalar function f: ℝⁿ → ℝ is the vector of all partial derivatives:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\nabla f = \begin{bmatrix} \frac{\partial f}{\partial x_1} \\ \frac{\partial f}{\partial x_2} \\ \vdots \\ \frac{\partial f}{\partial x_n} \end{bmatrix}\end{split}\]</div>
+</section>
+<section id="geometric-meaning">
+<h3>Geometric Meaning<a class="headerlink" href="#geometric-meaning" title="Link to this heading"></a></h3>
+<p>The gradient points in the <strong>direction of steepest ascent</strong>. Its magnitude tells you how steep that direction is.</p>
+<ul class="simple">
+<li><p>To maximize f: move in direction of ∇f</p></li>
+<li><p>To minimize f: move in direction of -∇f ← <strong>This is gradient descent!</strong></p></li>
+</ul>
+</section>
+<section id="id1">
+<h3>Example<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>For f(x, y) = x² + y²:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\nabla f = \begin{bmatrix} 2x \\ 2y \end{bmatrix}\end{split}\]</div>
+<p>At point (1, 1), the gradient is [2, 2]. This points away from the minimum at (0, 0).</p>
+</section>
+<section id="pydelt-s-gradient-computation">
+<h3>PyDelt’s Gradient Computation<a class="headerlink" href="#pydelt-s-gradient-computation" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.multivariate</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultivariateDerivatives</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Generate 2D data: f(x,y) = x² + y²</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="n">X</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">Y</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="c1"># Prepare data</span>
+<span class="n">input_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span>
+<span class="n">output_data</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+<span class="c1"># Compute gradient</span>
+<span class="n">mv</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span><span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">mv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">output_data</span><span class="p">)</span>
+<span class="n">gradient_func</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">gradient</span><span class="p">()</span>
+
+<span class="c1"># Evaluate at specific points</span>
+<span class="n">test_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]])</span>
+<span class="n">gradients</span> <span class="o">=</span> <span class="n">gradient_func</span><span class="p">(</span><span class="n">test_points</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Point (1,1): gradient =&quot;</span><span class="p">,</span> <span class="n">gradients</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>   <span class="c1"># Should be [2, 2]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Point (0,0): gradient =&quot;</span><span class="p">,</span> <span class="n">gradients</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>   <span class="c1"># Should be [0, 0]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Point (-1,2): gradient =&quot;</span><span class="p">,</span> <span class="n">gradients</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>  <span class="c1"># Should be [-2, 4]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="the-jacobian">
+<h2>The Jacobian<a class="headerlink" href="#the-jacobian" title="Link to this heading"></a></h2>
+<section id="when-output-is-a-vector">
+<h3>When Output Is a Vector<a class="headerlink" href="#when-output-is-a-vector" title="Link to this heading"></a></h3>
+<p>For a vector-valued function <strong>f</strong>: ℝⁿ → ℝᵐ, the <strong>Jacobian</strong> is the matrix of all partial derivatives:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}J_{\mathbf{f}} = \begin{bmatrix} \frac{\partial f_1}{\partial x_1} &amp; \cdots &amp; \frac{\partial f_1}{\partial x_n} \\ \vdots &amp; \ddots &amp; \vdots \\ \frac{\partial f_m}{\partial x_1} &amp; \cdots &amp; \frac{\partial f_m}{\partial x_n} \end{bmatrix}\end{split}\]</div>
+<p>Row i, column j contains ∂fᵢ/∂xⱼ.</p>
+</section>
+<section id="id2">
+<h3>Example<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p>For <strong>f</strong>(x, y) = [x² + y, xy]:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}J = \begin{bmatrix} 2x &amp; 1 \\ y &amp; x \end{bmatrix}\end{split}\]</div>
+</section>
+<section id="ml-connection-backpropagation">
+<h3>ML Connection: Backpropagation<a class="headerlink" href="#ml-connection-backpropagation" title="Link to this heading"></a></h3>
+<p>In a neural network, each layer is a vector-valued function. The Jacobian of a layer tells you how each output depends on each input.</p>
+<p>Backpropagation multiplies Jacobians:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial L}{\partial \mathbf{x}} = \frac{\partial L}{\partial \mathbf{h}_n} \cdot J_{h_n} \cdot J_{h_{n-1}} \cdot ... \cdot J_{h_1}\]</div>
+</section>
+<section id="pydelt-s-jacobian-computation">
+<h3>PyDelt’s Jacobian Computation<a class="headerlink" href="#pydelt-s-jacobian-computation" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Vector-valued function: f(x,y) = [x² + y, xy]</span>
+<span class="c1"># We need multiple outputs</span>
+<span class="n">input_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span>
+<span class="n">output_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span>
+    <span class="p">(</span><span class="n">X</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">Y</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span>  <span class="c1"># f1 = x² + y</span>
+    <span class="p">(</span><span class="n">X</span> <span class="o">*</span> <span class="n">Y</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>       <span class="c1"># f2 = xy</span>
+<span class="p">])</span>
+
+<span class="n">mv</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span><span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">mv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">output_data</span><span class="p">)</span>
+<span class="n">jacobian_func</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">jacobian</span><span class="p">()</span>
+
+<span class="c1"># Evaluate Jacobian at (1, 2)</span>
+<span class="n">test_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">]])</span>
+<span class="n">J</span> <span class="o">=</span> <span class="n">jacobian_func</span><span class="p">(</span><span class="n">test_point</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Jacobian at (1,2):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">J</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="c1"># Should be approximately:</span>
+<span class="c1"># [[2, 1],   &lt;- [∂f1/∂x, ∂f1/∂y] = [2x, 1] = [2, 1]</span>
+<span class="c1">#  [2, 1]]   &lt;- [∂f2/∂x, ∂f2/∂y] = [y, x] = [2, 1]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="the-hessian">
+<h2>The Hessian<a class="headerlink" href="#the-hessian" title="Link to this heading"></a></h2>
+<section id="second-order-information">
+<h3>Second-Order Information<a class="headerlink" href="#second-order-information" title="Link to this heading"></a></h3>
+<p>The <strong>Hessian</strong> is the matrix of second partial derivatives:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}H_f = \begin{bmatrix} \frac{\partial^2 f}{\partial x_1^2} &amp; \frac{\partial^2 f}{\partial x_1 \partial x_2} &amp; \cdots \\ \frac{\partial^2 f}{\partial x_2 \partial x_1} &amp; \frac{\partial^2 f}{\partial x_2^2} &amp; \cdots \\ \vdots &amp; \vdots &amp; \ddots \end{bmatrix}\end{split}\]</div>
+</section>
+<section id="what-it-tells-you">
+<h3>What It Tells You<a class="headerlink" href="#what-it-tells-you" title="Link to this heading"></a></h3>
+<p>The Hessian describes the <strong>curvature</strong> of the function:</p>
+<ul class="simple">
+<li><p><strong>Positive definite</strong> H: Local minimum (bowl shape)</p></li>
+<li><p><strong>Negative definite</strong> H: Local maximum (dome shape)</p></li>
+<li><p><strong>Indefinite</strong> H: Saddle point</p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>Example<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>For f(x, y) = x² + y²:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}H = \begin{bmatrix} 2 &amp; 0 \\ 0 &amp; 2 \end{bmatrix}\end{split}\]</div>
+<p>This is positive definite (both eigenvalues are 2 &gt; 0), confirming (0, 0) is a minimum.</p>
+</section>
+<section id="ml-connection-second-order-optimization">
+<h3>ML Connection: Second-Order Optimization<a class="headerlink" href="#ml-connection-second-order-optimization" title="Link to this heading"></a></h3>
+<p>Newton’s method uses the Hessian:</p>
+<div class="math notranslate nohighlight">
+\[\theta_{new} = \theta_{old} - H^{-1} \nabla L\]</div>
+<p>This converges faster than gradient descent but requires computing and inverting the Hessian—expensive for large models!</p>
+<p>Approximations:</p>
+<ul class="simple">
+<li><p><strong>L-BFGS</strong>: Approximate Hessian from gradient history</p></li>
+<li><p><strong>Adam</strong>: Diagonal approximation using second moments</p></li>
+<li><p><strong>Natural gradient</strong>: Fisher information matrix</p></li>
+</ul>
+</section>
+<section id="pydelt-s-hessian-computation">
+<h3>PyDelt’s Hessian Computation<a class="headerlink" href="#pydelt-s-hessian-computation" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Compute Hessian</span>
+<span class="n">hessian_func</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">hessian</span><span class="p">()</span>
+<span class="n">H</span> <span class="o">=</span> <span class="n">hessian_func</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hessian at (0,0):&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">H</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="c1"># For f(x,y) = x² + y², should be [[2, 0], [0, 2]]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="the-laplacian">
+<h2>The Laplacian<a class="headerlink" href="#the-laplacian" title="Link to this heading"></a></h2>
+<section id="id4">
+<h3>Definition<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p>The <strong>Laplacian</strong> is the trace of the Hessian (sum of diagonal elements):</p>
+<div class="math notranslate nohighlight">
+\[\nabla^2 f = \sum_{i=1}^{n} \frac{\partial^2 f}{\partial x_i^2}\]</div>
+</section>
+<section id="physical-meaning">
+<h3>Physical Meaning<a class="headerlink" href="#physical-meaning" title="Link to this heading"></a></h3>
+<p>The Laplacian measures how much a point differs from its neighbors:</p>
+<ul class="simple">
+<li><p><strong>Positive Laplacian</strong>: Point is lower than average of neighbors (local minimum tendency)</p></li>
+<li><p><strong>Negative Laplacian</strong>: Point is higher than average of neighbors (local maximum tendency)</p></li>
+</ul>
+</section>
+<section id="applications">
+<h3>Applications<a class="headerlink" href="#applications" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Heat equation</strong>: ∂u/∂t = α∇²u (heat flows from hot to cold)</p></li>
+<li><p><strong>Diffusion</strong>: Concentration spreads out over time</p></li>
+<li><p><strong>Image processing</strong>: Edge detection, smoothing</p></li>
+<li><p><strong>Graph neural networks</strong>: Graph Laplacian for message passing</p></li>
+</ul>
+</section>
+<section id="pydelt-s-laplacian-computation">
+<h3>PyDelt’s Laplacian Computation<a class="headerlink" href="#pydelt-s-laplacian-computation" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">laplacian_func</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">laplacian</span><span class="p">()</span>
+<span class="n">lap</span> <span class="o">=</span> <span class="n">laplacian_func</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Laplacian values:&quot;</span><span class="p">,</span> <span class="n">lap</span><span class="p">)</span>
+<span class="c1"># For f(x,y) = x² + y², Laplacian = 2 + 2 = 4 everywhere</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="directional-derivatives">
+<h2>Directional Derivatives<a class="headerlink" href="#directional-derivatives" title="Link to this heading"></a></h2>
+<section id="beyond-coordinate-directions">
+<h3>Beyond Coordinate Directions<a class="headerlink" href="#beyond-coordinate-directions" title="Link to this heading"></a></h3>
+<p>The gradient gives derivatives along coordinate axes. The <strong>directional derivative</strong> gives the derivative along any direction <strong>v</strong>:</p>
+<div class="math notranslate nohighlight">
+\[D_{\mathbf{v}} f = \nabla f \cdot \mathbf{v} = |\nabla f| \cos(\theta)\]</div>
+<p>where θ is the angle between ∇f and <strong>v</strong>.</p>
+</section>
+<section id="key-insight">
+<h3>Key Insight<a class="headerlink" href="#key-insight" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Maximum directional derivative: along ∇f (θ = 0)</p></li>
+<li><p>Zero directional derivative: perpendicular to ∇f (θ = 90°)</p></li>
+<li><p>Minimum directional derivative: opposite to ∇f (θ = 180°)</p></li>
+</ul>
+<p>This is why gradient descent works—we move in the direction of maximum decrease.</p>
+</section>
+</section>
+<section id="chain-rule-in-multiple-dimensions">
+<h2>Chain Rule in Multiple Dimensions<a class="headerlink" href="#chain-rule-in-multiple-dimensions" title="Link to this heading"></a></h2>
+<section id="scalar-composition">
+<h3>Scalar Composition<a class="headerlink" href="#scalar-composition" title="Link to this heading"></a></h3>
+<p>If z = f(x, y) and x = g(t), y = h(t):</p>
+<div class="math notranslate nohighlight">
+\[\frac{dz}{dt} = \frac{\partial f}{\partial x}\frac{dx}{dt} + \frac{\partial f}{\partial y}\frac{dy}{dt}\]</div>
+</section>
+<section id="vector-composition">
+<h3>Vector Composition<a class="headerlink" href="#vector-composition" title="Link to this heading"></a></h3>
+<p>If <strong>z</strong> = <strong>f</strong>(<strong>g</strong>(<strong>x</strong>)):</p>
+<div class="math notranslate nohighlight">
+\[J_{\mathbf{z}} = J_{\mathbf{f}} \cdot J_{\mathbf{g}}\]</div>
+<p>The Jacobians multiply! This is the multivariate chain rule—the foundation of backpropagation.</p>
+</section>
+</section>
+<section id="optimization-in-high-dimensions">
+<h2>Optimization in High Dimensions<a class="headerlink" href="#optimization-in-high-dimensions" title="Link to this heading"></a></h2>
+<section id="critical-points">
+<h3>Critical Points<a class="headerlink" href="#critical-points" title="Link to this heading"></a></h3>
+<p>A critical point satisfies ∇f = <strong>0</strong>. To classify it:</p>
+<ol class="arabic simple">
+<li><p>Compute the Hessian H at the critical point</p></li>
+<li><p>Find eigenvalues of H:</p>
+<ul class="simple">
+<li><p>All positive → local minimum</p></li>
+<li><p>All negative → local maximum</p></li>
+<li><p>Mixed signs → saddle point</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="the-saddle-point-problem">
+<h3>The Saddle Point Problem<a class="headerlink" href="#the-saddle-point-problem" title="Link to this heading"></a></h3>
+<p>In high dimensions, saddle points are much more common than local minima:</p>
+<ul class="simple">
+<li><p>For n dimensions, a random critical point has ~50% chance of each eigenvalue being positive</p></li>
+<li><p>Probability of all n eigenvalues positive: ~(1/2)ⁿ</p></li>
+</ul>
+<p>This is why gradient descent often works in deep learning—we’re unlikely to get stuck in local minima; we’re more likely at saddle points, which have escape directions.</p>
+</section>
+</section>
+<section id="practical-example-gradient-descent">
+<h2>Practical Example: Gradient Descent<a class="headerlink" href="#practical-example-gradient-descent" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.multivariate</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultivariateDerivatives</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+
+<span class="c1"># Objective: minimize f(x,y) = (x-1)² + (y-2)²</span>
+<span class="c1"># Minimum is at (1, 2)</span>
+
+<span class="c1"># Generate training data</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+<span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">Z</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">Y</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="n">input_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">X</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()])</span>
+<span class="n">output_data</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+
+<span class="c1"># Fit multivariate derivatives</span>
+<span class="n">mv</span> <span class="o">=</span> <span class="n">MultivariateDerivatives</span><span class="p">(</span><span class="n">SplineInterpolator</span><span class="p">,</span> <span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">mv</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">output_data</span><span class="p">)</span>
+<span class="n">gradient_func</span> <span class="o">=</span> <span class="n">mv</span><span class="o">.</span><span class="n">gradient</span><span class="p">()</span>
+
+<span class="c1"># Gradient descent</span>
+<span class="n">point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">]])</span>  <span class="c1"># Starting point</span>
+<span class="n">learning_rate</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">history</span> <span class="o">=</span> <span class="p">[</span><span class="n">point</span><span class="o">.</span><span class="n">copy</span><span class="p">()]</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+    <span class="n">grad</span> <span class="o">=</span> <span class="n">gradient_func</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+    <span class="n">point</span> <span class="o">=</span> <span class="n">point</span> <span class="o">-</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">grad</span>
+    <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+    
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final point: </span><span class="si">{</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Should be close to [1, 2]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;True minimum: [1, 2]&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="key-takeaways">
+<h2>Key Takeaways<a class="headerlink" href="#key-takeaways" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Partial derivatives</strong> measure change in one variable at a time</p></li>
+<li><p><strong>Gradient</strong> points toward steepest ascent—negate for descent</p></li>
+<li><p><strong>Jacobian</strong> is the matrix of derivatives for vector functions</p></li>
+<li><p><strong>Hessian</strong> captures curvature—crucial for optimization</p></li>
+<li><p><strong>Laplacian</strong> measures deviation from neighbors</p></li>
+<li><p><strong>Chain rule</strong> multiplies Jacobians—this IS backpropagation</p></li>
+</ol>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Compute by hand</strong>: For f(x, y, z) = xyz, find ∇f and evaluate at (1, 2, 3).</p></li>
+<li><p><strong>Classify critical points</strong>: For f(x, y) = x³ - 3xy², find critical points and classify them using the Hessian.</p></li>
+<li><p><strong>Implement gradient descent</strong>: Use PyDelt to minimize f(x, y) = sin(x) + cos(y) starting from (0, 0).</p></li>
+<li><p><strong>Explore saddle points</strong>: For f(x, y) = x² - y², verify that (0, 0) is a saddle point by computing the Hessian eigenvalues.</p></li>
+</ol>
+<hr class="docutils" />
+<p><em>Previous: <a class="reference internal" href="05_approximation_theory.html"><span class="std std-doc">← Approximation Theory</span></a> | Next: <a class="reference internal" href="07_complex_analysis.html"><span class="std std-doc">Complex Analysis →</span></a></em></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="05_approximation_theory.html" class="btn btn-neutral float-left" title="Chapter 5: Approximation Theory" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="07_complex_analysis.html" class="btn btn-neutral float-right" title="Chapter 7: Complex Analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

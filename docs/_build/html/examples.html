@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Examples &mdash; pydelt 0.4.0 documentation</title>
+  <title>Examples &mdash; pydelt 0.7.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=6c02275b"></script>
+      <script src="_static/documentation_options.js?v=5a057da9"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -47,6 +47,11 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematical Foundations:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="theory_index.html">Theory: Calculus for ML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">Mathematical Theory</a></li>
+</ul>
 <p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
@@ -65,6 +70,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#example-6-understanding-numerical-limitations">Example 6: Understanding Numerical Limitations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#example-7-tensor-calculus">Example 7: Tensor Calculus</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#example-8-stochastic-derivatives">Example 8: Stochastic Derivatives</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-7-window-functions-for-segmented-data">Example 7: Window Functions for Segmented Data</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="visual_examples.html">Visual Examples</a></li>
@@ -583,6 +589,99 @@
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Itô vs Stratonovich difference: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">method_diff</span><span class="p">))</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
+</section>
+<section id="example-7-window-functions-for-segmented-data">
+<h2>Example 7: Window Functions for Segmented Data<a class="headerlink" href="#example-7-window-functions-for-segmented-data" title="Link to this heading"></a></h2>
+<p>Window functions are useful when working with data that has natural boundaries,
+such as sensor data with measurement gaps or financial data with trading sessions.
+This example shows how to apply window functions to handle segmented time series.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+
+<span class="c1"># Simulate sensor data with measurement sessions separated by gaps</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="c1"># Session 1: 0-60 minutes</span>
+<span class="n">session1_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+<span class="n">session1_signal</span> <span class="o">=</span> <span class="mi">100</span> <span class="o">+</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">session1_time</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span>
+
+<span class="c1"># Session 2: 100-160 minutes (40-minute gap, ~15 value drop)</span>
+<span class="n">session2_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">160</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+<span class="n">session2_signal</span> <span class="o">=</span> <span class="mi">85</span> <span class="o">+</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">session2_time</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span>
+
+<span class="c1"># Session 3: 200-260 minutes (40-minute gap, ~15 value drop)</span>
+<span class="n">session3_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">260</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+<span class="n">session3_signal</span> <span class="o">=</span> <span class="mi">70</span> <span class="o">+</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">session3_time</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span>
+
+<span class="c1"># Combine all sessions</span>
+<span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">session1_time</span><span class="p">,</span> <span class="n">session2_time</span><span class="p">,</span> <span class="n">session3_time</span><span class="p">])</span>
+<span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">session1_signal</span><span class="p">,</span> <span class="n">session2_signal</span><span class="p">,</span> <span class="n">session3_signal</span><span class="p">])</span>
+
+<span class="c1"># Create a custom window generator that detects session boundaries</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_session_window</span><span class="p">(</span><span class="n">time_gap_threshold</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">value_drop_threshold</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Window generator that tapers at session boundaries.</span>
+<span class="sd">    Detects boundaries based on time gaps and value drops.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">window_func</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="c1"># Create Tukey window with 10% taper at edges</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">taper_length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">10</span><span class="p">)</span>
+
+        <span class="c1"># Taper at beginning</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">taper_length</span><span class="p">):</span>
+            <span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="n">taper_length</span><span class="p">))</span>
+
+        <span class="c1"># Taper at end</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">taper_length</span><span class="p">):</span>
+            <span class="n">weights</span><span class="p">[</span><span class="o">-</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="n">taper_length</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">weights</span>
+
+    <span class="k">return</span> <span class="n">window_func</span>
+
+<span class="c1"># Fit interpolator with window function</span>
+<span class="n">window_gen</span> <span class="o">=</span> <span class="n">create_session_window</span><span class="p">(</span><span class="n">time_gap_threshold</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">value_drop_threshold</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">interp</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">interp</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">window_func</span><span class="o">=</span><span class="n">window_gen</span><span class="p">)</span>
+
+<span class="c1"># Compute derivatives with and without normalization</span>
+<span class="n">deriv_func</span> <span class="o">=</span> <span class="n">interp</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">normalize_by_observations</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">derivatives</span> <span class="o">=</span> <span class="n">deriv_func</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+
+<span class="n">deriv_func_norm</span> <span class="o">=</span> <span class="n">interp</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">normalize_by_observations</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">derivatives_normalized</span> <span class="o">=</span> <span class="n">deriv_func_norm</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Window function applied: </span><span class="si">{</span><span class="n">interp</span><span class="o">.</span><span class="n">window_func</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of observations: </span><span class="si">{</span><span class="n">interp</span><span class="o">.</span><span class="n">n_observations</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Derivative range: [</span><span class="si">{</span><span class="n">derivatives</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">derivatives</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Normalized derivative range: [</span><span class="si">{</span><span class="n">derivatives_normalized</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">, &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">derivatives_normalized</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+
+<span class="c1"># Compare with standard numpy windows</span>
+<span class="n">interp_hanning</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="n">interp_hanning</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">window_func</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">hanning</span><span class="p">)</span>
+
+<span class="n">deriv_hanning</span> <span class="o">=</span> <span class="n">interp_hanning</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">time</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">nHanning window derivative range: [</span><span class="si">{</span><span class="n">deriv_hanning</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">deriv_hanning</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Key Points:</strong></p>
+<ul class="simple">
+<li><p>Window functions modify the signal before interpolation, reducing edge effects</p></li>
+<li><p>Custom window generators can detect session boundaries based on time gaps and value drops</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">normalize_by_observations</span></code> parameter scales derivatives by 1/N when a window was applied</p></li>
+<li><p>Standard NumPy windows (hanning, hamming, blackman, bartlett) are supported</p></li>
+<li><p>Window functions are particularly useful for:</p>
+<ul>
+<li><p>Sensor data with measurement gaps</p></li>
+<li><p>Financial data with trading sessions</p></li>
+<li><p>Any time series with natural segmentation</p></li>
+<li><p>Reducing artifacts at data boundaries</p></li>
+</ul>
+</li>
+</ul>
 </section>
 </section>
 

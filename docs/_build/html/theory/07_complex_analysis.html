@@ -1,0 +1,474 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 7: Complex Analysis &mdash; pydelt 0.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chapter 8: Applications to Machine Learning" href="08_applications_to_ml.html" />
+    <link rel="prev" title="Chapter 6: Multivariate Calculus" href="06_multivariate_calculus.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start Here:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematical Foundations:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../theory_index.html">Theory: Calculus for ML</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../theory_index.html#chapters">Chapters</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="00_why_calculus.html">Why Calculus? A Guide for ML Practitioners</a></li>
+<li class="toctree-l3"><a class="reference internal" href="01_functions_and_limits.html">Chapter 1: Functions and Limits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="02_derivatives_intuition.html">Chapter 2: Derivatives Intuition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="03_differentiation_rules.html">Chapter 3: Differentiation Rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="04_integration_intuition.html">Chapter 4: Integration Intuition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="05_approximation_theory.html">Chapter 5: Approximation Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="06_multivariate_calculus.html">Chapter 6: Multivariate Calculus</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Chapter 7: Complex Analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#why-complex-numbers-for-ml">Why Complex Numbers for ML?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#complex-numbers-as-2d-vectors">Complex Numbers as 2D Vectors</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#euler-s-formula-the-most-beautiful-equation">Euler’s Formula: The Most Beautiful Equation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#complex-differentiation">Complex Differentiation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-fourier-transform">The Fourier Transform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#convolution-and-the-fourier-transform">Convolution and the Fourier Transform</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#residues-and-contour-integration">Residues and Contour Integration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#complex-numbers-in-neural-networks">Complex Numbers in Neural Networks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#conformal-maps">Conformal Maps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#connecting-to-pydelt">Connecting to PyDelt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#key-takeaways">Key Takeaways</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exercises">Exercises</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="08_applications_to_ml.html">Chapter 8: Applications to Machine Learning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#quick-reference">Quick Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#learning-paths">Learning Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#who-this-is-for">Who This Is For</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Mathematical Theory</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference &amp; Help:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visual_examples.html">Visual Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feature_comparison.html">Feature Comparison Matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../theory_index.html">Theory: Calculus for ML</a></li>
+      <li class="breadcrumb-item active">Chapter 7: Complex Analysis</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/theory/07_complex_analysis.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-7-complex-analysis">
+<h1>Chapter 7: Complex Analysis<a class="headerlink" href="#chapter-7-complex-analysis" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p><em>“Complex numbers are not complicated—they’re just 2D. Euler’s formula connects exponentials, trigonometry, and rotation in one beautiful equation.”</em></p>
+</div></blockquote>
+<section id="why-complex-numbers-for-ml">
+<h2>Why Complex Numbers for ML?<a class="headerlink" href="#why-complex-numbers-for-ml" title="Link to this heading"></a></h2>
+<p>You might wonder: why do ML practitioners need complex numbers? Here’s why:</p>
+<ol class="arabic simple">
+<li><p><strong>Fourier transforms</strong> use complex exponentials</p></li>
+<li><p><strong>Signal processing</strong> is naturally complex</p></li>
+<li><p><strong>Quantum computing</strong> is built on complex numbers</p></li>
+<li><p><strong>Some optimizations</strong> are easier in the complex plane</p></li>
+<li><p><strong>Eigenvalues</strong> of real matrices can be complex</p></li>
+</ol>
+<p>This chapter gives you the intuition you need—not a full course in complex analysis.</p>
+</section>
+<section id="complex-numbers-as-2d-vectors">
+<h2>Complex Numbers as 2D Vectors<a class="headerlink" href="#complex-numbers-as-2d-vectors" title="Link to this heading"></a></h2>
+<section id="the-basic-idea">
+<h3>The Basic Idea<a class="headerlink" href="#the-basic-idea" title="Link to this heading"></a></h3>
+<p>A complex number z = a + bi is just a point in 2D:</p>
+<ul class="simple">
+<li><p><strong>Real part</strong>: a (x-coordinate)</p></li>
+<li><p><strong>Imaginary part</strong>: b (y-coordinate)</p></li>
+<li><p><strong>i</strong>: The “imaginary unit” where i² = -1</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Complex numbers in Python</span>
+<span class="n">z</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">+</span> <span class="mi">4</span><span class="n">j</span>  <span class="c1"># a = 3, b = 4</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Real part: </span><span class="si">{</span><span class="n">z</span><span class="o">.</span><span class="n">real</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>       <span class="c1"># 3.0</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Imaginary part: </span><span class="si">{</span><span class="n">z</span><span class="o">.</span><span class="n">imag</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># 4.0</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Magnitude: </span><span class="si">{</span><span class="nb">abs</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>       <span class="c1"># 5.0 (distance from origin)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Angle: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>      <span class="c1"># 0.927 radians</span>
+</pre></div>
+</div>
+</section>
+<section id="polar-form">
+<h3>Polar Form<a class="headerlink" href="#polar-form" title="Link to this heading"></a></h3>
+<p>Any complex number can be written as:</p>
+<div class="math notranslate nohighlight">
+\[z = r(\cos\theta + i\sin\theta) = re^{i\theta}\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p>r = |z| is the <strong>magnitude</strong> (distance from origin)</p></li>
+<li><p>θ is the <strong>argument</strong> (angle from positive real axis)</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+<span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+<span class="n">z_polar</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">theta</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;z = </span><span class="si">{</span><span class="n">z</span><span class="si">}</span><span class="s2">, z_polar = </span><span class="si">{</span><span class="n">z_polar</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Same number!</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="euler-s-formula-the-most-beautiful-equation">
+<h2>Euler’s Formula: The Most Beautiful Equation<a class="headerlink" href="#euler-s-formula-the-most-beautiful-equation" title="Link to this heading"></a></h2>
+<div class="math notranslate nohighlight">
+\[e^{i\theta} = \cos\theta + i\sin\theta\]</div>
+<p>This single equation connects:</p>
+<ul class="simple">
+<li><p><strong>Exponentials</strong> (e)</p></li>
+<li><p><strong>Trigonometry</strong> (sin, cos)</p></li>
+<li><p><strong>Complex numbers</strong> (i)</p></li>
+<li><p><strong>Rotation</strong> (θ)</p></li>
+</ul>
+<section id="special-case-euler-s-identity">
+<h3>Special Case: Euler’s Identity<a class="headerlink" href="#special-case-euler-s-identity" title="Link to this heading"></a></h3>
+<p>When θ = π:</p>
+<div class="math notranslate nohighlight">
+\[e^{i\pi} + 1 = 0\]</div>
+<p>This equation contains the five most important constants in mathematics: e, i, π, 1, and 0.</p>
+</section>
+<section id="why-it-matters">
+<h3>Why It Matters<a class="headerlink" href="#why-it-matters" title="Link to this heading"></a></h3>
+<p>Euler’s formula means:</p>
+<ul class="simple">
+<li><p><strong>Multiplication by e^(iθ)</strong> = rotation by angle θ</p></li>
+<li><p><strong>Sinusoids are complex exponentials</strong>: cos(θ) = Re(e^(iθ))</p></li>
+<li><p><strong>Fourier analysis</strong> becomes multiplication</p></li>
+</ul>
+</section>
+</section>
+<section id="complex-differentiation">
+<h2>Complex Differentiation<a class="headerlink" href="#complex-differentiation" title="Link to this heading"></a></h2>
+<section id="analytic-functions">
+<h3>Analytic Functions<a class="headerlink" href="#analytic-functions" title="Link to this heading"></a></h3>
+<p>A function f: ℂ → ℂ is <strong>analytic</strong> (or holomorphic) if it’s differentiable in the complex sense:</p>
+<div class="math notranslate nohighlight">
+\[f'(z) = \lim_{h \to 0} \frac{f(z+h) - f(z)}{h}\]</div>
+<p>where h can approach 0 from any direction in the complex plane.</p>
+</section>
+<section id="the-cauchy-riemann-equations">
+<h3>The Cauchy-Riemann Equations<a class="headerlink" href="#the-cauchy-riemann-equations" title="Link to this heading"></a></h3>
+<p>If f(z) = u(x,y) + iv(x,y) is analytic, then:</p>
+<div class="math notranslate nohighlight">
+\[\frac{\partial u}{\partial x} = \frac{\partial v}{\partial y}, \quad \frac{\partial u}{\partial y} = -\frac{\partial v}{\partial x}\]</div>
+<p>These constraints are very restrictive—analytic functions are extremely smooth.</p>
+</section>
+<section id="why-this-matters">
+<h3>Why This Matters<a class="headerlink" href="#why-this-matters" title="Link to this heading"></a></h3>
+<p>Analytic functions have remarkable properties:</p>
+<ul class="simple">
+<li><p><strong>Infinitely differentiable</strong> (unlike real functions)</p></li>
+<li><p><strong>Equal to their Taylor series</strong> (no approximation error!)</p></li>
+<li><p><strong>Determined by values on boundary</strong> (holographic principle)</p></li>
+</ul>
+</section>
+</section>
+<section id="the-fourier-transform">
+<h2>The Fourier Transform<a class="headerlink" href="#the-fourier-transform" title="Link to this heading"></a></h2>
+<section id="from-time-to-frequency">
+<h3>From Time to Frequency<a class="headerlink" href="#from-time-to-frequency" title="Link to this heading"></a></h3>
+<p>The Fourier transform converts a signal from time domain to frequency domain:</p>
+<div class="math notranslate nohighlight">
+\[\hat{f}(\omega) = \int_{-\infty}^{\infty} f(t) e^{-i\omega t} dt\]</div>
+<p>The inverse:</p>
+<div class="math notranslate nohighlight">
+\[f(t) = \frac{1}{2\pi} \int_{-\infty}^{\infty} \hat{f}(\omega) e^{i\omega t} d\omega\]</div>
+</section>
+<section id="intuition">
+<h3>Intuition<a class="headerlink" href="#intuition" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>e^(iωt) is a rotating complex number at frequency ω</p></li>
+<li><p>The integral measures how much f(t) “correlates” with each frequency</p></li>
+<li><p>The result is a complex number encoding amplitude and phase</p></li>
+</ul>
+</section>
+<section id="in-code">
+<h3>In Code<a class="headerlink" href="#in-code" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy.fft</span><span class="w"> </span><span class="kn">import</span> <span class="n">fft</span><span class="p">,</span> <span class="n">fftfreq</span>
+
+<span class="c1"># Create a signal: sum of two frequencies</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">signal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">25</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Compute FFT</span>
+<span class="n">spectrum</span> <span class="o">=</span> <span class="n">fft</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+<span class="n">frequencies</span> <span class="o">=</span> <span class="n">fftfreq</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="c1"># The spectrum shows peaks at 10 Hz and 25 Hz</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">frequencies</span><span class="p">[:</span><span class="mi">500</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">spectrum</span><span class="p">[:</span><span class="mi">500</span><span class="p">]))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Frequency (Hz)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Magnitude&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Frequency Spectrum&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="ml-applications">
+<h3>ML Applications<a class="headerlink" href="#ml-applications" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Audio processing</strong>: Speech recognition, music generation</p></li>
+<li><p><strong>Image processing</strong>: Convolution in frequency domain</p></li>
+<li><p><strong>Time series</strong>: Spectral analysis, periodicity detection</p></li>
+<li><p><strong>Positional encodings</strong>: Transformers use sinusoidal embeddings</p></li>
+</ul>
+</section>
+</section>
+<section id="convolution-and-the-fourier-transform">
+<h2>Convolution and the Fourier Transform<a class="headerlink" href="#convolution-and-the-fourier-transform" title="Link to this heading"></a></h2>
+<section id="the-convolution-theorem">
+<h3>The Convolution Theorem<a class="headerlink" href="#the-convolution-theorem" title="Link to this heading"></a></h3>
+<p>Convolution in time domain = multiplication in frequency domain:</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{F}(f * g) = \mathcal{F}(f) \cdot \mathcal{F}(g)\]</div>
+<p>This is why FFT-based convolution is fast:</p>
+<ol class="arabic simple">
+<li><p>FFT both signals: O(n log n)</p></li>
+<li><p>Multiply: O(n)</p></li>
+<li><p>Inverse FFT: O(n log n)</p></li>
+</ol>
+<p>Total: O(n log n) instead of O(n²) for direct convolution.</p>
+</section>
+<section id="ml-connection">
+<h3>ML Connection<a class="headerlink" href="#ml-connection" title="Link to this heading"></a></h3>
+<p>CNNs use convolution extensively. For large kernels, FFT-based convolution can be faster.</p>
+</section>
+</section>
+<section id="residues-and-contour-integration">
+<h2>Residues and Contour Integration<a class="headerlink" href="#residues-and-contour-integration" title="Link to this heading"></a></h2>
+<section id="the-residue-theorem">
+<h3>The Residue Theorem<a class="headerlink" href="#the-residue-theorem" title="Link to this heading"></a></h3>
+<p>For analytic functions with isolated singularities:</p>
+<div class="math notranslate nohighlight">
+\[\oint_C f(z) dz = 2\pi i \sum \text{Res}(f, z_k)\]</div>
+<p>The integral around a closed curve equals 2πi times the sum of residues inside.</p>
+</section>
+<section id="id1">
+<h3>Why It Matters<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>This lets you compute difficult real integrals by:</p>
+<ol class="arabic simple">
+<li><p>Extending to complex plane</p></li>
+<li><p>Choosing a clever contour</p></li>
+<li><p>Using residues instead of direct integration</p></li>
+</ol>
+</section>
+<section id="example-application">
+<h3>Example Application<a class="headerlink" href="#example-application" title="Link to this heading"></a></h3>
+<p>The integral ∫₀^∞ sin(x)/x dx = π/2 is hard to compute directly but easy with contour integration.</p>
+</section>
+</section>
+<section id="complex-numbers-in-neural-networks">
+<h2>Complex Numbers in Neural Networks<a class="headerlink" href="#complex-numbers-in-neural-networks" title="Link to this heading"></a></h2>
+<section id="complex-valued-networks">
+<h3>Complex-Valued Networks<a class="headerlink" href="#complex-valued-networks" title="Link to this heading"></a></h3>
+<p>Some applications benefit from complex-valued neural networks:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Complex linear layer (conceptual)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">complex_linear</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">W_real</span><span class="p">,</span> <span class="n">W_imag</span><span class="p">,</span> <span class="n">b_real</span><span class="p">,</span> <span class="n">b_imag</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Complex matrix multiplication:</span>
+<span class="sd">    (W_r + iW_i)(z_r + iz_i) = (W_r z_r - W_i z_i) + i(W_r z_i + W_i z_r)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">z_real</span><span class="p">,</span> <span class="n">z_imag</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">z</span><span class="o">.</span><span class="n">imag</span>
+    <span class="n">out_real</span> <span class="o">=</span> <span class="n">W_real</span> <span class="o">@</span> <span class="n">z_real</span> <span class="o">-</span> <span class="n">W_imag</span> <span class="o">@</span> <span class="n">z_imag</span> <span class="o">+</span> <span class="n">b_real</span>
+    <span class="n">out_imag</span> <span class="o">=</span> <span class="n">W_real</span> <span class="o">@</span> <span class="n">z_imag</span> <span class="o">+</span> <span class="n">W_imag</span> <span class="o">@</span> <span class="n">z_real</span> <span class="o">+</span> <span class="n">b_imag</span>
+    <span class="k">return</span> <span class="n">out_real</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">out_imag</span>
+</pre></div>
+</div>
+</section>
+<section id="applications">
+<h3>Applications<a class="headerlink" href="#applications" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>MRI reconstruction</strong>: Data is inherently complex</p></li>
+<li><p><strong>Radar/sonar</strong>: Phase information matters</p></li>
+<li><p><strong>Audio synthesis</strong>: Complex spectrograms</p></li>
+<li><p><strong>Quantum ML</strong>: Quantum states are complex</p></li>
+</ul>
+</section>
+</section>
+<section id="conformal-maps">
+<h2>Conformal Maps<a class="headerlink" href="#conformal-maps" title="Link to this heading"></a></h2>
+<section id="angle-preserving-transformations">
+<h3>Angle-Preserving Transformations<a class="headerlink" href="#angle-preserving-transformations" title="Link to this heading"></a></h3>
+<p>Analytic functions preserve angles—they’re <strong>conformal maps</strong>. This means:</p>
+<ul class="simple">
+<li><p>Local shapes are preserved (circles map to circles, infinitesimally)</p></li>
+<li><p>Useful for solving PDEs by mapping to simpler domains</p></li>
+</ul>
+</section>
+<section id="example-the-joukowski-transform">
+<h3>Example: The Joukowski Transform<a class="headerlink" href="#example-the-joukowski-transform" title="Link to this heading"></a></h3>
+<div class="math notranslate nohighlight">
+\[w = z + \frac{1}{z}\]</div>
+<p>This maps a circle to an airfoil shape—used in aerodynamics!</p>
+</section>
+</section>
+<section id="connecting-to-pydelt">
+<h2>Connecting to PyDelt<a class="headerlink" href="#connecting-to-pydelt" title="Link to this heading"></a></h2>
+<p>While PyDelt primarily works with real-valued functions, complex analysis concepts appear in:</p>
+<ol class="arabic simple">
+<li><p><strong>Fourier-based smoothing</strong>: Some interpolation methods use frequency domain</p></li>
+<li><p><strong>Spectral analysis</strong>: Analyzing periodic components in time series</p></li>
+<li><p><strong>Signal processing</strong>: Derivatives of complex signals</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+
+<span class="c1"># Complex signal (e.g., from FFT)</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">signal_complex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>  <span class="c1"># Unit circle in complex plane</span>
+
+<span class="c1"># Work with real and imaginary parts separately</span>
+<span class="n">real_part</span> <span class="o">=</span> <span class="n">signal_complex</span><span class="o">.</span><span class="n">real</span>
+<span class="n">imag_part</span> <span class="o">=</span> <span class="n">signal_complex</span><span class="o">.</span><span class="n">imag</span>
+
+<span class="c1"># Differentiate each part</span>
+<span class="n">interp_real</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="n">interp_real</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">real_part</span><span class="p">)</span>
+<span class="n">deriv_real</span> <span class="o">=</span> <span class="n">interp_real</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="n">interp_imag</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="n">interp_imag</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">imag_part</span><span class="p">)</span>
+<span class="n">deriv_imag</span> <span class="o">=</span> <span class="n">interp_imag</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)(</span><span class="n">t</span><span class="p">)</span>
+
+<span class="c1"># Combine back</span>
+<span class="n">deriv_complex</span> <span class="o">=</span> <span class="n">deriv_real</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">deriv_imag</span>
+
+<span class="c1"># For e^(it), derivative should be i*e^(it)</span>
+<span class="n">expected</span> <span class="o">=</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">t</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max error: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">deriv_complex</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">expected</span><span class="p">))</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="key-takeaways">
+<h2>Key Takeaways<a class="headerlink" href="#key-takeaways" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Complex numbers are 2D vectors</strong> with special multiplication</p></li>
+<li><p><strong>Euler’s formula</strong> connects exponentials, trig, and rotation</p></li>
+<li><p><strong>Fourier transform</strong> converts time ↔ frequency using complex exponentials</p></li>
+<li><p><strong>Analytic functions</strong> are extremely smooth and well-behaved</p></li>
+<li><p><strong>Convolution theorem</strong> makes FFT-based convolution fast</p></li>
+<li><p><strong>Complex networks</strong> are useful for inherently complex data</p></li>
+</ol>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Euler’s formula</strong>: Verify that e^(iπ/4) = (1+i)/√2 using Python.</p></li>
+<li><p><strong>FFT analysis</strong>: Create a signal with 3 frequency components. Use FFT to identify them.</p></li>
+<li><p><strong>Complex derivative</strong>: For f(z) = z², verify the Cauchy-Riemann equations.</p></li>
+<li><p><strong>Rotation</strong>: Show that multiplying by e^(iπ/2) rotates a complex number by 90°.</p></li>
+</ol>
+<hr class="docutils" />
+<p><em>Previous: <a class="reference internal" href="06_multivariate_calculus.html"><span class="std std-doc">← Multivariate Calculus</span></a> | Next: <a class="reference internal" href="08_applications_to_ml.html"><span class="std std-doc">Applications to ML →</span></a></em></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="06_multivariate_calculus.html" class="btn btn-neutral float-left" title="Chapter 6: Multivariate Calculus" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="08_applications_to_ml.html" class="btn btn-neutral float-right" title="Chapter 8: Applications to Machine Learning" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

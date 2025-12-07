@@ -23,7 +23,23 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
+    'myst_parser',  # Support for Markdown files
 ]
+
+# MyST Parser settings for Markdown support
+myst_enable_extensions = [
+    "dollarmath",  # Support $...$ and $$...$$ for math
+    "colon_fence",  # Support ::: for admonitions
+    "deflist",  # Definition lists
+    "tasklist",  # Task lists with checkboxes
+]
+myst_heading_anchors = 3  # Generate anchors for h1-h3
+
+# Source file suffixes
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']

@@ -1,0 +1,413 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chapter 1: Functions and Limits &mdash; pydelt 0.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5a057da9"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chapter 2: Derivatives Intuition" href="02_derivatives_intuition.html" />
+    <link rel="prev" title="Why Calculus? A Guide for ML Practitioners" href="00_why_calculus.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pydelt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Start Here:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mathematical Foundations:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../theory_index.html">Theory: Calculus for ML</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../theory_index.html#chapters">Chapters</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="00_why_calculus.html">Why Calculus? A Guide for ML Practitioners</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Chapter 1: Functions and Limits</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#what-is-a-function-really">What Is a Function, Really?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-three-ways-to-represent-functions">The Three Ways to Represent Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#limits-the-foundation-of-calculus">Limits: The Foundation of Calculus</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#when-limits-don-t-exist">When Limits Don’t Exist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#continuity-when-functions-behave-nicely">Continuity: When Functions Behave Nicely</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-epsilon-delta-definition-for-the-curious">The Epsilon-Delta Definition (For the Curious)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#connecting-to-pydelt">Connecting to PyDelt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#key-takeaways">Key Takeaways</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exercises">Exercises</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="02_derivatives_intuition.html">Chapter 2: Derivatives Intuition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="03_differentiation_rules.html">Chapter 3: Differentiation Rules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="04_integration_intuition.html">Chapter 4: Integration Intuition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="05_approximation_theory.html">Chapter 5: Approximation Theory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="06_multivariate_calculus.html">Chapter 6: Multivariate Calculus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="07_complex_analysis.html">Chapter 7: Complex Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="08_applications_to_ml.html">Chapter 8: Applications to Machine Learning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bibliography.html">Bibliography</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#quick-reference">Quick Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#learning-paths">Learning Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../theory_index.html#who-this-is-for">Who This Is For</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Mathematical Theory</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Master the Methods:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../basic_interpolation.html">Basic Interpolation &amp; Derivatives</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../neural_networks.html">Neural Networks &amp; Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../multivariate_calculus.html">Multivariate Calculus &amp; Vector Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../stochastic_computing.html">Stochastic Computing &amp; Probabilistic Derivatives</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference &amp; Help:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visual_examples.html">Visual Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../feature_comparison.html">Feature Comparison Matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pydelt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../theory_index.html">Theory: Calculus for ML</a></li>
+      <li class="breadcrumb-item active">Chapter 1: Functions and Limits</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/theory/01_functions_and_limits.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-1-functions-and-limits">
+<h1>Chapter 1: Functions and Limits<a class="headerlink" href="#chapter-1-functions-and-limits" title="Link to this heading"></a></h1>
+<blockquote>
+<div><p><em>“A function is a machine: input → output. A limit asks: what happens as we get infinitely close to something?”</em></p>
+</div></blockquote>
+<section id="what-is-a-function-really">
+<h2>What Is a Function, Really?<a class="headerlink" href="#what-is-a-function-really" title="Link to this heading"></a></h2>
+<p>Before we can talk about derivatives, we need to be crystal clear about what a function is.</p>
+<section id="the-machine-metaphor">
+<h3>The Machine Metaphor<a class="headerlink" href="#the-machine-metaphor" title="Link to this heading"></a></h3>
+<p>Think of a function as a <strong>machine with one rule</strong>: for every input, there’s exactly one output.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Input → [Function Machine] → Output
+  x   →       f(x)        →   y
+</pre></div>
+</div>
+<p>Some examples:</p>
+<ul class="simple">
+<li><p><strong>f(x) = x²</strong>: Input 3, output 9. Input -2, output 4.</p></li>
+<li><p><strong>f(x) = sin(x)</strong>: Input π/2, output 1. Input 0, output 0.</p></li>
+<li><p><strong>Neural network</strong>: Input image, output class probabilities.</p></li>
+</ul>
+</section>
+<section id="why-this-matters-for-ml">
+<h3>Why This Matters for ML<a class="headerlink" href="#why-this-matters-for-ml" title="Link to this heading"></a></h3>
+<p>In machine learning, almost everything is a function:</p>
+<ul class="simple">
+<li><p>Your <strong>model</strong> is a function: inputs → predictions</p></li>
+<li><p>Your <strong>loss</strong> is a function: (predictions, labels) → scalar</p></li>
+<li><p>Your <strong>optimizer</strong> updates weights based on functions of gradients</p></li>
+</ul>
+<p>Understanding functions deeply helps you understand what your models are actually doing.</p>
+</section>
+</section>
+<section id="the-three-ways-to-represent-functions">
+<h2>The Three Ways to Represent Functions<a class="headerlink" href="#the-three-ways-to-represent-functions" title="Link to this heading"></a></h2>
+<section id="analytical-formula">
+<h3>1. Analytical (Formula)<a class="headerlink" href="#analytical-formula" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>This is the cleanest representation—you have an exact formula. Calculus textbooks mostly work with these.</p>
+</section>
+<section id="tabular-data-points">
+<h3>2. Tabular (Data Points)<a class="headerlink" href="#tabular-data-points" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x_data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="n">y_data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">36</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This is what you usually have in practice—measurements, observations, samples. <strong>PyDelt specializes in this case.</strong></p>
+</section>
+<section id="graphical-visual">
+<h3>3. Graphical (Visual)<a class="headerlink" href="#graphical-visual" title="Link to this heading"></a></h3>
+<p>A curve on a plot. Useful for intuition, but you can’t compute with it directly.</p>
+</section>
+<section id="the-pydelt-bridge">
+<h3>The PyDelt Bridge<a class="headerlink" href="#the-pydelt-bridge" title="Link to this heading"></a></h3>
+<p>PyDelt converts <strong>tabular data</strong> into <strong>smooth functions</strong> that behave like analytical ones:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+
+<span class="c1"># Your data (tabular)</span>
+<span class="n">x_data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+<span class="n">y_data</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">36</span><span class="p">]</span>
+
+<span class="c1"># Convert to smooth function</span>
+<span class="n">interpolator</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">interpolator</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_data</span><span class="p">,</span> <span class="n">y_data</span><span class="p">)</span>
+
+<span class="c1"># Now you can evaluate anywhere</span>
+<span class="n">f_approx</span> <span class="o">=</span> <span class="n">interpolator</span><span class="p">(</span><span class="mf">2.5</span><span class="p">)</span>  <span class="c1"># Returns ~12.25</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="limits-the-foundation-of-calculus">
+<h2>Limits: The Foundation of Calculus<a class="headerlink" href="#limits-the-foundation-of-calculus" title="Link to this heading"></a></h2>
+<section id="the-intuition">
+<h3>The Intuition<a class="headerlink" href="#the-intuition" title="Link to this heading"></a></h3>
+<p>A <strong>limit</strong> answers the question: <em>“What value does f(x) approach as x gets closer and closer to some point a?”</em></p>
+<p>We write this as:</p>
+<div class="math notranslate nohighlight">
+\[\lim_{x \to a} f(x) = L\]</div>
+<p>This means: as x gets arbitrarily close to a, f(x) gets arbitrarily close to L.</p>
+</section>
+<section id="why-limits-matter">
+<h3>Why Limits Matter<a class="headerlink" href="#why-limits-matter" title="Link to this heading"></a></h3>
+<p>Limits are the foundation of derivatives. The derivative is defined as a limit:</p>
+<div class="math notranslate nohighlight">
+\[f'(a) = \lim_{h \to 0} \frac{f(a+h) - f(a)}{h}\]</div>
+<p>This says: “The derivative is what the slope of the secant line approaches as the two points get infinitely close together.”</p>
+</section>
+<section id="a-concrete-example">
+<h3>A Concrete Example<a class="headerlink" href="#a-concrete-example" title="Link to this heading"></a></h3>
+<p>Consider f(x) = x². What is the derivative at x = 2?</p>
+<p>Let’s compute the limit step by step:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>h</p></th>
+<th class="head"><p>(f(2+h) - f(2)) / h</p></th>
+<th class="head"><p>=</p></th>
+<th class="head"><p>((2+h)² - 4) / h</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>(9 - 4) / 1</p></td>
+<td><p>=</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>0.1</p></td>
+<td><p>(4.41 - 4) / 0.1</p></td>
+<td><p>=</p></td>
+<td><p>4.1</p></td>
+</tr>
+<tr class="row-even"><td><p>0.01</p></td>
+<td><p>(4.0401 - 4) / 0.01</p></td>
+<td><p>=</p></td>
+<td><p>4.01</p></td>
+</tr>
+<tr class="row-odd"><td><p>0.001</p></td>
+<td><p>(4.004001 - 4) / 0.001</p></td>
+<td><p>=</p></td>
+<td><p>4.001</p></td>
+</tr>
+</tbody>
+</table>
+<p>As h → 0, the value approaches <strong>4</strong>. So f’(2) = 4.</p>
+<p>(Analytically: if f(x) = x², then f’(x) = 2x, so f’(2) = 4. ✓)</p>
+</section>
+<section id="limits-in-code">
+<h3>Limits in Code<a class="headerlink" href="#limits-in-code" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">numerical_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Approximate derivative using limit definition.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">h</span><span class="p">)</span> <span class="o">-</span> <span class="n">f</span><span class="p">(</span><span class="n">a</span><span class="p">))</span> <span class="o">/</span> <span class="n">h</span>
+
+<span class="c1"># Compute derivative at x=2</span>
+<span class="n">derivative_at_2</span> <span class="o">=</span> <span class="n">numerical_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;f&#39;(2) ≈ </span><span class="si">{</span><span class="n">derivative_at_2</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Output: 4.000000</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="when-limits-don-t-exist">
+<h2>When Limits Don’t Exist<a class="headerlink" href="#when-limits-don-t-exist" title="Link to this heading"></a></h2>
+<p>Not every limit exists. Understanding when limits fail helps you understand when derivatives fail.</p>
+<section id="case-1-jump-discontinuities">
+<h3>Case 1: Jump Discontinuities<a class="headerlink" href="#case-1-jump-discontinuities" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">step_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<p>At x = 0, the left limit is 0 and the right limit is 1. They don’t match, so the limit doesn’t exist—and neither does the derivative.</p>
+<p><strong>ML Connection</strong>: This is why ReLU has no derivative at x = 0 (though we define it as 0 by convention).</p>
+</section>
+<section id="case-2-infinite-oscillation">
+<h3>Case 2: Infinite Oscillation<a class="headerlink" href="#case-2-infinite-oscillation" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">oscillating</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As x → 0, this function oscillates infinitely fast between -1 and 1. No limit exists.</p>
+</section>
+<section id="case-3-vertical-asymptotes">
+<h3>Case 3: Vertical Asymptotes<a class="headerlink" href="#case-3-vertical-asymptotes" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">reciprocal</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="n">x</span>
+</pre></div>
+</div>
+<p>As x → 0, f(x) → ±∞. The limit is infinite (doesn’t exist as a real number).</p>
+</section>
+</section>
+<section id="continuity-when-functions-behave-nicely">
+<h2>Continuity: When Functions Behave Nicely<a class="headerlink" href="#continuity-when-functions-behave-nicely" title="Link to this heading"></a></h2>
+<p>A function is <strong>continuous</strong> at a point if:</p>
+<ol class="arabic simple">
+<li><p>The limit exists</p></li>
+<li><p>The function is defined at that point</p></li>
+<li><p>The limit equals the function value</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[\lim_{x \to a} f(x) = f(a)\]</div>
+<section id="why-continuity-matters-for-ml">
+<h3>Why Continuity Matters for ML<a class="headerlink" href="#why-continuity-matters-for-ml" title="Link to this heading"></a></h3>
+<p><strong>Continuous functions are easier to optimize.</strong> Gradient descent assumes your loss function is continuous (and usually differentiable). When it’s not:</p>
+<ul class="simple">
+<li><p>Training can be unstable</p></li>
+<li><p>Gradients can be undefined</p></li>
+<li><p>Optimization can get stuck</p></li>
+</ul>
+<p><strong>PyDelt’s interpolation methods produce continuous functions</strong> from your discrete data, making derivative computation well-defined.</p>
+</section>
+</section>
+<section id="the-epsilon-delta-definition-for-the-curious">
+<h2>The Epsilon-Delta Definition (For the Curious)<a class="headerlink" href="#the-epsilon-delta-definition-for-the-curious" title="Link to this heading"></a></h2>
+<p>The formal definition of a limit uses two Greek letters:</p>
+<blockquote>
+<div><p>For every ε &gt; 0, there exists a δ &gt; 0 such that if 0 &lt; |x - a| &lt; δ, then |f(x) - L| &lt; ε.</p>
+</div></blockquote>
+<p>In plain English: “No matter how close you want f(x) to be to L (within ε), I can find a range around a (within δ) where that’s true.”</p>
+<p>You don’t need this for practical ML work, but it’s the foundation that makes calculus rigorous.</p>
+</section>
+<section id="connecting-to-pydelt">
+<h2>Connecting to PyDelt<a class="headerlink" href="#connecting-to-pydelt" title="Link to this heading"></a></h2>
+<p>When PyDelt fits an interpolator to your data, it’s creating a <strong>continuous, smooth function</strong> that:</p>
+<ol class="arabic simple">
+<li><p>Passes through (or near) your data points</p></li>
+<li><p>Has well-defined limits everywhere</p></li>
+<li><p>Has well-defined derivatives (which you can compute!)</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydelt.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">SplineInterpolator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Noisy data</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+
+<span class="c1"># Create smooth, continuous function</span>
+<span class="n">interpolator</span> <span class="o">=</span> <span class="n">SplineInterpolator</span><span class="p">(</span><span class="n">smoothing</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">interpolator</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+<span class="c1"># This function has well-defined limits and derivatives everywhere</span>
+<span class="n">derivative_func</span> <span class="o">=</span> <span class="n">interpolator</span><span class="o">.</span><span class="n">differentiate</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="key-takeaways">
+<h2>Key Takeaways<a class="headerlink" href="#key-takeaways" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Functions map inputs to outputs</strong> deterministically</p></li>
+<li><p><strong>Limits describe behavior</strong> as we approach a point</p></li>
+<li><p><strong>Derivatives are defined as limits</strong> of difference quotients</p></li>
+<li><p><strong>Continuity ensures</strong> limits and function values match</p></li>
+<li><p><strong>PyDelt creates continuous functions</strong> from discrete data</p></li>
+</ol>
+</section>
+<section id="exercises">
+<h2>Exercises<a class="headerlink" href="#exercises" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Compute by hand</strong>: What is lim(x→3) of (x² - 9)/(x - 3)? (Hint: factor the numerator)</p></li>
+<li><p><strong>Code it</strong>: Write a function that computes the numerical derivative at multiple points and plots it against the analytical derivative for f(x) = sin(x).</p></li>
+<li><p><strong>Think about it</strong>: Why does the ReLU function f(x) = max(0, x) have a derivative everywhere except x = 0?</p></li>
+</ol>
+<hr class="docutils" />
+<p><em>Previous: <a class="reference internal" href="00_why_calculus.html"><span class="std std-doc">← Why Calculus?</span></a> | Next: <a class="reference internal" href="02_derivatives_intuition.html"><span class="std std-doc">Derivatives Intuition →</span></a></em></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="00_why_calculus.html" class="btn btn-neutral float-left" title="Why Calculus? A Guide for ML Practitioners" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="02_derivatives_intuition.html" class="btn btn-neutral float-right" title="Chapter 2: Derivatives Intuition" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Michael Harrison Lee.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
